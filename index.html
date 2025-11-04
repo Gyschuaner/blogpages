@@ -1,1 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人博客 | 分享生活与技术</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo"><a href="#">我的博客</a></div>
+                <ul class="nav-links">
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#about">关于我</a></li>
+                    <li><a href="#categories">分类</a></li>
+                    <li><a href="#contact">联系</a></li>
+                </ul>
+                <div class="search">
+                    <input type="text" placeholder="搜索文章...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </nav>
+    </header>
 
+    <!-- 主要内容 -->
+    <main>
+        <div class="container">
+            <!-- 博客文章列表 -->
+            <div class="blog-content">
+                <!-- 置顶文章 -->
+                <article class="featured-post">
+                    <div class="post-thumbnail">
+                        <img src="https://via.placeholder.com/800x400" alt="博客封面图">
+                    </div>
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="category"><a href="#">技术</a></span>
+                            <span class="date">2023年10月15日</span>
+                        </div>
+                        <h2 class="post-title"><a href="#">从零开始搭建个人博客网站</a></h2>
+                        <p class="post-excerpt">这是一篇关于如何使用HTML、CSS和JavaScript搭建个人博客网站的指南。在这篇文章中，我将分享我的经验和技巧，帮助你也能拥有一个自己的博客平台。</p>
+                        <div class="post-footer">
+                            <div class="author-info">
+                                <img src="https://via.placeholder.com/40" alt="作者头像">
+                                <span>博主</span>
+                            </div>
+                            <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 文章列表 -->
+                <div class="post-list">
+                    <!-- 文章1 -->
+                    <article class="post">
+                        <div class="post-content">
+                            <div class="post-meta">
+                                <span class="category"><a href="#">技术</a></span>
+                                <span class="date">2023年10月10日</span>
+                            </div>
+                            <h2 class="post-title"><a href="#">前端开发的10个最佳实践</a></h2>
+                            <p class="post-excerpt">本文总结了前端开发中的一些最佳实践，包括代码组织、性能优化、可访问性等方面的建议。</p>
+                            <div class="post-footer">
+                                <div class="author-info">
+                                    <img src="https://via.placeholder.com/40" alt="作者头像">
+                                    <span>博主</span>
+                                </div>
+                                <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 文章2 -->
+                    <article class="post">
+                        <div class="post-content">
+                            <div class="post-meta">
+                                <span class="category"><a href="#">生活</a></span>
+                                <span class="date">2023年10月5日</span>
+                            </div>
+                            <h2 class="post-title"><a href="#">程序员的日常工作习惯</a></h2>
+                            <p class="post-excerpt">分享一些我在日常工作中养成的好习惯，帮助我提高效率并保持工作与生活的平衡。</p>
+                            <div class="post-footer">
+                                <div class="author-info">
+                                    <img src="https://via.placeholder.com/40" alt="作者头像">
+                                    <span>博主</span>
+                                </div>
+                                <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 文章3 -->
+                    <article class="post">
+                        <div class="post-content">
+                            <div class="post-meta">
+                                <span class="category"><a href="#">学习</a></span>
+                                <span class="date">2023年9月28日</span>
+                            </div>
+                            <h2 class="post-title"><a href="#">如何高效学习新技术栈</a></h2>
+                            <p class="post-excerpt">在技术快速发展的今天，如何快速有效地学习新技术成为程序员必须面对的挑战。本文分享一些实用的学习方法。</p>
+                            <div class="post-footer">
+                                <div class="author-info">
+                                    <img src="https://via.placeholder.com/40" alt="作者头像">
+                                    <span>博主</span>
+                                </div>
+                                <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    <a href="#" class="prev">上一页</a>
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <span>...</span>
+                    <a href="#">10</a>
+                    <a href="#" class="next">下一页</a>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <!-- 关于我 -->
+                <div class="widget about-me">
+                    <h3 class="widget-title">关于我</h3>
+                    <div class="author-profile">
+                        <img src="https://via.placeholder.com/100" alt="作者头像">
+                        <h4>博主名称</h4>
+                        <p>热爱技术，分享生活。这是我的个人博客，欢迎交流！</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-weixin"></i></a>
+                            <a href="#"><i class="fab fa-weibo"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分类 -->
+                <div class="widget categories">
+                    <h3 class="widget-title">文章分类</h3>
+                    <ul>
+                        <li><a href="#">技术 <span>(12)</span></a></li>
+                        <li><a href="#">生活 <span>(8)</span></a></li>
+                        <li><a href="#">学习 <span>(5)</span></a></li>
+                        <li><a href="#">分享 <span>(3)</span></a></li>
+                    </ul>
+                </div>
+
+                <!-- 热门文章 -->
+                <div class="widget popular-posts">
+                    <h3 class="widget-title">热门文章</h3>
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <h4>从零开始搭建个人博客网站</h4>
+                                <span>2023年10月15日</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <h4>前端开发的10个最佳实践</h4>
+                                <span>2023年10月10日</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <h4>如何高效学习新技术栈</h4>
+                                <span>2023年9月28日</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 标签云 -->
+                <div class="widget tag-cloud">
+                    <h3 class="widget-title">标签云</h3>
+                    <div class="tags">
+                        <a href="#">HTML</a>
+                        <a href="#">CSS</a>
+                        <a href="#">JavaScript</a>
+                        <a href="#">前端开发</a>
+                        <a href="#">学习笔记</a>
+                        <a href="#">生活感悟</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>我的博客</h3>
+                    <p>分享技术，记录生活，共同成长。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="#">首页</a></li>
+                        <li><a href="#about">关于我</a></li>
+                        <li><a href="#categories">分类</a></li>
+                        <li><a href="#contact">联系</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系我</h4>
+                    <p>邮箱：example@blog.com</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 我的博客. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人主页</title>
+    <title>首页 - Xgg的个人主页</title>
     <link rel="stylesheet" href="style.css">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,7 +13,7 @@
     <header id="navbar">
         <div class="container">
             <div class="logo">
-                <a href="index.html">我的个人主页</a>
+                <a href="index.html">Xgg的个人主页</a>
             </div>
             <nav class="menu">
                 <ul>
@@ -37,13 +37,12 @@
 
     <!-- 主页部分 -->
     <section id="home" class="hero">
-        <!-- 装饰元素 - 直接放在hero容器内 -->
-        <!-- 树木 -->
+        <!-- 树木元素 -->
         <div class="tree-left"></div>
         <div class="tree-right"></div>
         <div class="tree-small"></div>
         
-        <!-- 云朵 -->
+        <!-- 云朵元素 -->
         <div class="cloud-1"></div>
         <div class="cloud-2"></div>
         <div class="cloud-3"></div>
@@ -54,89 +53,71 @@
         <div class="flower"></div>
         <div class="mushroom"></div>
         
-        <!-- 主要内容 -->
-        <div class="container">
-            <div class="hero-content">
-                <!-- 左侧：头像和名字 -->
-                <div class="left-section">
-                    <div class="profile-picture">
-                        <img src="images/handson.png" alt="个人头像" class="avatar">
-                    </div>
-                    <h1>你好，我是<span class="highlight">张小明</span></h1>
-                </div>
-                
-                <!-- 右侧：其他信息 -->
-                <div class="right-section">
-                    <h2>Web前端开发工程师</h2>
-                    <p class="intro">热爱技术，专注于创建美观、高效的Web应用。</p>
-                    <div class="social-links">
-                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
-                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
+        <!-- 个人头像部分 -->
+        <!-- avatar-container: 头像的外层容器，用于控制头像在页面中的水平布局和位置 -->
+        <div class="avatar-container">
+            <!-- profile-picture: 头像的内层容器，用于添加边框和阴影效果 -->
+            <div class="profile-picture">
+                <!-- avatar: 实际的头像图片，设置了特定的尺寸和样式 -->
+                <!-- src: 头像图片的路径 -->
+                <!-- alt: 头像的替代文本，用于屏幕阅读器或图片加载失败时显示 -->
+                <img src="images/handson.png" alt="个人头像" class="avatar">
+            </div>
+        </div>
+        
+        <!-- 个人名字部分 -->
+        <div class="name-container">
+            <div class="text-section">
+                <h1 id="typing-text"><span class="highlight"></span></h1>
             </div>
         </div>
     </section>
-
-    <!-- 关于我部分 -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">关于我</h2>
-            <div class="about-content">
-                <p>todo - 还没做完</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 技能部分 -->
-    <section id="skills" class="skills">
-        <div class="container">
-            <h2 class="section-title">专业技能</h2>
-            <div class="skills-category">
-                <p>todo - 还没做完</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 项目经验部分 -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">项目经验</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <div class="project-content">
-                        <h3 class="project-title">项目</h3>
-                        <p class="project-description">todo - 还没做完</p>
-                    </div>
-                </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-    <!-- 页脚 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2024 Xgg的个人主页. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="index.html">首页</a>
-                    <a href="blog.html">博客</a>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <!-- 返回顶部按钮 -->
     <button id="back-to-top" class="back-to-top">
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- 引入JavaScript文件 -->
     <script src="script.js"></script>
+    <script>
+        // 打字机效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const text1 = "很高兴见到你，我是Xgg";
+            const text2 = "这里是我打造的异世界";
+            const text3 = "存放我的学习笔记与奇思妙想";
+            const typingElement = document.getElementById('typing-text');
+            const highlightElement = typingElement.querySelector('.highlight');
+            let index = 0;
+            let currentText = text1;
+            let isFirstTextComplete = false;
+            let isSecondTextComplete = false;
+            
+            function type() {
+                if (index < currentText.length) {
+                    // 使用innerHTML而不是textContent，确保换行正确显示
+                    highlightElement.innerHTML += currentText.charAt(index);
+                    index++;
+                    setTimeout(type, 50); // 将打字间隔缩短到50毫秒
+                } else if (!isFirstTextComplete) {
+                    // 第一行完成后添加换行
+                    highlightElement.innerHTML += '<br>';
+                    isFirstTextComplete = true;
+                    currentText = text2;
+                    index = 0;
+                    setTimeout(type, 500); // 换行后暂停半秒再继续打字
+                } else if (!isSecondTextComplete) {
+                    // 第二行完成后添加换行
+                    highlightElement.innerHTML += '<br>';
+                    isSecondTextComplete = true;
+                    currentText = text3;
+                    index = 0;
+                    setTimeout(type, 500); // 换行后暂停半秒再继续打字
+                }
+            }
+            
+            // 开始打字效果
+            type();
+        });
+    </script>
 </body>
 </html>

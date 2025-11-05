@@ -11,7 +11,7 @@ body {
     color: #333;
     background-color: #7EC0EE;
     background-image: 
-        linear-gradient(#7EC0EE 0%, #7EC0EE 60%, #8BAA36 60%, #8BAA36 100%),
+        linear-gradient(#7EC0EE 0%, #7EC0EE 80%, #8BAA36 80%, #8BAA36 100%),
         /* 云朵 */
         radial-gradient(circle at 10% 15%, #FFFFFF 20px, transparent 21px),
         radial-gradient(circle at 25% 12%, #FFFFFF 15px, transparent 16px),
@@ -29,7 +29,7 @@ body {
 body::before {
     content: '';
     position: fixed;
-    top: 60vh;
+    top: 0vh;
     left: 0;
     right: 0;
     bottom: 0;

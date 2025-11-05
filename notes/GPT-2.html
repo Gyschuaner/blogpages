@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a miniGPT - 我的个人主页</title>
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+    <!-- 引入博客动态加载脚本 -->
+    <script src="../js/blog-script.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    
+    <style>
+        /* 限制中间列最大宽度，确保与其他页面保持一致 */
+        .blog-main-content {
+            max-width: 940px; /* 限制最大宽度 */
+        }
+        /* 确保 pre 标签内的代码块正确显示 */
+        pre {
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            background-color: #A09688 !important;
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        }
+        /* highlight.js 需要 pre > code 结构 */
+        pre > code {
+            font-family: 'Microsoft YaHei UI', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background-color: transparent !important;
+            color: #333 !important;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        /* 修正 .md 中 <hr> 的样式 */
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
+        /* 修正表格样式 */
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        /* 覆盖 highlight.js 的默认样式 */
+        .hljs {
+            background-color: transparent !important;
+            color: #333 !important;
+        }
+        /* 确保代码高亮颜色可见 */
+        .hljs-keyword {
+            color: #7b00ff !important;
+        }
+        .hljs-string {
+            color: #008000 !important;
+        }
+        .hljs-comment {
+            color: #808080 !important;
+        }
+        .hljs-number {
+            color: #ff0000 !important;
+        }
+        .hljs-literal {
+            color: #008000 !important;
+        }
+    </style>
+</head>
+<body>
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="../home.html">首页</a></li>
+                    <li><a href="../about.html">关于我</a></li>
+                    <li><a href="../skills.html">技能</a></li>
+                    <li><a href="../projects.html">项目</a></li>
+                    <li><a href="../blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="blog-container">
+        <aside class="blog-sidebar-left">
+            <nav class="blog-nav">
+                <h3>博客列表</h3>
+                <ul>
+                    <li><a href="../notes/javascript-async-programming.html">JavaScript 异步编程详解</a></li>
+                    <li><a href="../notes/attention-mechanism.html">注意力机制详解</a></li>
+                </ul>
+                
+                <h3 style="margin-top: 30px;">分类</h3>
+                <ul>
+                    <li><a href="../blog.html">机器学习</a></li>
+                    <li><a href="../blog.html">深度学习</a></li>
+                    <li><a href="../blog.html">NLP</a></li>
+                    <li><a href="../blog.html">JavaScript</a></li>
+                    <li><a href="../blog.html">Python</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="blog-main-content">
+            <article class="blog-article">
+                <h1>Build a miniGPT</h1>
+                <div class="article-meta">
+                    <span class="read-time"><i class="far fa-clock"></i> 大约 25 分钟</span>
+                    <span class="tags">
+                        <span class="tag">GPT-2</span>
+                        <span class="tag">PyTorch</span>
+                        <span class="tag">Transformer</span>
+                    </span>
+                </div>
+                <hr>
+                
+                <div class="article-body">
+                    
+                    <h2 id="paper">论文</h2>
+                    <p>language_models_are_unsupervised_multitask_learners.pdf</p>
+                    
+                    <h2 id="libraries">相关库</h2>
+                    <p>主要依赖于PyTorch框架</p>
+                    
+                    <h2 id="model-structure">模型结构</h2>
+                    <p>主要是一个Transformer架构</p>
+
+                    <h2 id="import-packages">1 导入相关的包</h2>
+<pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+from dataclasses import dataclass
+import math
+
+torch.manual_seed(1024) # random seed
+</code></pre>
+                    <ul>
+                        <li>其中最后一步设置随机种子是为了在每次运行代码时产出的最终结果都相同。</li>
+                        <li>随机的内容有很多，如模型参数的初始化、Dropout中丢弃的神经元，DataLoader的打乱数据集</li>
+                    </ul>
+
+                    <h2 id="define-params">2 定义GPT的一些参数</h2>
+<pre><code class="language-python">@dataclass
+class GPTconfig:
+	block_size: int = 512
+	batch_size: int = 12
+	n_layer: int = 12
+	n_head: int = 12
+	n_embd: int = 768
+	hidden_dim = n_embd
+	dropout: float = 0.1
+	head_size: int = n_embd // n_head
+	vocab_size: int = 50527
+</code></pre>
+                    <ul>
+                        <li>这些参数就像搭建GPT的一个蓝图，在开始搭建前在一个地方集中的写出来，是一个良好的习惯</li>
+                        <li>对于参数的一些解释：</li>
+                        <li><strong>block_size</strong>：这是模型的上下文窗口(Context Window)，即模型一次性能看多长的句子。模型在预测下一个词的时候，最多只能参考前512个词(token)。该值越大就越能处理更长的依赖关系，但是计算量也会急剧增加。</li>
+                        <li><strong>batch_size</strong>：这是一个训练参数，是指模型在训练时能同时处理多少个句子。</li>
+                        <li><strong>n_layer</strong>：指Transformer Decoder模块的堆叠数量。层数越多，模型可能就学习到更高级更抽象的语义特征，但是模型也越大，训练越慢。GPT-2 small版本为12层。</li>
+                        <li><strong>n_head</strong>：这是多头注意力（Multi-Head Attention）机制的核心。想象一下，在阅读“猫追老鼠”时，一个“注意力头”可能关注“猫”和“追”的关系（动作发出者），另一个头可能关注“追”和“老鼠”的关系（动作接受者）。多个头从不同角度去分析句子中词与词之间的关系，让模型理解得更全面。</li>
+                        <li><strong>n_embd</strong>：指“嵌入维度”（Embedding Dimension）。一个token转换成多长的数字向量。维度越高，能编码的信息越丰富，但计算量也越大。</li>
+                        <li><strong>head_size</strong>： 总的词向量维度（<code>n_embd=768</code>）会被均匀地分给每一个注意力头（<code>n_head=12</code>）。所以每个头独立处理一个 <code>64</code> 维的小向量。最后再把 <code>12</code> 个头的结果拼接起来，恢复到 <code>768</code> 维。</li>
+                        <li><strong>vocab_size</strong>：指词汇表的大小，<code>50257</code> 是OpenAI在训练GPT-2时使用的BPE分词器最终得到的词汇量大小。</li>
+                    </ul>
+
+                    <h2 id="define-structure">3 定义GPT的结构</h2>
+
+                    <h3 id="single-head">3.1 Single Head Attention</h3>
+                    <p>本部分完整代码</p>
+<pre><code class="language-python">class SingleHeadAttention(nn.Module):
+    # 单头注意力机制
+    def __init__(self, config):
+        super().__init__()
+        self.key = nn.Linear(config.n_embd, config.head_size)
+        self.value = nn.Linear(config.n_embd, config.head_size)
+        self.query = nn.Linear(config.n_embd, config.head_size)
+        self.head_size = config.head_size
+
+        # 尝试学习新的写法，attention_mask 通过 register_buffer 注册
+        # 因为不用计算梯度，所以节约内存和显存，速度也更快
+        self.register_buffer(
+            'attention_mask', 
+            torch.tril(
+                torch.ones(config.block_size, config.block_size)
+            ))
+        self.dropout = nn.Dropout(config.dropout)
+
+    def forward(self, x):
+        batch_size, seq_len, hidden_size = x.size()
+        k = self.key(x)
+        v = self.value(x)
+        q = self.query(x)
+        weight = q @ k.transpose(-2, -1)   # @ 就是 torch.matmul 的简化写法
+        # 一定要在 softmax 前除以 sqrt(head_size)
+        weight = weight.masked_fill(
+            self.attention_mask[:seq_len, :seq_len] == 0, 
+            float('-inf')
+        ) / math.sqrt(self.head_size)  # 这里的 hidden_size 其实是 head_size，因为是单头
+        weight = F.softmax(weight, dim=-1)
+        weight = self.dropout(weight)
+        out = weight @ v
+        return out
+</code></pre>
+                    <hr>
+                    <p>下面为代码拆解</p>
+<pre><code class="language-python">class SingleHeadAttention(nn.Module):
+    # 单头注意力机制
+    def __init__(self, config):
+        super().__init__()
+        self.key = nn.Linear(config.n_embd, config.head_size)
+        self.value = nn.Linear(config.n_embd, config.head_size)
+        self.query = nn.Linear(config.n_embd, config.head_size)
+        self.head_size = config.head_size
+</code></pre>
+                    <ul>
+                        <li>这是注意力机制里的KQV矩阵。</li>
+                        <li><code>nn.Linear</code>表示KQV矩阵是可学习的权重矩阵，模型在训练过程中会不断优化它们的参数。</li>
+                    </ul>
+                    <hr>
+<pre><code class="language-python">		self.register_buffer(
+			'attention_mask',
+			torch.tril(
+				torch.ones(config.block_size, config.block_size)
+			)
+		)
+		
+		self.dropout = nn.Dropout(config.block_size)
+</code></pre>
+                    <ul>
+                        <li><code>attention_mask</code>（注意力面具）：规定了一个词在寻找上下文时，<strong>只能往前看，不能往后看</strong>。</li>
+                        <li><strong><code>torch.tril(...)</code></strong>：这个函数会创建一个下三角矩阵，就像这样：
+<pre><code>[[1., 0., 0.],
+ [1., 1., 0.],
+ [1., 1., 1.]]
+</code></pre>
+                        </li>
+                        <li><strong><code>register_buffer</code></strong>：对于注意力面具来说这是一种固定的规则，不需要通过反向传播来学习和更新，所以注册为<code>buffer</code>可以节约资源，并且在保存和加载模型时能被一并处理。详见PyTorch#register_buffer。</li>
+                    </ul>
+                    <hr>
+<pre><code class="language-python">	# x input
+	def forward(self, x):
+		batch_size, seq_len, hidden_size = x.size()
+		k = self.key(x)
+		q = self.query(x)
+		v = self.value(x)
+		weight = q @ k.transpose(-2, -1)
+		# 将原先定义的注意力面具部分中的‘0’修改为负无穷大，强制执行不能偷看未来的规则
+		weight = weight.masked_fill(
+			self.attention_mask[:seq_len, :seq_len] == 0, float('-inf')
+		) / math.sqrt(self.head_size) 
+		weight = F.softmax(weight, dim=-1)
+		weight = self.dropout(weight)
+		out = weight @ v
+		return out
+</code></pre>
+                    <p>这一部分涉及到注意力机制的计算过程，下面就来拆解这个过程</p>
+                    <ul>
+                        <li>首先，<code>x</code>的维度是<code>(batch_size, seq_len, n_embd)</code>，即<code>(批次大小， 句子长度， 词向量维度)</code>。</li>
+                        <li>输入的 <code>x</code> 首先通过三个独立的线性变换层（<code>self.key</code>, <code>self.query</code>, <code>self.value</code>），为每个词都生成三个不同的向量：
+                            <ul>
+                                <li><strong>Query (Q) 向量</strong>: 代表为了理解当前词，我需要去<strong>查询</strong>什么样的信息。</li>
+                                <li><strong>Key (K) 向量</strong>: 代表当前词<strong>可以被查询</strong>的“关键词”或“标签”。</li>
+                                <li><strong>Value (V) 向量</strong>: 代表当前词<strong>本身实际蕴含的意义</strong>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>公式</strong>: 假设输入矩阵为 $X \in \mathbb{R}^{T \times d_{model}}$ (这里 $T$ 是 <code>seq_len</code>, $d_{model}$ 是 <code>n_embd</code>)。$Q, K, V$ 是由 $X$ 分别乘以三个不同的权重矩阵 $W_Q, W_K, W_V$ 得到的。
+                         即$Q = X W_Q$，$K = X W_K$，$V = X W_V$
+		                其中 $W_Q, W_K \in \mathbb{R}^{d_{model} \times d_k}$，$W_V \in \mathbb{R}^{d_{model} \times d_v}$。$d_{model}$ 是 n_embd，$d_k = d_v$ 是 head_size。</li>
+                        <li>其次，要知道两个词之间的相关性，需要利用查询Q和关键词K。将每个词的Q向量与所有词的K向量做矩阵乘法，若两个词之间相关性很强，则会使他们的点积结果很大。</li>
+                        <li>其中<code>k.transpose(-2, -1)</code> 是将 $K$ 矩阵的最后两个维度（句子长度和词向量维度）进行转置，以便进行矩阵乘法。$$\text{Scores} = Q K^T$$这是原始的注意力分数矩阵。</li>
+                        <li>之后，<code>masked_fill</code>部分的代码含义是：在预测第i个词时，只能通过第1到第i个词预测，不能“偷看”之后的词，因此将所有代表“未来”位置的注意力分数直接设置为负无穷<code>-inf</code>。</li>
+                        <li>scale缩放部分，<code>/math.sqrt(self.head_size)</code>是使部分较大的注意力分数变小。由于当<code>head_size</code>较大时，点积的结果可能会很大，这将在后面的Softmax函数推入梯度极小的区域，导致训练困难，因此将分数除以$\sqrt{d_k}$可以缓解这个问题。$$\text{Scores}_{\text{scaled}} = \frac{Q K^T}{\sqrt{d_k}}$$</li>
+                        <li>之后，将Scores通过Softmax归一化到(0, 1)区间。现在矩阵里的值<code>weight[i, j]</code> 代表：词 <code>i</code> 应该给予词 <code>j</code> <strong>百分之多少的注意力</strong>。</li>
+                        <li>最后一步，将该值与Value矩阵点积，生成最终的out。这一步代表了每个词之间的相关性。</li>
+                        <li>综合的表达式如下：$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{\text{mask}(QK^T)}{\sqrt{d_k}}\right)V$$</li>
+                        <li>注意力机制可看注意力机制</li>
+                    </ul>
+
+                    <h3 id="multi-head">3.2 Multi Head Attention</h3>
+                    <p>为什么要用多头注意力机制？这就像一个专家和多个专家的关系。一个专家擅长这一个部分，另外的专家擅长另外的部分。讲这些独立的专家的意见汇总起来，这就是<code>MultiHeadAttention</code>要做的事情。</p>
+                    <p>这部分完整代码</p>
+<pre><code class="language-python">class MultiHeadAttention(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.heads = nn.ModuleList(
+            [
+                SingleHeadAttention(config)
+                for _ in range(config.n_head)
+            ]
+        )
+        self.proj = nn.Linear(config.n_embd, config.n_embd)
+        self.dropout = nn.Dropout(config.dropout)
+
+    def forward(self, x):
+        output = torch.cat(
+            [h(x) for h in self.heads], 
+            dim = -1
+        )
+        output = self.proj(output)
+        output = self.dropout(output)
+        return output
+</code></pre>
+                    <hr>
+                    <p>下面为代码拆解</p>
+<pre><code class="language-python">class MultiHeadAttention(nn.Module):
+	def __init__(self, config):
+		super().__init__()
+		self.heads = nn.ModuleList(
+			[
+				SingleHeadAttention(config)
+				for _ in range(config.n_head) #n_head表示有多少头
+			]
+		)
+</code></pre>
+                    <ul>
+                        <li><code>self.heads</code>创建了<code>config.n_head</code>个相互独立的<code>SingleHeadAttention</code>实例</li>
+                        <li><code>nn.ModuleList</code>: 这是PyTorch里一个专门用来存放 <code>nn.Module</code> 的特殊列表。它能确保所有专家都被正确地注册到主模型中，这样他们在训练、保存、移动设备（如CPU/GPU）时都能被妥善管理。</li>
+                    </ul>
+<pre><code class="language-python">		self.proj = nn.Linear(config.n_embd, config.n_embd)
+		self.dropout = nn.Dropout(config.dropout)
+</code></pre>
+                    <ul>
+                        <li><code>self.proj</code>: 这里创建了最后一个线性层。它的工作是接收所有12位专家的分析结果，并将它们“投影”融合，形成一个统一、连贯的最终结论。</li>
+                        <li><code>self.dropout</code>:防止过拟合，随机丢失一些连接</li>
+                    </ul>
+<pre><code class="language-python">	def forward(self, x):
+		output = torch.cat(
+			[h(x) for h in self.heads],
+			dim = -1
+		)
+</code></pre>
+                    <ul>
+                        <li><strong><code>[h(x) for h in self.heads]</code></strong>:<code>self.heads</code>中的<strong>每一位专家 (<code>h</code>)</strong> 都拿到<strong>完全相同的输入句子 <code>x</code></strong>，然后各自独立地进行完整的 <code>SingleHeadAttention</code> 计算。</li>
+                        <li><strong><code>torch.cat(..., dim=-1)</code></strong>:函数接受这几个头的输出，将他们简单拼接在一起。</li>
+                    </ul>
+<pre><code class="language-python">		output = self.proj(output)
+		output = self.dropout(output)
+</code></pre>
+                    <ul>
+                        <li>最后，由<code>proj</code>整合最终的输出。</li>
+                    </ul>
+
+                    <h3 id="mlp">3.3 Feed Forward MLP</h3>
+                    <p>本部分就是一个简单的MLP</p>
+<pre><code class="language-python">class FeedForward(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(config.n_embd, 4 * config.n_embd),
+            nn.GELU(),
+            nn.Linear(4 * config.n_embd, config.n_embd),
+            nn.Dropout(config.dropout)
+        )
+    
+    def forward(self, x):
+        return self.net(x)
+</code></pre>
+                    <ul>
+                        <li><code>nn.Sequential</code> 是一个容器，它将一系列的层打包在一起。输入数据会按照你定义的顺序，依次流过这些层。</li>
+                        <li><code>nn.Linear(config.n_embd, 4 * config.n_embd)</code>：线性层，接受维度为<code>n_embd</code>，输出维度为<code>4 * config.n_embd</code>。</li>
+                        <li><code>nn.GELU</code>：激活函数，引入非线性能力</li>
+                        <li><code>nn.Linear(4 * config.n_embd, config.n_embd)</code>：线性层，接受维度为<code>4 * n_embd</code>，输出维度为<code>n_embd</code>。</li>
+                    </ul>
+
+                    <h3 id="block">3.4 Block</h3>
+                    <p>Block部分就是将上述所有定义的元件组成一个完整的块。</p>
+<pre><code class="language-python">	class Block(nn.Module):
+		def __init__(self, config):
+			super().__init__()
+			self.att = MultiHeadAttention(config)
+			self.ffn = FeedForward(config)
+			self.ln1 = nn.LayerNorm(config.n_embd)
+			self.ln2 = nn.LayerNorm(config.n_embd)
+			
+		def forward(self, x):
+			x = x + self.att(self.ln1(x))
+			x = x + self.ffn(self.ln2(x))
+			return x
+</code></pre>
+                    <ul>
+                        <li><code>self.att</code>：本层就是MultiHeadAttention[#3.2 Multi Head Attention]，负责捕捉句子中词之间的信息，收集上下文的信息。</li>
+                        <li><code>self.ffn</code>：本层就是FeedForward[#3.3 Feed Forward MLP]，负责让已经带了上下文信息的每个词再次进行特征提取。</li>
+                        <li><code>self.ln</code> <code>nn.LayerNorm</code>：标准化层，使其均值为0，方差为1。这样做能让数值稳定在一个可控的范围内，<strong>极大地稳定了训练过程</strong>，防止模型出现梯度爆炸或消失。</li>
+                        <li><code>x + ...</code>：这是残差连接（Residual Connection），这个连接这保证了信息流动的通畅。即使本层没学到任何有用的东西（输出接近于零），原始信息 <code>x</code> 依然可以无损地传递下去。这极大地缓解了深度网络中的**梯度消失**问题，让模型训练几十层甚至上百层成为可能。</li>
+                    </ul>
+
+                    <h3 id="gpt-class">3.5 GPT</h3>
+                    <p>本部分是将所有的Block组装起来，并且规定模型是如何训练和生成的。<br>本部分完整代码</p>
+<pre><code class="language-python">class GPT(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(config.vocab_size, config.n_embd)
+        self.position_embedding_table = nn.Embedding(config.block_size, config.n_embd)
+        self.blocks = nn.Sequential(
+            *[Block(config) for _ in range(config.n_layer)]
+        )
+        self.ln_final = nn.LayerNorm(config.n_embd)
+        self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
+        
+        # linear (4 -> 8)； weight shape 是记上是 8 * 4，
+        # 所以 embedding weight 和 lm_head weight 是共享的
+        # 这里学习一下 tie weight。
+        # 这是为了减少参数，加快训练；（现在 25的 SLM 很多都这样做了，注意⚠️）
+        # self.token_embedding_table.weight = self.lm_head.weight
+
+        self.apply(self._init_weights)
+    
+    def _init_weights(self, module):
+        if isinstance(module, nn.Linear):
+            # 这里使用的是正态分布初始化
+            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+            if module.bias is not None:
+                torch.nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Embedding):
+            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+
+    def forward(self, idx, targets=None):
+        # idx 是输入的 token ids
+        batch, seq_len = idx.size()
+        token_emb = self.token_embedding_table(idx)
+
+        # seq 长度是这次输入的最大长度
+        pos_emb = self.position_embedding_table(
+            # 要确保 位置编码和输入的 idx 在同一个设备上
+            torch.arange(seq_len, device=idx.device)
+        )
+        # 有一个经典题目：为什么 embedding 和 position 可以相加？
+        x = token_emb + pos_emb   # shape is (batch, seq_len, n_embd)
+        x = self.blocks(x)
+        x = self.ln_final(x)
+        logits = self.lm_head(x)   # shape is (batch, seq_len, vocab_size)
+        
+        if targets is None:
+            loss = None
+        else:
+            batch, seq_len, vocab_size = logits.size()
+            logits = logits.view(batch * seq_len, vocab_size)
+            targets = targets.view(batch * seq_len)
+            loss = F.cross_entropy(logits, targets)
+        return logits, loss
+
+    def generate(self, idx, max_new_tokens):
+        # idx is (B, T) array of indices in the current context
+        for _ in range(max_new_tokens):
+            # 如果序列太长，只取最后 block_size 个token
+            idx_cond = idx if idx.size(1) <= self.block_size else idx[:, -self.block_size:]
+            # 获取预测
+            logits, _ = self(idx_cond)
+            # 只关注最后一个时间步的预测
+            logits = logits[:, -1, :]  # becomes (B, vocab_size)
+            # 应用softmax获取概率
+            probs = F.softmax(logits, dim=-1)
+            # 采样下一个token
+            idx_next = torch.multinomial(probs, num_samples=1)  # (B, 1)
+            # 附加到序列上
+            idx = torch.cat((idx, idx_next), dim=1)  # (B, T+1)
+        return idx
+</code></pre>
+                    <hr>
+<pre><code class="language-python">class GPT(nn.Module):
+	def __init__()
+		super().__init__()
+		self.token_embedding_table = nn.Embedding(config.vocab_size, config.n_embd)
+		self.position_embedding_table = nn.Embedding(config.block_size, config.n_embd)
+		self.blocks = nn.Sequential(
+			*[Block(config) for _ in range(config.n_layer)]
+		)
+		self.ln_final = nn.LayerNorm(config.n_embd)
+		self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias = False)
+</code></pre>
+                    <ul>
+                        <li><code>self.token_embedding_table</code>：<strong>词汇字典与嵌入层</strong>。这相当于一个巨大的百科全书。每个词token对应一个id，计算机将这个id转换为该词对应的n_embd维的词向量。
+                            <ul>
+                                <li>token ---&gt; n_embd维词向量</li>
+                            </ul>
+                        </li>
+                        <li><code>self.position_embedding_table</code>： <strong>位置信息嵌入层</strong>。目的是让模型理解词语的顺序。其中<code>config.block_size</code>就是最多能处理多长的句子。</li>
+                        <li><code>self.blocks</code>：将Block堆叠<code>n_layer</code>层。
+                            <ul>
+                                <li><code>self.blocks = nn.Sequential(*[Block(config) for _ in range(config.n_layer)])</code>这一块的语法比较复杂，对其拆解一下
+                                    <ul>
+                                        <li><code>for _ in range(config.n_layer)</code>循环n_layer次</li>
+                                        <li><code>[... for ... in ...]</code> - 列表推导式 (List Comprehension)：这是一种用于快速创建列表的方法</li>
+                                        <li><code>*[...]</code>：列表解包，即将这个列表拆散。举例：<code>[1, 2, 3]</code> ---&gt; <code>1 2 3</code></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><code>self.ln_final</code>：在经历了许多层Block的处理之后，再经过这一层，使其重新标准化，有利于后续的计算和模型的训练效果。</li>
+                        <li><code>self.lm_head</code>：这是一个线性层，通过处理完成的<code>n_embd</code>维向量重新展成<code>vocab_size</code>维向量，为字典里的每一个词打分，这个分数称为logit。分数越高的词，就是模型预测的最有可能出现的词。</li>
+                    </ul>
+                    <hr>
+<pre><code class="language-python">	def _init_weights(self, module):
+		if isinstance(module, nn.Linear)
+			torch.nn.init.normal_(module.weight, mean=0.0, std=0.02) # 正态分布
+			if module.bias is not None:
+				torch.nn.init.zeros_(module.bias)
+		elif isinstance(module, nn.Embedding):
+			torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+</code></pre>
+                    <ul>
+                        <li>这一部分代码是在设置模型参数的初始值。</li>
+                        <li><code>torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)</code>在均值为0，方差为0.02的正态分布中随机选值作为该层的初始参数。</li>
+                        <li><code>if isinstance(module, nn.Linear)</code> &amp; <code>elif isinstance(module, nn.Embedding)</code>是在判断该层是否是Linear线性层或是Embedding层。</li>
+                        <li><code>torch.nn.init.zeros_(module.bias)</code>：有一些线性层还拥有<code>bias</code>这个参数，若有这个偏置项参数，则初始值全部设为0。
+                            <ul>
+                                <li>关于<code>bias</code>的解释
+                                    <ul>
+                                        <li>偏置项（bias）与权重（weight）无关，它是一个独立的可学习参数，它允许神经元左右移动它的激活函数曲线，从而让模型能够更好地拟合数据。没有偏置，激活函数的中心点就被死死地钉在了原点上。有了偏置，它就可以自由移动，找到最适合数据的位置。</li>
+                                        <li>在大多数层，比如 <code>nn.Linear</code> (全连接层) 和 <code>nn.Conv2d</code> (卷积层) 中，<strong>默认都应该使用偏置项</strong> (<code>bias=True</code>)。因为它增加了模型的表达能力，让模型更容易学习。</li>
+                                        <li>但是也有不用的情况：当一个层（比如<code>nn.Linear</code>）<strong>后面紧跟着一个归一化层</strong>（比如 <code>nn.BatchNorm</code> 或 <code>nn.LayerNorm</code>）时，我们通常会把前面那个层的 <code>bias</code> 设置为 <code>False</code>。因为归一化层有和bias一样功能的参数，两者同时存在相当于功能冗余了。</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <hr>
+<pre><code class="language-python">	def forward(self, idx, targets=None):
+		# idx是输入的token ids
+		batch, seq_len = idx.size()
+		token_emb = self.token_embedding_table(idx)
+		pos_emb = self.position_embedding_table(
+			torch.arange(seq_len, device=idx.device)
+		)
+		x = token_emb + pos_emb
+		x = self.blocks(x)
+		x = self.ln_final(x)
+		logits = self.lm_head(x)
+</code></pre>
+                    <ul>
+                        <li><code>token_emb = self.token_embedding_table(idx)</code><strong>语义编码</strong>：是将输入的词的id转换为一个代表其语义含义的<code>n_embd</code>维向量<code>token_emb</code>。<code>token_embedding_table</code>层在本部分的第一个def定义了。</li>
+                        <li><code>pos_emb = self.position_embedding_table(...)</code><strong>位置编码</strong>：为每个词生成从0到len-1的位置值。
+                            <ul>
+                                <li><code>torch.arange(seq_len, device=idx.device)</code>会生成一个从0到句子长度减1的序列。确保生成的位置编码和idx在同一个设备上。</li>
+                            </ul>
+                        </li>
+                        <li><code>x = token_emb + pos_emb</code>随后对两个位置进行按元素相加。</li>
+                        <li>之后，依次经过block、ln_final、lm_head层，得到最终的概率预测。</li>
+                    </ul>
+<pre><code class="language-python">		if targets is None:
+			loss = None
+		else:
+			batch, seq_len, vocab_size = logits.size()
+			logits = logits.view(batch * seq_len, vocab_size)
+			targets = targets.view(batch * seq_len)
+			loss = F.cross_entropy(logits, targets)
+		return logits, loss
+</code></pre>
+                    <ul>
+                        <li><code>forward</code>中的<code>target</code>参数：当<code>target=None</code>时，就代表没有提供标准答案，说明是预测模式；当<code>target=else（不是None）</code>时，即是学习模式，需要计算loss进行学习。</li>
+                        <li><code>logits.view</code> &amp; <code>targets.view</code>：将logits的文字对应部分和targets变形为一维的矩阵，即<code>(batch, seq_len)</code> -&gt; <code>(batch * seq_len)</code>，之后才能用交叉熵函数进行逐一对比计算loss。</li>
+                    </ul>
+                    <hr>
+                    <p>generate生成部分</p>
+<pre><code class="language-python">	def generate(self, idx, max_new_tokens):
+		for _ in range(max_new_tokens):
+			# 如果序列太长，只取最后block_size个token
+			idx_cond = idx if idx.size(1) &lt;= self.block_size else idx[:, -self.block_size:]
+			# 获取预测
+			logits, _ = self(idx_cond)
+			# 只关注最后一个预测
+			logits = logits[:, -1, :]
+			probs = F.softmax(logits, dim=-1)
+			idx_next = torch.multinomial(probs, num_samples=1)
+			idx = torch.cat((idx, idx_next), dim=1)
+</code></pre>
+                    <ul>
+                        <li>这一个过程由以下五步为一个循环
+                            <ul>
+                                <li><strong>读</strong>一遍当前的稿子。</li>
+                                <li><strong>想</strong>一下最可能接在后面的那个字是什么。</li>
+                                <li>从几个可能性中<strong>选</strong>一个字（带点随机性，增加创造力）。</li>
+                                <li>把这个新字<strong>写</strong>在稿子末尾。</li>
+                                <li><strong>重复</strong>以上步骤，直到写满你要求的字数。</li>
+                            </ul>
+                        </li>
+                        <li><code>idx_cond = idx if idx.size(1) &lt;= self.block_size else idx[:, -self.block_size:]</code>:只看最后<code>block_size</code>个词，若超过<code>block_size</code>个词，则截断，只看最后<code>block_size</code>个词。</li>
+                        <li><code>logits, _ = self(idx_cond)</code>：输入模型进行预测，得到logits</li>
+                        <li><code>logits = logits[:, -1, :]</code>：由于在logits中，包含了所有词的下一个词是什么，但是我们所关心的只是在末尾下一个词会是什么，因此在<code>seq_len</code>这个维度上取最后一个。</li>
+                        <li><code>probs = F.softmax(...)</code>：用softmax函数使分数变成概率值。</li>
+                        <li><code>idx_next = torch.multinomial(...)</code>：根据概率分布来<strong>随机抽样</strong>，根据概率随机选下一个词是啥。</li>
+                        <li><code>idx = torch.cat((idx, idx_next), dim=1)</code>：选出的新词<code>idx_next</code>用<code>torch.cat</code>拼接到<code>idx</code>的末尾，变成新的<code>idx</code>。</li>
+                    </ul>
+
+                    <h3 id="data-dimensions">3.6 数据维度的变化</h3>
+                    <p>我们的模型和配置如下：</p>
+                    <ul>
+                        <li><strong><code>batch_size</code> (B)</strong></li>
+                        <li><strong><code>block_size</code> (T)</strong> = 512</li>
+                        <li><strong><code>n_embd</code> (C)</strong> = <strong>768</strong> (每个词/位置的向量维度)</li>
+                        <li><strong><code>vocab_size</code> (V)</strong> = <strong>50257</strong> (我们字典里总共有这么多词)</li>
+                    </ul>
+                    <hr>
+                    <ul>
+                        <li>step 0：原始输入
+                            <ul>
+                                <li><code>idx</code>包含了输入文本的token ID</li>
+                                <li>维度：<code>(B, T)</code></li>
+                            </ul>
+                        </li>
+                        <li>step 1：嵌入层
+                            <ul>
+                                <li>操作：<code>x = self.token_embedding_table(idx) + self.position_embedding_table(torch.arange(T))</code></li>
+                                <li>维度变化
+                                    <ul>
+                                        <li><code>token_embedding_table(idx)</code>
+                                          <code>idx(B, T)</code>-&gt;<code>token_emb(B, T, C)</code></li>
+                                        <li><code>position_embedding_table(torch.arange(T))</code>
+                                          <code>torch.arange(T)</code>-&gt;<code>pos_emb(T, C)</code></li>
+                                        <li><code>token_emb + pos_emb</code> = <code>x(B, T, C)</code>
+                                          有广播机制</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>step 2：blocks
+                            <ul>
+                                <li>输出形状和输入形状一样，为<code>x(B, T, C)</code></li>
+                            </ul>
+                        </li>
+                        <li>step 3：输出层
+                            <ul>
+                                <li>操作<code>logits = self.lm_head(self.ln_final(x))</code></li>
+                                <li>维度变化
+                                    <ul>
+                                        <li><code>self.ln_final(x)</code>
+                                          层归一化输入输出形状不变，为<code>x(B, T, C)</code></li>
+                                        <li><code>self.lm_head(...)</code>
+                                          通过线性层<code>nn.Linear(T, V)</code>
+                                         <code>x(B, T, C)</code>-&gt;<code>logits(B, T, V)</code>
+                                          代表模型预测：在第b个句子，第t个位置的下一个词是字典中第v个词的分数</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>step 4：计算损失
+                            <ul>
+                                <li>操作：<code>.view()</code></li>
+                                <li>维度变化
+                                    <ul>
+                                        <li><code>logits = logits.view(B * T, V)</code>
+                                          <code>logits(B, T, V)</code>-&gt;<code>logits(B * T, V)</code></li>
+                                        <li><code>targets = targets.view(B * T)</code>
+                                          <code>targets(B, T)</code>-&gt;<code>targets(B * T)</code></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h2 id="build-dataset">4 构建输入的Dataset</h2>
+                    <p>本部分完整代码</p>
+<pre><code class="language-python">class MyDataset(Dataset):
+    def __init__(self, path, block_size=512):
+        # 我的数据在 /root/fs/mobvoi_seq_monkey_general_open_corpus.jsonl 中，
+        # 读取前 1000 行
+        import tiktoken
+        self.enc = tiktoken.get_encoding("gpt2")
+        self.block_size = block_size
+
+        self.eos_token = self.enc.encode(
+            "&lt;|endoftext|&gt;",
+            allowed_special={"&lt;|endoftext|&gt;"}
+        )[0]
+
+        import json
+
+        self.encoded_data = []
+
+        self.max_lines = 1000
+        raw_data = []
+        with open(path, 'r', encoding='utf-8') as f:
+            for i, line in enumerate(f):
+                if i &gt;= self.max_lines:
+                    break
+                try:
+                    text = json.loads(line.strip())['text']
+                    raw_data.append(text)
+                except json.JSONDecodeError:
+                    continue
+                except Exception as e:
+                    continue
+        full_encoded = []
+        for text in raw_data:
+            encoded_text = self.enc.encode(text)
+            full_encoded.extend(encoded_text + [self.eos_token])
+        
+        # 将长文本分割成训练样本
+        for i in range(0, len(full_encoded), self.block_size):
+            # 多取一个 Token 作为目标
+            chunk = full_encoded[i:i+self.block_size+1]
+            # 如果长度不够，用 eos_token 填充
+            if len(chunk) &lt; self.block_size + 1:
+                chunk = chunk + [self.eos_token] * (self.block_size + 1 - len(chunk))
+            self.encoded_data.append(chunk)
+    
+    def __len__(self):
+        return len(self.encoded_data)
+    
+    def __getitem__(self, idx):
+        chunk = self.encoded_data[idx]
+        x = torch.tensor(chunk[:-1], dtype=torch.long)
+        y = torch.tensor(chunk[1:], dtype=torch.long)
+        return x, y
+
+    def encode(self, text):
+        """将文本编码为token IDs"""
+        return self.enc.encode(text)
+
+    def decode(self, ids):
+        """将token IDs解码为文本"""
+        return self.enc.decode(ids)
+		
+data_file_path = 'D:/Pythonproject/GPT-2/mobvoi_seq_monkey_general_open_corpus.jsonl' #保存原始训练文件的路径
+dataset = MyDataset(data_file_path)
+train_dataset, val_dataset = torch.utils.data.random_split(dataset, [0.9, 0.1])
+train_loader = DataLoader(train_dataset, batch_size=12, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=12, shuffle=False)
+</code></pre>
+                    <hr>
+<pre><code class="language-python">class MyDataset(Dataset):
+	def __init__(self, path, block_size=512)：
+		import tiktoken
+		self.enc = tiktoken.get_encoding("gpt2")
+		self.block_size = block_size
+		self.eos_token = self.enc.encode(
+			"&lt;|endoftext|&gt;",
+			allowed_special={"&lt;|endoftext|&gt;"}
+		)[0]
+</code></pre>
+                    <ul>
+                        <li><code>import tiktoken</code>：是OpenAI官方提供的、与GPT模型配套的<strong>分词器</strong>和翻译器</li>
+                        <li><code>self.enc = tiktoken.get_encoding("gpt2")</code>：创建一个<code>self.enc</code>实例，用<code>gpt2</code>的编码，将完整的一句话拆分成数字ID。如<code>hello world</code>-&gt;<code>[313, 995]</code></li>
+                        <li><code>block_size</code>：每次能阅读的上下文长度</li>
+                        <li><code>self.eos_token</code>：表示找结束符
+                            <ul>
+                                <li><strong>调用</strong> <code>encode</code> 方法去查找特殊标记 <code>"&lt;|endoftext|&gt;"</code> 的密码</li>
+                                <li>通过 <code>allowed_special</code> 参数<strong>强制</strong>分词器将 <code>"&lt;|endoftext|&gt;"</code> 作为一个<strong>不可分割的整体</strong>来处理</li>
+                                <li><code>encode</code> 方法成功找到了这个特殊标记对应的密码，并将其放入一个列表中，返回<code>[50256]</code></li>
+                                <li>使用 <code>[0]</code> 从列表中<strong>提取</strong>出那个唯一的数字密码 <code>50256</code></li>
+                                <li>最终，将整数 <code>50256</code> 赋值给 <code>self.eos_token</code> 变量，以便后续在代码中方便地使用。</li>
+                            </ul>
+                        </li>
+                    </ul>
+<pre><code class="language-python">		import json
+		self.encoded_data = []
+		self.max_lines = 1000
+		raw_data = []
+		with open(path, 'r') as f:
+			for i, line in enumerate(f):
+    			if i &gt;= self.max_lines:
+    				 break
+    			try:
+    				text = json.loads(line.strip())['text']
+    				raw_data.append[text]
+    			except json.JSONDecodeError:
+    				continue
+    			except Exception as e:
+    				continue
+</code></pre>
+                    <ul>
+                        <li><code>self.max_line = 1000</code>：只取前1000行。为的是能先快速搭建一个初步的模型。</li>
+                        <li><code>with open(path, 'r') as f:</code>：打开原始jsonl文件。在jsonl中每一行都是一个数据。
+                            <ul>
+                                <li><code>try...except...</code>：跳过坏数据，如不能解码等</li>
+                                <li><strong><code>json.loads(line.strip())['text']</code></strong>: 对每一行进行处理：<code>line.strip()</code> 清理首尾多余的空格，<code>json.loads()</code> 将这行文字解析成一个Python字典，<code>['text']</code> 从字典中提取出我们真正需要的文本内容。</li>
+                            </ul>
+                        </li>
+                    </ul>
+<pre><code class="language-python">		full_encoded = []
+		for text in raw_data:
+			encoded_text = self.enc.encode(text)
+			full_encoded.extend(encoded_text + [self.eos_token])
+</code></pre>
+                    <ul>
+                        <li><strong><code>for text in raw_data:</code></strong>: 遍历刚刚清洗好的1000条文本。</li>
+                        <li><strong><code>encoded_text = self.enc.encode(text)</code></strong>: 用我们准备好的“翻译器”将每一段文本都转换成一串数字ID。</li>
+                        <li><code>full_encoded.extend(...)</code>：将所有编码后的ID全部拼在一起。
+                            <ul>
+                                <li>为什么要用extend：这样做可以最大化地利用数据。如果按句子分开，那么每句的末尾都可能会有一小段内容因为凑不够一个 <code>block_size</code> 而被浪费掉。而把所有文本拼接在一起，我们就可以从头到尾、无缝地进行切割，几乎不会浪费任何数据。</li>
+                                <li>注意这里的列表方法是<code>extend</code>而不是<code>append</code>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+<pre><code class="language-python">		#将长文本分割成训练样本
+		for i in range(0, len(full_encoded), self.block_size):
+			chunk = full_encoded[i:i+self.block_size+1]
+			#如果长度不够，用eos_token填充
+			if len(chunk) &lt; self.block_size + 1:
+				chunk = chunk + [self.eos_token] * (self.block_size+1-len(chunk))
+			self.encoded_data.append(chunk)
+</code></pre>
+                    <ul>
+                        <li><code>for i in range(0, len(full_encoded), self.block_size):</code>：每隔512做一个标记分割</li>
+                        <li><code>chunk = full_encoded[i:i+self.block_size+1]</code>：分割<code>i:i+self.block_size+1</code>这一段
+                            <ul>
+                                <li>为什么要多+1：这是为了给模型准备“题目”和“答案”。在训练时，第0到511个词是<strong>输入（题目X）</strong>，而第1到512个词则是<strong>目标（答案Y）</strong>。多切下一个词，就方便我们方便地制作出这组<code>X</code>和<code>Y</code>。</li>
+                            </ul>
+                        </li>
+                        <li><code>if len(chunk) &lt; self.block_size + 1</code>：表示当分割到末尾时，可能不足513个，我们用 <code>eos_token</code> 来填充，确保所有的句子长度完全一样。</li>
+                    </ul>
+<pre><code class="language-python">	def __len__(self):
+		return len(self.encoded_data)
+	
+	def __getitem__(self ,idx):
+		chunk = self.encoded_data[idx]
+		x = torch.tensor(chunk[:-1], detype=torch.long)
+		y = torch.tensor(chunk[1:], detype=torch.long)
+		return x, y
+		
+	def encode(self, text):
+		return self.enc.encode(text)
+		
+	def decode(self, ids)
+		return self.enc.decode(ids)
+</code></pre>
+                    <ul>
+                        <li><code>def __len__(self)</code>：表示获取<code>encoded_data</code>中的总的data的个数。</li>
+                        <li><code>def __getitem__</code>：表示获取<code>encoded_data</code>中的第<code>idx</code>个data，并且构造<code>x, y</code>训练样本对</li>
+                        <li><code>encode</code> &amp; <code>decode</code>部分表示将编码后的ID送入<code>generate</code>方法中处理，并且在<code>generate</code>方法生成的ID解码。</li>
+                    </ul>
+<pre><code class="language-python">data_file_path = '' #保存原始训练文件的路径
+dataset = MyDataset(data_file_path)
+train_dataset, val_dataset = torch.utils.data.random_split(dataset, [0.9, 0.1])
+train_loader = DataLoader(train_dataset, batch_size=12, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=12, shuffle=False)
+</code></pre>
+                    <ul>
+                        <li>这一部分是获取原始数据集和分割原始数据集为训练集和验证集。</li>
+                        <li>批大小<code>batch_size</code>为12，<code>train</code>的数据集随机打乱，<code>val</code>的数据集不打乱。</li>
+                    </ul>
+
+                    <h2 id="model-training">5 模型训练</h2>
+                    <p>本部分完整代码</p>
+<pre><code class="language-python">model = GPT(GPTconfig())
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = model.to(device)
+
+# 打印模型一共有多少参数
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters:{total_params / 1e6}M")
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000)
+
+def train(model, optimizer, scheduler, train_loader, val_loader, device):
+	model.train()
+	total_loss = 0
+	for batch_idx, (x, y) in enumerate(train_loader):
+		x,y = x.to(device), y.to(device) #将x, y转移到训练设备上
+		logits, loss = model(x, targets=y) #前向传播
+		#反向传播
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+		scheduler.step() #调整学习率
+		
+		total_loss += loss.item()
+		
+		if batch_idx % 100 == 0:
+			print(f'Epoch:{epoch}, Batch:{batch_idx}, Loss:{loss.item():.4f}')
+	return total_loss
+	
+def eval(model, val_loader, device):
+    model.eval()
+    val_loss = 0
+    with torch.no_grad():
+        for x, y in val_loader:
+            x, y = x.to(device), y.to(device)
+            logits, loss = model(x, targets=y)
+            val_loss += loss.item()
+    return val_loss
+	
+epoch_num = 2
+for epoch in range(epoch_num): #设置轮数
+	train_loss = train(model, optimizer, scheduler, train_loader, val_loader, device)
+	val_loss = eval(model, val_loader, device)
+	print(f'Epoch: {epoch}, Train Loss: {train_loss/len(train_loader):.4f}, Val Loss: {val_loss/len(val_loader):.4f}')
+	
+	#保存模型
+	avg_val_loss = val_loss / len(val_loader)
+	checkpoint = {
+		'epoch':epoch,
+		'model_state_dict':model.state_dict(),
+		'optimizer_state_dict':optimizer.state_dict(),
+		'scheduler_state_dict':scheduler.state_dict(),
+		'val_loss':avg_val_loss,
+	}
+	#保存每个epoch模型
+	torch.save(checkpoint, f'checkpoints/model_epoch_{epoch}.pt')
+</code></pre>
+                    <hr>
+<pre><code class="language-python">model = GPT(GPTconfig())
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = model.to(device)
+
+# 打印模型一共有多少参数
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters:{total_params / 1e6}M")
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000)
+</code></pre>
+                    <ul>
+                        <li><code>model = GPT(GPTConfig())</code>：<code>GPT()</code>是之前定义好的一个完整的网络架构；<code>GPTConfig</code>是最早定义的所有基本参数</li>
+                        <li><code>device = "cuda" if torch.cuda.is_available() else "cpu"</code>：若有GPU和cuda，则用GPU训练，否则用CPU</li>
+                        <li><code>optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)</code>：设置优化器optimizer，选用<code>AdamW</code>，<code>lr</code>代表学习率。</li>
+                        <li><code>scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000)</code>：设置学习率调度器，使用<code>CosineAnnealingLR</code>余弦退火
+                            <ul>
+                                <li>从设定的<code>lr=3e-4</code>开始，根据余弦退火的规则，逐渐下降至一个很小的值，用<code>T_max=1000</code>步能降到最小值</li>
+                            </ul>
+                        </li>
+                    </ul>
+<pre><code class="language-python">def train(model, optimizer, scheduler, train_loader, val_loader, device):
+	model.train()
+	total_loss = 0
+	for batch_idx, (x, y) in enumerate(train_loader):
+		x,y = x.to(device), y.to(device) #将x, y转移到训练设备上
+		logits, loss = model(x, targets=y) #前向传播
+		#反向传播
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+		scheduler.step() #调整学习率
+		
+		total_loss += loss.item()
+		
+		if batch_idx % 100 == 0:
+			print(f'Epoch:{epoch}, Batch:{batch_idx}, Loss:{loss.item():.4f}')
+	return total_loss
+</code></pre>
+                    <ul>
+                        <li>这一部分为<code>train</code>的流程</li>
+                        <li><code>model.train()</code>表示模型启动学习模式，即模型中的可学习参数会随着训练改变，激活Dropout层。</li>
+                        <li><strong>前向传播</strong>：<code>logits, loss = model(x, targets=y)</code>，表示模型传入<code>x</code>，输出<code>logits</code>，将<code>logits</code>和<code>y</code>做<code>loss</code>，得到一个loss分数</li>
+                        <li><strong>反向传播</strong>
+                            <ul>
+                                <li>第一步，<code>optimizer.zero_grad()</code>清空上次计算的梯度。由于Pytorch中的梯度是会累加的，如果不清空，就会和下一个训练样本进来后得到的梯度相混，导致训练不准确。</li>
+                                <li>第二步，<code>loss.backward()</code>计算出模型中每一个参数对于这个loss的梯度，或者说“贡献度”和“责任度”</li>
+                                <li>第三步，<code>optimizer.step()</code>，根据计算出的梯度，优化器去更新模型中的每一个参数。</li>
+                            </ul>
+                        </li>
+                        <li><code>scheduler.step()</code>调整学习率</li>
+                    </ul>
+<pre><code class="language-python">def eval(model, val_loader, device):
+	model.eval() #验证模式
+	val_loss = 0
+	with torch.no_grad()
+		for x, y in val_loader:
+		x, y = x.to(device), y.to(device)
+		logits, loss = model(x, targets=y)
+		val_loss += loss.item()
+	return val_loss
+</code></pre>
+                    <ul>
+                        <li>这一部分为<code>val</code>流程</li>
+                        <li><code>model.eval()</code>：进入验证模式，模型可学习参数不再变化，关闭Dropout层。</li>
+                        <li><code>with torch.no_grad()</code>：不计算梯度</li>
+                    </ul>
+<pre><code class="language-python">epoch_num = 2
+for epoch in range(epoch_num): #设置轮数
+	train_loss = train(model, optimizer, scheduler, train_loader, val_loader, device)
+	val_loss = eval(model, val_loader, device)
+	print(f'Epoch: {epoch}, Train Loss: {train_loss/len(train_loader):.4f}, Val Loss: {val_loss/len(val_loader):.4f}')
+	
+	#保存模型
+	avg_val_loss = val_loss / len(val_loader)
+	checkpoint = {
+		'epoch':epoch
+		'model_state_dict':model.state_dict(),
+		'optimizer_state_dict':optimizer.state_dict(),
+		'scheduler_state_dict':scheduler.state_dict(),
+		'val_loss':avg_val_loss,
+	}
+	#保存每个epoch模型
+	torch.save(checkpoint, f'checkpoints/model_epoch_{epoch}.pt')
+</code></pre>
+                    <ul>
+                        <li>这一部分是模型训练主循环</li>
+                        <li><code>for epoch in range(epoch_num)</code>中调用上面定义过的<code>train</code>和<code>val</code>函数</li>
+                        <li><code>torch.save(checkpoint, f'checkpoints/model_epoch_{epoch}.pt')</code>保存每一个epoch之后模型的各项参数，方便训练中断之后继续训练，或是比较每一个epoch后模型各项参数的变化。
+                            <ul>
+                                <li>关于这一点的说明，由于保存每一轮的模型参数可能对电脑储存空间有较高的要求（这里差不多2G一个模型参数文件）</li>
+                                <li>可以改为如下的几轮保存一次</li>
+                            </ul>
+                        </li>
+                    </ul>
+<pre><code class="language-python">	if epoch % n = 0:
+		torch.save(checkpoint, f'checkpoints/model_epoch_{epoch}.pt')
+</code></pre>
+                    
+                    <h2 id="environment-config">6 实验环境及配置</h2>
+                    <p>硬件环境具体配置</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><strong>镜像</strong></th>
+                                <th><strong>PyTorch2.8.0 Python 3.12(ubuntu22.04) CUDA12.8</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>GPU</td>
+                                <td>RTX 3090（24GB）</td>
+                            </tr>
+                            <tr>
+                                <td>CPU</td>
+                                <td>15 vCPU Intel(R) Xeon(R) Platinum 8358P CPU @ 2.60GHz</td>
+                            </tr>
+                            <tr>
+                                <td>内存</td>
+                                <td>90GB</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>参数环境配置<br>
+                    <code>max_line</code>=50000<br>
+                    <code>epoch</code>= 4<br>
+                    <code>learning_rate</code>= 3e-4 使用余弦退火，<code>max_T</code>= 50000<br>
+                    <code>train:val</code> = 0.9 : 0.1</p>
+                    <p>训练详情<br>
+                    中文语料：mobvoi_seq_monkey_general_open_corpus.jsonl<br>
+                    训练耗时：6h20m<br>
+                    结果分析：掌握一定的句子结构，但是输出不准确。<br>
+                    英文语料：TinyStories.jsonl<br>
+                    训练耗时：5h12m<br>
+                    结果分析：基本掌握逻辑，句式较为简单，没有很大的问题</p>
+                    <p>英文版训练Loss曲线</p>
+
+                </div>
+            </article>
+        </main>
+        
+        <aside class="blog-sidebar-right">
+            <div class="toc">
+                <h3>文章目录</h3>
+                <ul class="toc-list">
+                    <li><a href="#paper">论文</a></li>
+                    <li><a href="#libraries">相关库</a></li>
+                    <li><a href="#model-structure">模型结构</a></li>
+                    <li><a href="#import-packages">1 导入相关的包</a></li>
+                    <li><a href="#define-params">2 定义GPT的一些参数</a></li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#define-structure">3 定义GPT的结构</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#single-head">3.1 Single Head Attention</a></li>
+                            <li><a href="#multi-head">3.2 Multi Head Attention</a></li>
+                            <li><a href="#mlp">3.3 Feed Forward MLP</a></li>
+                            <li><a href="#block">3.4 Block</a></li>
+                            <li><a href="#gpt-class">3.5 GPT</a></li>
+                            <li><a href="#data-dimensions">3.6 数据维度的变化</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#build-dataset">4 构建输入的Dataset</a></li>
+                    <li><a href="#model-training">5 模型训练</a></li>
+                    <li><a href="#environment-config">6 实验环境及配置</a></li>
+                </ul>
+            </div>
+        </aside>
+        
+        <style>
+            .toc-toggle {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .toc-icon {
+                width: 16px;
+                height: 16px;
+                margin-right: 5px;
+                transition: transform 0.3s ease;
+            }
+            .toc-toggle.collapsed .toc-icon {
+                transform: rotate(-90deg);
+            }
+            .toc-children {
+                margin-left: 20px;
+                transition: max-height 0.3s ease, opacity 0.3s ease;
+                max-height: 500px;
+                overflow: hidden;
+                opacity: 1;
+            }
+            .toc-children.collapsed {
+                max-height: 0;
+                opacity: 0;
+            }
+            .toc-toggle a {
+                flex: 1;
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 为有子菜单的项目添加点击事件
+                const toggleItems = document.querySelectorAll('.toc-toggle');
+                toggleItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        // 如果点击的是链接，不执行折叠操作
+                        if (e.target.tagName === 'A') return;
+                        
+                        const parent = this.closest('.toc-item-has-children');
+                        const children = parent.querySelector('.toc-children');
+                        
+                        this.classList.toggle('collapsed');
+                        children.classList.toggle('collapsed');
+                    });
+                });
+            });
+        </script>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 xgg的个人主页. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../index.html">首页</a>
+                    <a href="../blog.html">博客</a>
+                    <a href="../contact.html">联系我</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="reading-progress">
+        <span class="progress-label">阅读进度</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <span class="progress-text" id="progressText">0%</span>
+        </div>
+    </div>
+
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <style>
+        .reading-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 95px; /* 向右移20px + 向左移动75px = 向右95px */
+            width: 240px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 100%;
+            transition: width 0.3s ease, background-position 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script>
+        // 阅读进度条功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            window.addEventListener('scroll', function() {
+                // 计算滚动进度
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                
+                // 更新进度条宽度
+                progressBar.style.width = progress + '%';
+                
+                // 更新进度文本
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // 更新渐变背景位置，实现颜色渐变效果
+                const gradientPosition = (progress / 100) * 300;
+                progressBar.style.backgroundPosition = gradientPosition + '% 0';
+            });
+        });
+    </script>
+
+    <script src="../script.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>
+        // 确保在模板的主脚本 script.js 加载 *之后* 再执行高亮
+        // 或者在 DOMContentLoaded 时执行，此时 KaTeX 也已初始化
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // 查找所有 <pre><code> 块并应用高亮
+            hljs.highlightAll();
+        });
+    </script>
+
+</body>
+</html>

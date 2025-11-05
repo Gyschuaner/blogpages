@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注意力机制详解 - 我的个人主页</title>
+    <link rel="stylesheet" href="../style.css">
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入KaTeX支持数学公式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+    <!-- 引入博客动态加载脚本 -->
+    <script src="../js/blog-script.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="../home.html">首页</a></li>
+                    <li><a href="../about.html">关于我</a></li>
+                    <li><a href="../skills.html">技能</a></li>
+                    <li><a href="../projects.html">项目</a></li>
+                    <li><a href="../blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- 博客内容 - 三栏布局 -->
+    <div class="blog-container">
+        <!-- 左侧导航 - 所有博客列表 -->
+        <aside class="blog-sidebar-left">
+            <nav class="blog-nav">
+                <h3>博客列表</h3>
+                <ul></ul>
+                
+                <h3 style="margin-top: 30px;">分类</h3>
+                <ul>
+                    <li><a href="../blog.html">机器学习</a></li>
+                    <li><a href="../blog.html">深度学习</a></li>
+                    <li><a href="../blog.html">NLP</a></li>
+                    <li><a href="../blog.html">JavaScript</a></li>
+                    <li><a href="../blog.html">Python</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- 中间内容区 -->
+        <main class="blog-main-content">
+            <article class="blog-article">
+                <!-- 文章标题区域 -->
+                <h1>注意力机制详解</h1>
+                <div class="article-meta">
+                    <span class="author"><i class="far fa-user"></i> 故意盛的剩饭</span>
+                    <span class="date"><i class="far fa-calendar-alt"></i> 2024-02-15</span>
+                    <span class="read-time"><i class="far fa-clock"></i> 大约 15 分钟</span>
+                    <span class="tags">
+                        <span class="tag">注意力机制</span>
+                        <span class="tag">深度学习</span>
+                        <span class="tag">NLP</span>
+                    </span>
+                </div>
+                <hr>
+                
+                <div class="article-body">
+                    <!-- 阅读收获 -->
+                    <div id="takeaway" class="takeaway-section">
+                        <h2>阅读收获</h2>
+                        <ul>
+                            <li>理解词嵌入和位置编码的基本概念</li>
+                            <li>掌握自注意力机制的工作原理</li>
+                            <li>学习可学习的自注意力、掩码注意力和多头自注意力</li>
+                            <li>了解注意力机制中的参数量计算方法</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 前言 -->
+                    <div id="intro">
+                        <p>注意力机制是现代深度学习模型（尤其是NLP领域的Transformer架构）中的核心组件。本文将详细介绍注意力机制的基本原理、实现方法和关键概念，帮助你深入理解这一重要的深度学习技术。</p>
+                    </div>
+                    
+                    <h2 id="word-embedding">1. 词嵌入</h2>
+                    
+                    <h3>1.1 语义编码</h3>
+                    <p>计算机是很难直接使用人类自然语言的，因此在NLP中的第一步就是将自然语言转换为机器可以看懂、可以处理的数据，即将句子中的每一个词转换为等长的向量，这一步就是<strong>嵌入</strong>。</p>
+                    
+                    <p>嵌入中向量的每一个维度都有潜在的意义，比如说第一个维度代表该词的代表东西的大小，如"金字塔"，该词的对应的嵌入向量第一维度可能就很大，而如"蚂蚁"，该词的第一维度可能就很小。但是这里只是举例说明，在实际情况中，很难暴露维度和语义含义之间的关系。</p>
+                    
+                    <p>词嵌入的向量没有一个统一的标准，同一个词在不同的维度下、不同的神经网络下、不同的训练阶段都会有差异。嵌入从随机值开始，通过不断地训练以达到最小化神经网络误差的效果。</p>
+                    
+                    <p>将句子中每个单词的嵌入集合到一起，就会得到一个嵌入矩阵。</p>
+                    
+                    <p>如这样一句话：</p>
+                    <div align="center">
+                    我喜欢学注意力机制
+                    </div>
+                    <p>首先，这样一句话会被拆成如下的token："我"、"喜欢"、"学"、"注意力"、"机制"。之后，其中的每一个token会被编为n维的向量，举个例子，当n=4时，"我"对应的向量是<code>[0.98, 0.05, 0.11, 0.01]</code>，<strong>这是个行向量</strong>，同理，将其余的token转换为向量之后，将其行拼接起来，就得到了一个5x4的嵌入矩阵。</p>
+                    
+                    $$\begin{bmatrix} 0.98 & 0.05 & 0.11 & 0.01 \\ 0.21 & 0.65 & 0.45 & 0.03 \\ 0.15 & 0.91 & 0.20 & 0.08 \\ 0.10 & 0.08 & 0.95 & 0.72 \\ 0.02 & 0.01 & 0.89 & 0.93 \end{bmatrix}$$
+                    
+                    <p>这里的每一列的维度都代表了不同的含义，如第一列表示"人"、第二列表示"动作"等。这样就让机器学会了词的含义以及词与词之间的关系。</p>
+                    
+                    <h3>1.2 位置编码</h3>
+                    <p>位置编码是一个很关键的问题，词在句子中的不同位置会直接影响到整个句子的含义。如"狗咬人"和"人咬狗"。<br>
+                    在这里Transformer的作者给出了这样一个位置编码</p>
+                    
+                    $$PE_{(pos, 2i)} = \sin(pos / 10000^{2i/d_{\text{model}}})$$
+                    $$PE_{(pos, 2i+1)} = \cos(pos / 10000^{2i/d_{\text{model}}})$$
+                    
+                    <p>$pos$是词在句子中的位置，$i$是向量中的维度索引。<br>
+                    该公式为每个位置$pos$生成了一个$d_{model}$维的向量。该向量的不同维度$i$上使用了不同频率的$sin/cos$波，低频波编码全局位置，高频波编码局部位置，组合起来形成一个独特的位置"指纹"。</p>
+                    
+                    <p><strong>关键优势:</strong></p>
+                    <ul>
+                        <li><strong>唯一性</strong>: 为每个位置生成唯一的编码。</li>
+                        <li><strong>确定性</strong>: 非学习参数，可预先计算，节省资源。</li>
+                        <li><strong>泛化能力</strong>: 理论上可以推广到比训练时更长的句子。</li>
+                        <li><strong>蕴含相对位置信息</strong>: 这是最重要的优点。由于三角函数的周期性，模型可以轻易学习到词与词之间的<strong>相对位置关系</strong>（例如"前一个词"、"后两个词"），而不是死记硬背绝对位置。</li>
+                    </ul>
+                    
+                    <h2 id="self-attention">2. 自注意力</h2>
+                    
+                    <p>第一步，我们将上述例子得到的五个词向量记为$a_1,...,a_5$，如何去计算每个词之间的关系呢？很简单，只要对这五个向量两两做点积就可以。下面是第一个词与其余词做点积得到权重$w_{1n}$。</p>
+                    
+                    $$\begin{cases} a_1 \cdot a_1 = w_{11} \\ a_1 \cdot a_2 = w_{12} \\ a_1 \cdot a_3 = w_{13} \\ \vdots \\  a_1 \cdot a_n = w_{1n} \end{cases}$$
+                    
+                    <p>第二步，对每个词的所有权重softmax，举个例子：</p>
+                    $$[w_{11}, w_{12}, w_{13}, w_{14}, w_{15}] -softmax-> [0.4, 0.2, 0.1, 0.1, 0.2]$$
+                    
+                    <p>最后加起来的总和为1，$softmax$后的结果表示这个词对每个词分配的注意力权重是多少。</p>
+                    
+                    <p>第三步，生成新的带有上下文关系的向量编码。</p>
+                    $$w_{11}a_1 + w_{12}a_2 + w_{13}a_3 + \dots + w_{1n}a_n = y_1$$
+                    
+                    <p>这一步中的$y_1$是"我"这个向量再结合了上下文信息之后的新编码。当我们将这些权重乘以每个词时，我们实际上是在将所有其他词重新加权到第一个词。同理的对其余的向量类似操作，得到蕴含上下文信息的新矩阵$Y=[y_1,y_2,y_3,y_4,y_5]^T$。</p>
+                    
+                    <p>上面三步的所有式子可以表示为</p>
+                    $$\text{softmax}(A \cdot A^T) = W$$
+                    $$W \cdot A = Y$$
+                    
+                    <p>其中$W、Y$为</p>
+                    $$W = \begin{bmatrix} a_1 \\ a_2 \\ a_3\\ a_4 \\ a_5 \end{bmatrix} \begin{bmatrix}a_1,a_2,a_3,a_4,a_5\end{bmatrix}=\begin{bmatrix}w_{11} & w_{12} & w_{13} & w_{14} & w_{15}\\ w_{21} & w_{22} & w_{23} & w_{24} & w_{25}\\ w_{31} & w_{32} & w_{33} & w_{34} & w_{35}\\ w_{41} & w_{42} & w_{43} & w_{44} & w_{45}\\ w_{51} & w_{52} & w_{53} & w_{54} & w_{55}\end{bmatrix}$$
+                    $$Y = \begin{bmatrix}w_{11} & w_{12} & w_{13} & w_{14} & w_{15}\\ w_{21} & w_{22} & w_{23} & w_{24} & w_{25}\\ w_{31} & w_{32} & w_{33} & w_{34} & w_{35}\\ w_{41} & w_{42} & w_{43} & w_{44} & w_{45}\\ w_{51} & w_{52} & w_{53} & w_{54} & w_{55}\end{bmatrix}\begin{bmatrix} a_1 \\ a_2 \\ a_3\\ a_4 \\ a_5 \end{bmatrix}=\begin{bmatrix} y_1 \\ y_2 \\ y_3\\ y_4 \\ y_5 \end{bmatrix}$$
+                    
+                    <p>这里的权重不是训练得到的，并且词的顺序和接近程度是没有关系的，这种为句子添加上下文关系的方法称为<strong>自注意力</strong>。</p>
+                    
+                    <h3>2.1 可学习的自注意力</h3>
+                    <p>为了更好的学习上下文关系，我们可以引入可学习的参数。这里引入Q、K、V的思想。<br>
+                    在上面的自注意力公式中，我们发现$A$出现了三次：</p>
+                    <ul>
+                        <li>第一次 $A$：作为"查询者"，去和其他词比较。（$AA^T$ 中的第一个$A$）</li>
+                        <li>第二次 $A$：作为"被查询者"或"标签"，来和其他词比较。（$AA^T$ 中的第二个$A$）</li>
+                        <li>第三次 $A$：作为"内容的提供者"，被加权求和，形成最终输出。（$WA$）</li>
+                    </ul>
+                    
+                    <p>我们为这三个$A$分别起个名字：Query、Key、Value。为了使这三个$A$有所差异，我们理所应当的引入三个可训练的权重矩阵$Q、K、V$:</p>
+                    <ul>
+                        <li><strong>$W^Q$ (Query 矩阵)</strong>：它的任务是把原始的 $A$ 转换成一个更适合<strong>提问</strong>的 $Q$。</li>
+                        <li><strong>$W^K$ (Key 矩阵)</strong>：它的任务是把原始的 $A$ 转换成一个更适合<strong>被检索、被匹配</strong>的 $K$。</li>
+                        <li><strong>$W^V$ (Value 矩阵)</strong>：它的任务是把原始的 $A$ 转换成一个更适合<strong>被提取、被使用</strong>的 $V$。</li>
+                    </ul>
+                    
+                    $$Q = A W^Q、K = A W^K、V = A W^V$$
+                    
+                    <p>这使得模型不再依赖于天生的词之间的关系，而是可以动态的学习更适合用来表示一个词的向量形式。</p>
+                    <p>这使得更新词向量的表达式变为</p>
+                    $$Y=softmax(QK^T)⋅V$$
+                    
+                    <p>上图为注意力值的主要运算过程，主要为以下几步：</p>
+                    <ul>
+                        <li>首先查询Query和键Key相乘，算出相似度Similarity，即$Similarity=QK^T$</li>
+                        <li>之后乘以权重$a$，这一步基本上用$softmax$，即$Softmax(QK^T)$</li>
+                        <li>最后，将上一步的值乘以值Value，即$Attention=Softmax(QK^T)⋅V$</li>
+                    </ul>
+                    
+                    <p>在原始论文中，研究人员使用了缩放点积注意力，即</p>
+                    $$\text{Attention}(Q, K, V) = \text{softmax}\left( \frac{QK^T}{\sqrt{d_k}} \right)V$$
+                    
+                    <p><strong>为什么要除以$\sqrt{d_k}$？</strong></p>
+                    <ul>
+                        <li><strong>问题背景</strong>：点积 `QKᵀ` 的结果会随着向量维度 `dₖ` 的增大而增大。如果维度很大（比如512维），那么点积的结果可能会变得非常大。</li>
+                        <li><strong>Softmax的"陷阱"</strong>：Softmax函数对非常大或非常小的输入值非常敏感。如果输入一个很大的数值，Softmax的输出会趋近于一个"赢家通吃"的分布（比如 `[0.001, 0.998, 0.001]`），这被称为<strong>饱和区</strong>。</li>
+                        <li><strong>梯度消失</strong>：一旦Softmax进入饱和区，它在这些位置的梯度（也就是模型学习的信号）会变得极其微小，几乎为零。这就是<strong>梯度消失</strong>问题。如果梯度消失了，模型就无法有效地从数据中学习，训练过程就会停滞或失败。</li>
+                        <li><strong>"缩放"的作用</strong>： 除以 $\sqrt{d_k}$ 就像一个"<strong>音量调节旋钮</strong>"。它将点积的数值"拉回"到一个更温和、更合理的范围，防止它们过大。这使得Softmax函数能够工作在一个更健康的区域，从而保证了梯度的有效传播，让整个模型的训练过程更加稳定和可靠。</li>
+                    </ul>
+                    
+                    <h3>2.2 掩码注意力</h3>
+                    <p>为什么要有掩码注意力？<br>
+                    首先，我们在上述的自注意力中，都是对一句完整的话进行处理，这是没问题的。但是，在我们生活中使用的模型，如GPT、Deepseek，他们都是生成模型，也就是说要根据前文的内容，生成符合前文内容的后文，这就导致了在计算自注意力机制的过程中，他是没有下文的。</p>
+                    
+                    <p>我们依旧举个例子，如</p>
+                    <div align="center">
+                    我喜欢学掩码注意力机制
+                    </div>
+                    
+                    <p>在上述自注意力计算过程中，我们在计算"掩码"这个注意力分数的时候，会环顾该句话中的所有词，如前文的"喜欢"、后文的"注意力"。这里会导致一个问题，当机器想要预测"掩码"的下一个词时，它会参考"注意力"这个词的分数，这就相当于拿着答案"注意力"去预测下一个词应该是"注意力"，这显然是不合理的。<br>
+                    因此，我们提出掩码注意力，让模型不要偷看"答案"，只根据上文预测下一个词。</p>
+                    
+                    $$\text{Attention}(Q, K, V) = \text{softmax}\left( \frac{QK^T}{\sqrt{d_k}} +M\right)V$$
+                    
+                    <p>其中$M$为掩码矩阵，是一个上三角矩阵。5阶的掩码矩阵如下所示</p>
+                    $$M=\begin{bmatrix}0 & -\infty & -\infty & -\infty & -\infty\\ 0 & 0 & -\infty & -\infty & -\infty\\ 0 & 0 & 0 & -\infty & -\infty\\ 0 & 0 & 0 & 0 & -\infty\\ 0 & 0 & 0 & 0 & 0\end{bmatrix}$$
+                    
+                    <p>其中$-\infty$的部分均为下标$i>j$。<br>
+                    在原有的$\frac{QK^T}{\sqrt{d_k}}$加上$M$后，其上三角部分（不包含对角线）都会变成$-\infty$，经过softmax函数后会变成0，即</p>
+                    
+                    $$\text{softmax}\left(\begin{bmatrix}0.4 & -\infty & -\infty & -\infty & -\infty\\ 0.1 & -0.3 & -\infty & -\infty & -\infty\\ 0.5 & 0.7 & 3 & -\infty & -\infty\\ -1.2 & 1.5 & 0.4 & 0.5 & -\infty\\ 3.2 & 1 & -1 & -0.5 & -2\end{bmatrix}\right)=\begin{bmatrix} 1.00 & 0 & 0 & 0 & 0 \\ 0.60 & 0.40 & 0 & 0 & 0 \\ 0.07 & 0.08 & 0.85 & 0 & 0 \\ 0.04 & 0.57 & 0.19 & 0.21 & 0 \\ 0.86 & 0.10 & 0.01 & 0.02 & 0.01 \end{bmatrix}$$
+                    
+                    <p>此时计算出的注意力分数自动屏蔽掉了未来的一些词的影响。</p>
+                    
+                    <h3>2.3 多头自注意力</h3>
+                    <p>前述的均为单头自注意力，多头自注意力机制顾名思义，就是将多个单头自注意力结合起来，这有利于模型从更多角度学到句子中词之间的关系。要注意，多头注意力中词嵌入的向量会平分到每个头中，即如果词嵌入为512维，头有八个，则每个头分到$512/8=64$维</p>
+                    
+                    <p>$$\text{head}_i=\text{Attention}(QW_i^Q,KW_i^K,VW_i^V)$$
+                    $$\text{MultiHead}=\text{Concat}(\text{head}_1,\text{head}_2...\text{head}_k)W^O$$</p>
+                    
+                    <p>其中$\text{Concat}$为横向拼接，$W^O$为Concat之后还要通过一层线性层的权重。</p>
+                    
+                    <h3>2.4 参数量问题</h3>
+                    <p>这一部分我们来考虑注意力机制中的参数量到底有多少。我们设一个词被编码为$n$维向量。<br>
+                    先考虑单头注意力机制。<br>
+                    比如拥有一个编码矩阵$A = \begin{pmatrix} 0.1 & 0.2 & 0.3 & 0.4 \\ \ 0.5 & 0.6 & 0.7 & 0.8 \\ \ 0.9 & 1.0 & 1.1 & 1.2 \end{pmatrix}_{3×4}$，这里$n=4$、三个词。<br>
+                    要使$Q = A W^Q、K = A W^K、V = A W^V$的$Q、K、V$矩阵也为$3×4$矩阵，根据矩阵乘法，三个矩阵均为$4×4$矩阵，即总的参数量为$48$。抽象成$n$，则为$3n^2$。<br>
+                    加上最后要通过一个线性层的参数$W^O$，同上的，也为$n^2$。因此所有<strong>参数量为$4n^2$</strong>。</p>
+                    
+                    <p>再来考虑<strong>多头注意力机制</strong>，设头的数量为n_head。一个词被编码为$n$维向量，以GPT2来举例，n=512，n_head=8，因此，每个头需要处理$n/n_{head}=64$维信息（输出64维，为的是到最后能拼接成512维的矩阵）。<br>
+                    每个头输入的维数为$(token_{num}, n)$，输出要为$(token_{num}, n/n_{head})$，则每一个$Q、K、V$矩阵的维度为$(n, n/n_{head})$，一共分别有n_head个$Q、K、V$矩阵，因此总参数量为</p>
+                    $$n×n/n_{head}×n_{head}×3+W^O=4n^2$$
+                    
+                    <p>这与单头注意力机制的总参数量一样！<br>
+                    <strong>因此，我们得到这个结论，多头注意力机制的总参数量和单头注意力机制的总参数量相同。</strong></p>
+                </div>
+            </article>
+        </main>
+        
+        <!-- 右侧边栏 - 目录 -->
+        <aside class="blog-sidebar-right">
+            <div class="toc">
+                <h3>文章目录</h3>
+                <ul class="toc-list">
+                    <li><a href="#takeaway">阅读收获</a></li>
+                    <li><a href="#intro">前言</a></li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#word-embedding">1. 词嵌入</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#word-embedding">1.1 语义编码</a></li>
+                            <li><a href="#word-embedding">1.2 位置编码</a></li>
+                        </ul>
+                    </li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#self-attention">2. 自注意力</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#self-attention">2.1 可学习的自注意力</a></li>
+                            <li><a href="#self-attention">2.2 掩码注意力</a></li>
+                            <li><a href="#self-attention">2.3 多头自注意力</a></li>
+                            <li><a href="#self-attention">2.4 参数量问题</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        
+        <style>
+            .toc-toggle {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .toc-icon {
+                width: 16px;
+                height: 16px;
+                margin-right: 5px;
+                transition: transform 0.3s ease;
+            }
+            .toc-toggle.collapsed .toc-icon {
+                transform: rotate(-90deg);
+            }
+            .toc-children {
+                margin-left: 20px;
+                transition: max-height 0.3s ease, opacity 0.3s ease;
+                max-height: 500px;
+                overflow: hidden;
+                opacity: 1;
+            }
+            .toc-children.collapsed {
+                max-height: 0;
+                opacity: 0;
+            }
+            .toc-toggle a {
+                flex: 1;
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 为有子菜单的项目添加点击事件
+                const toggleItems = document.querySelectorAll('.toc-toggle');
+                toggleItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        // 如果点击的是链接，不执行折叠操作
+                        if (e.target.tagName === 'A') return;
+                        
+                        const parent = this.closest('.toc-item-has-children');
+                        const children = parent.querySelector('.toc-children');
+                        
+                        this.classList.toggle('collapsed');
+                        children.classList.toggle('collapsed');
+                    });
+                });
+            });
+        </script>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 xgg的个人主页. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../index.html">首页</a>
+                    <a href="../blog.html">博客</a>
+                    <a href="../contact.html">联系我</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 阅读进度条 -->
+        <div class="reading-progress">
+            <span class="progress-label">阅读进度</span>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+        </div>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <style>
+        .reading-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 95px; /* 向右移20px + 向左移动75px = 向右95px */
+            width: 240px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 100%;
+            transition: width 0.3s ease, background-position 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script>
+        // 阅读进度条功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            window.addEventListener('scroll', function() {
+                // 计算滚动进度
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                
+                // 更新进度条宽度
+                progressBar.style.width = progress + '%';
+                
+                // 更新进度文本
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // 更新渐变背景位置，实现颜色渐变效果
+                const gradientPosition = (progress / 100) * 300;
+                progressBar.style.backgroundPosition = gradientPosition + '% 0';
+            });
+        });
+    </script>
+
+    <!-- 引入JavaScript文件 -->
+    <script src="../script.js"></script>
+    <script src="../js/blog-script.js"></script>
+</body>
+</html>

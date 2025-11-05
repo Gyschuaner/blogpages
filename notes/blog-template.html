@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客模板 - 我的个人主页</title>
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+    <!-- 引入博客动态加载脚本 -->
+    <script src="../js/blog-script.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    
+    <style>
+        /* 确保 pre 标签内的代码块正确显示 */
+        pre {
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            background-color: #A09688 !important;
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        }
+        /* highlight.js 需要 pre > code 结构 */
+        pre > code {
+            font-family: 'Microsoft YaHei UI', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background-color: transparent !important;
+            color: #333 !important;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        /* 修正 .md 中 <hr> 的样式 */
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
+        /* 修正表格样式 */
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        /* 覆盖 highlight.js 的默认样式 */
+        .hljs {
+            background-color: transparent !important;
+            color: #333 !important;
+        }
+        /* 确保代码高亮颜色可见 */
+        .hljs-keyword {
+            color: #7b00ff !important;
+        }
+        .hljs-string {
+            color: #008000 !important;
+        }
+        .hljs-comment {
+            color: #808080 !important;
+        }
+        .hljs-number {
+            color: #ff0000 !important;
+        }
+        .hljs-literal {
+            color: #008000 !important;
+        }
+        /* 行内代码样式 */
+        p code, li code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid #ddd;
+        }
+        /* 引用样式 */
+        blockquote {
+            border-left: 4px solid #ccc;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            font-style: italic;
+        }
+        /* 图片样式 */
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="../home.html">首页</a></li>
+                    <li><a href="../about.html">关于我</a></li>
+                    <li><a href="../skills.html">技能</a></li>
+                    <li><a href="../projects.html">项目</a></li>
+                    <li><a href="../blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="blog-container">
+        <aside class="blog-sidebar-left">
+            <nav class="blog-nav">
+                <h3>博客列表</h3>
+                <ul></ul>
+                
+                <h3 style="margin-top: 30px;">分类</h3>
+                <ul>
+                    <li><a href="../blog.html">机器学习</a></li>
+                    <li><a href="../blog.html">深度学习</a></li>
+                    <li><a href="../blog.html">NLP</a></li>
+                    <li><a href="../blog.html">JavaScript</a></li>
+                    <li><a href="../blog.html">Python</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="blog-main-content">
+            <article class="blog-article">
+                <h1>博客模板</h1>
+                <div class="article-meta">
+                    <span class="author"><i class="far fa-user"></i> 故意盛的剩饭</span>
+                    <span class="date"><i class="far fa-calendar-alt"></i> 2024-02-15</span>
+                    <span class="read-time"><i class="far fa-clock"></i> 大约 5 分钟</span>
+                    <span class="tags">
+                        <span class="tag">模板</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                    </span>
+                </div>
+                <hr>
+                
+                <div class="article-body">
+                    
+                    <h2 id="intro">简介</h2>
+                    <p>这是一个博客文章模板，包含了常用的各种格式元素。你可以根据需要修改内容，使用这个模板来创建新的博客文章。</p>
+                    
+                    <h2 id="headings">标题层级</h2>
+                    <h1>一级标题</h1>
+                    <h2>二级标题</h2>
+                    <h3>三级标题</h3>
+                    <h4>四级标题</h4>
+                    <h5>五级标题</h5>
+                    <h6>六级标题</h6>
+                    
+                    <h2 id="paragraphs">段落文本</h2>
+                    <p>这是一个普通的段落文本。你可以在这里写入文章的主要内容。段落之间会有适当的间距，以提高可读性。</p>
+                    <p>另一个段落，展示了段落之间的间距效果。可以添加更多的内容来测试排版效果。</p>
+                    
+                    <h2 id="lists">列表</h2>
+                    <h3>无序列表</h3>
+                    <ul>
+                        <li>列表项 1</li>
+                        <li>列表项 2</li>
+                        <li>列表项 3</li>
+                        <li>列表项 4</li>
+                    </ul>
+                    
+                    <h3>有序列表</h3>
+                    <ol>
+                        <li>第一步</li>
+                        <li>第二步</li>
+                        <li>第三步</li>
+                        <li>第四步</li>
+                    </ol>
+                    
+                    <h2 id="code">代码示例</h2>
+                    <h3>行内代码</h3>
+                    <p>这里有一个行内代码示例：<code>console.log('Hello World');</code>，用于在段落中展示小段代码。</p>
+                    
+                    <h3>代码块</h3>
+                    <pre><code class="language-python">def hello_world():
+    print("Hello, World!")
+    # 这是一个注释
+    return True
+
+# 调用函数
+hello_world()</code></pre>
+                    
+                    <pre><code class="language-javascript">function greeting(name) {
+    console.log(`Hello, ${name}!`);
+    return name;
+}
+
+// 使用函数
+const result = greeting('World');</code></pre>
+                    
+                    <h2 id="math">数学公式</h2>
+                    <h3>行内公式</h3>
+                    <p>这是一个行内公式：$E = mc^2$，可以在段落中直接使用。</p>
+                    
+                    <h3>块级公式</h3>
+                    <p>这是一个块级公式：</p>
+                    <p>$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$</p>
+                    
+                    <p>另一个块级公式：</p>
+                    <p>$$f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</p>
+                    
+                    <h2 id="table">表格</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>表头1</th>
+                                <th>表头2</th>
+                                <th>表头3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>数据1</td>
+                                <td>数据2</td>
+                                <td>数据3</td>
+                            </tr>
+                            <tr>
+                                <td>数据4</td>
+                                <td>数据5</td>
+                                <td>数据6</td>
+                            </tr>
+                            <tr>
+                                <td>数据7</td>
+                                <td>数据8</td>
+                                <td>数据9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h2 id="quote">引用</h2>
+                    <blockquote>
+                        这是一段引用文本。引用通常用于引用他人的观点或文献内容。
+                        可以是多行的内容。
+                    </blockquote>
+                    
+                    <h2 id="image">图片</h2>
+                    <p>图片示例（使用占位图片）：</p>
+                    <img src="https://via.placeholder.com/800x400?text=图片示例" alt="图片示例">
+                    
+                    <h2 id="horizontal-rule">分隔线</h2>
+                    <p>分隔线用于分隔不同的内容区块：</p>
+                    <hr>
+                    
+                    <h2 id="tips">使用提示</h2>
+                    <ol>
+                        <li>修改标题时，同时更新页面顶部的 <code>&lt;title&gt;</code> 标签</li>
+                        <li>为每个主要章节添加适当的 <code>id</code> 属性，以便在目录中链接</li>
+                        <li>使用 Markdown 语法编写内容后，可以转换为 HTML 格式</li>
+                        <li>确保代码块使用正确的语言标识，以获得正确的语法高亮</li>
+                        <li>数学公式使用 KaTeX 语法，确保正确渲染</li>
+                    </ol>
+
+                </div>
+            </article>
+        </main>
+        
+        <aside class="blog-sidebar-right">
+            <div class="toc">
+                <h3>文章目录</h3>
+                <ul class="toc-list">
+                    <li><a href="#intro">简介</a></li>
+                    <li><a href="#headings">标题层级</a></li>
+                    <li><a href="#paragraphs">段落文本</a></li>
+                    <li><a href="#lists">列表</a></li>
+                    <li><a href="#code">代码示例</a></li>
+                    <li><a href="#math">数学公式</a></li>
+                    <li><a href="#table">表格</a></li>
+                    <li><a href="#quote">引用</a></li>
+                    <li><a href="#image">图片</a></li>
+                    <li><a href="#horizontal-rule">分隔线</a></li>
+                    <li><a href="#tips">使用提示</a></li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#nested-example">嵌套章节示例</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#nested-1">嵌套子项1</a></li>
+                            <li><a href="#nested-2">嵌套子项2</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        
+        <style>
+            .toc-toggle {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .toc-icon {
+                width: 16px;
+                height: 16px;
+                margin-right: 5px;
+                transition: transform 0.3s ease;
+            }
+            .toc-toggle.collapsed .toc-icon {
+                transform: rotate(-90deg);
+            }
+            .toc-children {
+                margin-left: 20px;
+                transition: max-height 0.3s ease, opacity 0.3s ease;
+                max-height: 500px;
+                overflow: hidden;
+                opacity: 1;
+            }
+            .toc-children.collapsed {
+                max-height: 0;
+                opacity: 0;
+            }
+            .toc-toggle a {
+                flex: 1;
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 为有子菜单的项目添加点击事件
+                const toggleItems = document.querySelectorAll('.toc-toggle');
+                toggleItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        // 如果点击的是链接，不执行折叠操作
+                        if (e.target.tagName === 'A') return;
+                        
+                        const parent = this.closest('.toc-item-has-children');
+                        const children = parent.querySelector('.toc-children');
+                        
+                        this.classList.toggle('collapsed');
+                        children.classList.toggle('collapsed');
+                    });
+                });
+            });
+        </script>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 我的个人主页. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../index.html">首页</a>
+                    <a href="../blog.html">博客</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="reading-progress">
+        <span class="progress-label">阅读进度</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <span class="progress-text" id="progressText">0%</span>
+        </div>
+    </div>
+
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <style>
+        .reading-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 95px;
+            width: 240px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 100%;
+            transition: width 0.3s ease, background-position 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script>
+        // 阅读进度条功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            window.addEventListener('scroll', function() {
+                // 计算滚动进度
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                
+                // 更新进度条宽度
+                progressBar.style.width = progress + '%';
+                
+                // 更新进度文本
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // 更新渐变背景位置，实现颜色渐变效果
+                const gradientPosition = (progress / 100) * 300;
+                progressBar.style.backgroundPosition = gradientPosition + '% 0';
+            });
+        });
+    </script>
+
+    <script src="../script.js"></script>
+    <script src="../js/blog-script.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script>
+        // 确保在模板的主脚本 script.js 加载 *之后* 再执行高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // 查找所有 <pre><code> 块并应用高亮
+            hljs.highlightAll();
+        });
+    </script>
+
+</body>
+</html>

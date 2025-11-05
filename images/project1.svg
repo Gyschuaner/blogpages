@@ -1,0 +1,37 @@
+<svg width="400" height="250" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="400" height="250" fill="#f0f2f5"/>
+  
+  <!-- 简化的电商网站布局 -->
+  <rect x="20" y="20" width="360" height="60" fill="#4a6fa5" rx="5"/>
+  
+  <!-- 导航图标 -->
+  <circle cx="50" cy="50" r="10" fill="white" opacity="0.5"/>
+  <rect x="90" y="40" width="40" height="20" fill="white" opacity="0.7" rx="3"/>
+  <rect x="140" y="40" width="40" height="20" fill="white" opacity="0.7" rx="3"/>
+  <rect x="190" y="40" width="40" height="20" fill="white" opacity="0.7" rx="3"/>
+  <rect x="240" y="40" width="40" height="20" fill="white" opacity="0.7" rx="3"/>
+  
+  <!-- 搜索框 -->
+  <rect x="290" y="40" width="80" height="20" fill="white" rx="10"/>
+  <circle cx="355" cy="50" r="5" fill="#4a6fa5"/>
+  
+  <!-- 产品展示区 -->
+  <rect x="20" y="100" width="100" height="120" fill="white" rx="5" stroke="#ddd"/>
+  <circle cx="70" cy="140" r="30" fill="#667eea" opacity="0.7"/>
+  <rect x="40" y="180" width="60" height="15" fill="#e0e0e0" rx="3"/>
+  <rect x="40" y="200" width="40" height="15" fill="#4a6fa5" rx="3"/>
+  
+  <rect x="140" y="100" width="100" height="120" fill="white" rx="5" stroke="#ddd"/>
+  <circle cx="190" cy="140" r="30" fill="#764ba2" opacity="0.7"/>
+  <rect x="160" y="180" width="60" height="15" fill="#e0e0e0" rx="3"/>
+  <rect x="160" y="200" width="40" height="15" fill="#4a6fa5" rx="3"/>
+  
+  <rect x="260" y="100" width="100" height="120" fill="white" rx="5" stroke="#ddd"/>
+  <circle cx="310" cy="140" r="30" fill="#f093fb" opacity="0.7"/>
+  <rect x="280" y="180" width="60" height="15" fill="#e0e0e0" rx="3"/>
+  <rect x="280" y="200" width="40" height="15" fill="#4a6fa5" rx="3"/>
+  
+  <!-- 标题 -->
+  <text x="200" y="80" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">电商网站重构项目</text>
+</svg>

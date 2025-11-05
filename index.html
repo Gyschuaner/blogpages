@@ -3,237 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人博客 | 分享生活与技术</title>
+    <title>个人主页</title>
     <link rel="stylesheet" href="style.css">
+    <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- 头部导航 -->
-    <header>
-        <nav>
-            <div class="container">
-                <div class="logo"><a href="#">我的博客</a></div>
-                <ul class="nav-links">
-                    <li><a href="#">首页</a></li>
-                    <li><a href="#about">关于我</a></li>
-                    <li><a href="#categories">分类</a></li>
-                    <li><a href="#contact">联系</a></li>
-                </ul>
-                <div class="search">
-                    <input type="text" placeholder="搜索文章...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
+    <!-- 导航栏 -->
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">我的个人主页</a>
             </div>
-        </nav>
+            <nav class="menu">
+                <ul>
+                    <li><a href="home.html">首页</a></li>
+                    <li><a href="about.html">关于我</a></li>
+                    <li><a href="skills.html">技能</a></li>
+                    <li><a href="projects.html">项目</a></li>
+                    <li><a href="contact.html">联系方式</a></li>
+                    <li><a href="blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
     </header>
 
-    <!-- 主要内容 -->
-    <main>
+    <!-- 主页部分 -->
+    <section id="home" class="hero">
         <div class="container">
-            <!-- 博客文章列表 -->
-            <div class="blog-content">
-                <!-- 置顶文章 -->
-                <article class="featured-post">
-                    <div class="post-thumbnail">
-                        <img src="https://via.placeholder.com/800x400" alt="博客封面图">
+            <div class="hero-content">
+                <!-- 左侧：头像和名字 -->
+                <div class="left-section">
+                    <div class="profile-picture">
+                        <img src="images/profile.svg" alt="个人头像" class="avatar">
                     </div>
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span class="category"><a href="#">技术</a></span>
-                            <span class="date">2023年10月15日</span>
-                        </div>
-                        <h2 class="post-title"><a href="#">从零开始搭建个人博客网站</a></h2>
-                        <p class="post-excerpt">这是一篇关于如何使用HTML、CSS和JavaScript搭建个人博客网站的指南。在这篇文章中，我将分享我的经验和技巧，帮助你也能拥有一个自己的博客平台。</p>
-                        <div class="post-footer">
-                            <div class="author-info">
-                                <img src="https://via.placeholder.com/40" alt="作者头像">
-                                <span>博主</span>
-                            </div>
-                            <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- 文章列表 -->
-                <div class="post-list">
-                    <!-- 文章1 -->
-                    <article class="post">
-                        <div class="post-content">
-                            <div class="post-meta">
-                                <span class="category"><a href="#">技术</a></span>
-                                <span class="date">2023年10月10日</span>
-                            </div>
-                            <h2 class="post-title"><a href="#">前端开发的10个最佳实践</a></h2>
-                            <p class="post-excerpt">本文总结了前端开发中的一些最佳实践，包括代码组织、性能优化、可访问性等方面的建议。</p>
-                            <div class="post-footer">
-                                <div class="author-info">
-                                    <img src="https://via.placeholder.com/40" alt="作者头像">
-                                    <span>博主</span>
-                                </div>
-                                <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- 文章2 -->
-                    <article class="post">
-                        <div class="post-content">
-                            <div class="post-meta">
-                                <span class="category"><a href="#">生活</a></span>
-                                <span class="date">2023年10月5日</span>
-                            </div>
-                            <h2 class="post-title"><a href="#">程序员的日常工作习惯</a></h2>
-                            <p class="post-excerpt">分享一些我在日常工作中养成的好习惯，帮助我提高效率并保持工作与生活的平衡。</p>
-                            <div class="post-footer">
-                                <div class="author-info">
-                                    <img src="https://via.placeholder.com/40" alt="作者头像">
-                                    <span>博主</span>
-                                </div>
-                                <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- 文章3 -->
-                    <article class="post">
-                        <div class="post-content">
-                            <div class="post-meta">
-                                <span class="category"><a href="#">学习</a></span>
-                                <span class="date">2023年9月28日</span>
-                            </div>
-                            <h2 class="post-title"><a href="#">如何高效学习新技术栈</a></h2>
-                            <p class="post-excerpt">在技术快速发展的今天，如何快速有效地学习新技术成为程序员必须面对的挑战。本文分享一些实用的学习方法。</p>
-                            <div class="post-footer">
-                                <div class="author-info">
-                                    <img src="https://via.placeholder.com/40" alt="作者头像">
-                                    <span>博主</span>
-                                </div>
-                                <a href="#" class="read-more">阅读更多 <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </article>
+                    <h1>你好，我是<span class="highlight">张小明</span></h1>
                 </div>
+                
+                <!-- 右侧：其他信息 -->
+                <div class="right-section">
+                    <h2>Web前端开发工程师</h2>
+                    <p class="intro">热爱技术，专注于创建美观、高效的Web应用。</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- 分页 -->
-                <div class="pagination">
-                    <a href="#" class="prev">上一页</a>
-                    <a href="#" class="active">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <span>...</span>
-                    <a href="#">10</a>
-                    <a href="#" class="next">下一页</a>
+    <!-- 关于我部分 -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">关于我</h2>
+            <div class="about-content">
+                <p>我是一名热爱技术的Web前端开发工程师，拥有3年前端开发经验。我专注于创建用户友好、性能优异的Web应用。</p>
+                <p>我的技术栈包括HTML5、CSS3、JavaScript、Vue.js和React等。我不断学习新技术，关注前端发展趋势。</p>
+                <p>在工作中，我注重代码质量和用户体验，善于解决复杂问题，能够与团队高效协作。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能部分 -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">专业技能</h2>
+            
+            <div class="skills-category">
+                <h3>前端技术</h3>
+                <div class="skill-item">
+                    <div class="skill-name">HTML5 & CSS3</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">JavaScript</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">Vue.js</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">React</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 75%"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 侧边栏 -->
-            <aside class="sidebar">
-                <!-- 关于我 -->
-                <div class="widget about-me">
-                    <h3 class="widget-title">关于我</h3>
-                    <div class="author-profile">
-                        <img src="https://via.placeholder.com/100" alt="作者头像">
-                        <h4>博主名称</h4>
-                        <p>热爱技术，分享生活。这是我的个人博客，欢迎交流！</p>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-github"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-weixin"></i></a>
-                            <a href="#"><i class="fab fa-weibo"></i></a>
-                        </div>
+            <div class="skills-category">
+                <h3>工具与方法</h3>
+                <div class="skill-item">
+                    <div class="skill-name">Git</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 85%"></div>
                     </div>
                 </div>
-
-                <!-- 分类 -->
-                <div class="widget categories">
-                    <h3 class="widget-title">文章分类</h3>
-                    <ul>
-                        <li><a href="#">技术 <span>(12)</span></a></li>
-                        <li><a href="#">生活 <span>(8)</span></a></li>
-                        <li><a href="#">学习 <span>(5)</span></a></li>
-                        <li><a href="#">分享 <span>(3)</span></a></li>
-                    </ul>
-                </div>
-
-                <!-- 热门文章 -->
-                <div class="widget popular-posts">
-                    <h3 class="widget-title">热门文章</h3>
-                    <ul>
-                        <li>
-                            <a href="#">
-                                <h4>从零开始搭建个人博客网站</h4>
-                                <span>2023年10月15日</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <h4>前端开发的10个最佳实践</h4>
-                                <span>2023年10月10日</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <h4>如何高效学习新技术栈</h4>
-                                <span>2023年9月28日</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- 标签云 -->
-                <div class="widget tag-cloud">
-                    <h3 class="widget-title">标签云</h3>
-                    <div class="tags">
-                        <a href="#">HTML</a>
-                        <a href="#">CSS</a>
-                        <a href="#">JavaScript</a>
-                        <a href="#">前端开发</a>
-                        <a href="#">学习笔记</a>
-                        <a href="#">生活感悟</a>
+                <div class="skill-item">
+                    <div class="skill-name">Webpack</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 75%"></div>
                     </div>
                 </div>
-            </aside>
+                <div class="skill-item">
+                    <div class="skill-name">响应式设计</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </section>
+
+    <!-- 项目经验部分 -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">项目经验</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/project1.svg" alt="电商网站" class="project-img">
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">电商网站重构</h3>
+                        <p class="project-description">使用Vue.js和Element UI重构了公司电商网站前端，提升了页面加载速度和用户体验。</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Vue.js</span>
+                            <span class="tech-tag">Element UI</span>
+                            <span class="tech-tag">Axios</span>
+                        </div>
+                        <a href="#" class="project-link">查看详情</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/project2.svg" alt="管理系统" class="project-img">
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">后台管理系统</h3>
+                        <p class="project-description">开发了基于React的企业级后台管理系统，包含数据可视化、用户权限管理等功能。</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Redux</span>
+                            <span class="tech-tag">Ant Design</span>
+                        </div>
+                        <a href="#" class="project-link">查看详情</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="images/project3.svg" alt="个人博客" class="project-img">
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">个人博客系统</h3>
+                        <p class="project-description">使用Node.js和Vue.js开发的个人博客系统，支持Markdown编辑和代码高亮。</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">Vue.js</span>
+                            <span class="tech-tag">MongoDB</span>
+                        </div>
+                        <a href="#" class="project-link">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式部分 -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">联系方式</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <span>example@email.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <span>138-0000-0000</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <span>上海市浦东新区</span>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">姓名</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">邮箱</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">留言</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">发送消息</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- 页脚 -->
-    <footer>
+    <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-info">
-                    <h3>我的博客</h3>
-                    <p>分享技术，记录生活，共同成长。</p>
-                </div>
+                <p>&copy; 2024 我的个人主页. All rights reserved.</p>
                 <div class="footer-links">
-                    <h4>快速链接</h4>
-                    <ul>
-                        <li><a href="#">首页</a></li>
-                        <li><a href="#about">关于我</a></li>
-                        <li><a href="#categories">分类</a></li>
-                        <li><a href="#contact">联系</a></li>
-                    </ul>
+                    <a href="index.html">首页</a>
+                    <a href="blog.html">博客</a>
+                    <a href="#contact">联系我</a>
                 </div>
-                <div class="footer-contact">
-                    <h4>联系我</h4>
-                    <p>邮箱：example@blog.com</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-weixin"></i></a>
-                        <a href="#"><i class="fab fa-weibo"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2023 我的博客. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- 回到顶部按钮 -->
-    <button id="back-to-top" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-    <!-- JavaScript -->
+    <!-- 引入JavaScript文件 -->
     <script src="script.js"></script>
 </body>
 </html>

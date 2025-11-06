@@ -64,48 +64,8 @@ function setupMobileMenu() {
     }
 }
 
-// 打字机效果函数
-function typewriterEffect(text1, text2 = null, text3 = null) {
-    const typingElement = document.getElementById('typing-text');
-    if (!typingElement) return;
-    
-    const highlightElement = typingElement.querySelector('.highlight');
-    if (!highlightElement) return;
-    
-    let index = 0;
-    let currentText = text1;
-    let isFirstTextComplete = false;
-    let isSecondTextComplete = false;
-    
-    function type() {
-        if (index < currentText.length) {
-            // 使用innerHTML而不是textContent，确保换行正确显示
-            highlightElement.innerHTML += currentText.charAt(index);
-            index++;
-            setTimeout(type, 50); // 将打字间隔缩短到50毫秒
-        } else if (!isFirstTextComplete && text2) {
-            // 第一行完成后添加换行
-            highlightElement.innerHTML += '<br>';
-            isFirstTextComplete = true;
-            currentText = text2;
-            index = 0;
-            setTimeout(type, 500); // 换行后暂停半秒再继续打字
-        } else if (!isSecondTextComplete && text3) {
-            // 第二行完成后添加换行
-            highlightElement.innerHTML += '<br>';
-            isSecondTextComplete = true;
-            currentText = text3;
-            index = 0;
-            setTimeout(type, 500); // 换行后暂停半秒再继续打字
-        }
-    }
-    
-    // 开始打字效果
-    type();
-}
-
-// 当页面加载完成后执行
-window.addEventListener('DOMContentLoaded', function() {
+// 页面加载完成后执行
+window.addEventListener('DOMContentLoaded', () => {
     highlightCurrentNavItem();
     handleHeaderScroll();
     setupBackToTop();
@@ -113,20 +73,4 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // 监听滚动事件
     window.addEventListener('scroll', handleHeaderScroll);
-    
-    // 检查是否存在打字机元素，如果存在则应用相应页面的打字效果
-    const typingElement = document.getElementById('typing-text');
-    if (typingElement) {
-        // 根据页面路径确定显示的文本
-        const path = window.location.pathname;
-        if (path.includes('about.html')) {
-            typewriterEffect('了解我的故事', '探索我的兴趣爱好', '认识真实的我');
-        } else if (path.includes('skills.html')) {
-            typewriterEffect('我的专业技能', '不断学习进步', '追求技术卓越');
-        } else if (path.includes('projects.html')) {
-            typewriterEffect('我的项目作品', '创新与实践的结合', '用代码创造价值');
-        } else if (path.includes('blog.html')) {
-            typewriterEffect('技术分享与思考', '记录学习历程', '交流知识与经验');
-        }
-    }
 });

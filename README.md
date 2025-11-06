@@ -8,7 +8,7 @@
 - `style.css` - 样式表文件
 - `script.js` - JavaScript交互逻辑
 - `images/` - 图片资源目录
-  - `profile.svg` - 个人头像
+  - `handson.png` - 个人头像
   - `project1.svg` - 项目1图片
   - `project2.svg` - 项目2图片
   - `project3.svg` - 项目3图片

@@ -22,6 +22,7 @@
                     <li><a href="skills.html">技能</a></li>
                     <li><a href="projects.html">项目</a></li>
                     <li><a href="blog.html">博客</a></li>
+                    <li><a href="timeline.html">轨迹</a></li>
                 </ul>
             </nav>
             <div class="social-links">
@@ -78,6 +79,105 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- 进度条样式 -->
+    <style>
+        /* 进度条容器 */
+        .progress-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 250px;
+            z-index: 1000;
+        }
+        
+        /* 进度条项目 */
+        .progress-item {
+            margin-bottom: 15px;
+        }
+        
+        /* 进度条标签 */
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* 进度条背景 */
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+        }
+        
+        /* 进度条填充 */
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 1.5s ease-out;
+            border-radius: 6px;
+        }
+        
+        /* 建站进度条颜色 */
+        #build-progress-bar {
+            background-color: #4CAF50;
+            width: 0;
+        }
+        
+        /* 优化进度条颜色 */
+        #optimize-progress-bar {
+            background-color: #2196F3;
+            width: 0;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .progress-container {
+                width: 200px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .progress-label {
+                font-size: 12px;
+            }
+            
+            .progress-bar-bg {
+                height: 10px;
+            }
+        }
+    </style>
+    
+    <!-- 进度条容器 -->
+    <div class="progress-container">
+        <!-- 建站进度条 -->
+        <div class="progress-item">
+            <div class="progress-label">
+                <span>建站进度</span>
+                <span>30%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="build-progress-bar" class="progress-bar-fill"></div>
+            </div>
+        </div>
+        
+        <!-- 优化进度条 -->
+        <div class="progress-item">
+            <div class="progress-label">
+                <span>优化进度</span>
+                <span>0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="optimize-progress-bar" class="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
     <script>
         // 打字机效果
@@ -117,6 +217,12 @@
             
             // 开始打字效果
             type();
+            
+            // 进度条动画效果
+            setTimeout(() => {
+                const progressBar1 = document.getElementById('build-progress-bar');
+                progressBar1.style.width = '30%';
+            }, 1000);
         });
     </script>
 </body>

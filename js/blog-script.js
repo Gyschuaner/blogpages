@@ -15,9 +15,9 @@ class BlogLoader {
                 {
                     "title": "注意力机制详解",
                     "path": "notes/attention-mechanism.html",
-                    "date": "2024-02-15",
+                    "date": "2025-10-27",
                     "category": "深度学习",
-                    "author": "故意盛的剩饭",
+                    "author": "xgg",
                     "readTime": "15分钟",
                     "tags": ["注意力机制", "深度学习", "NLP"],
                     "excerpt": "注意力机制是现代深度学习模型（尤其是NLP领域的Transformer架构）中的核心组件。本文将详细介绍注意力机制的基本原理、实现方法和关键概念，包括词嵌入、位置编码、自注意力、掩码注意力和多头自注意力等重要内容。"
@@ -25,17 +25,17 @@ class BlogLoader {
                 {
                     "title": "GPT-2模型详解与实现",
                     "path": "notes/GPT-2.html",
-                    "date": "2024-03-10",
+                    "date": "2025-10-20",
                     "category": "深度学习",
-                    "author": "故意盛的剩饭",
+                    "author": "xgg",
                     "readTime": "12分钟",
-                    "tags": ["GPT-2", "深度学习", "NLP"],
+                    "tags": ["GPT-2", "PyTorch", "Transformer"],
                     "excerpt": "本文详细介绍了GPT-2模型的架构原理与实现过程，包括单头注意力机制、多头注意力机制、前馈神经网络、Transformer Block等核心组件，并提供了完整的PyTorch实现代码。"
                 },
                 {
                     "title": "博客模板",
                     "path": "notes/blog-template.html",
-                    "date": "2024-02-15",
+                    "date": "2025-11-06",
                     "category": "模板",
                     "author": "故意盛的剩饭",
                     "readTime": "5分钟",

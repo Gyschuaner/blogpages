@@ -5,6 +5,45 @@
     box-sizing: border-box;
 }
 
+/* 渐出动画关键帧 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 渐出动画类 */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* 延迟渐出类 */
+.delay-1 {
+    animation-delay: 0.2s;
+}
+
+.delay-2 {
+    animation-delay: 0.4s;
+}
+
+.delay-3 {
+    animation-delay: 0.6s;
+}
+
+.delay-4 {
+    animation-delay: 0.8s;
+}
+
+.delay-5 {
+    animation-delay: 1s;
+}
+
 body {
     font-family: 'Arial', 'Helvetica', sans-serif;
     line-height: 1.6;
@@ -42,16 +81,234 @@ body::before {
     z-index: -1;
 }
 
-/* 树木和其他元素将在hero部分实现 */
+/* 时间线部分样式 - Minecraft风格 */
+.timeline-section {
+    padding: 80px 0;
+    background-color: #8BAA36;
+    border-top: 4px solid #000;
+    border-bottom: 4px solid #000;
+}
 
-/* 移除Minecraft字体 */
-/* @font-face {
-    font-family: 'Minecraft';
-    src: url('https://fonts.cdnfonts.com/s/8497/minecraft.woff') format('woff');
-} */
-    /* font-weight: normal;
-    font-style: normal;
-} */
+/* 时间线装饰元素 */
+.timeline-decoration {
+    height: 40px;
+    background-color: #5D7031;
+    border: 4px solid #000;
+    box-shadow: 5px 5px 0 #000;
+    max-width: 300px;
+    margin: 0 auto 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-decoration::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #FF5555;
+}
+
+.timeline {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 时间线中轴线 - 蛇形虚线效果 */
+.timeline::before {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 100%;
+    left: 50%;
+    top: 0%;
+    margin-left: -15px;
+    /* 使用新的SVG背景:
+      - d='M15,0 C-30,33 60,66 15,100'  (蛇形 S 曲线)
+      - stroke-width='8'                  (线条粗细)
+      - stroke-dasharray='15 10'        (虚线样式: 15长, 10空)
+    */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 100' preserveAspectRatio='none'%3E%3Cpath d='M15,0 C-30,33 60,66 15,100' stroke='%235D7031' stroke-width='8' fill='none' stroke-linecap='round' stroke-dasharray='5 10'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    z-index: 1;
+}
+
+
+/* 时间线项目 */
+.timeline-item {
+    padding: 10px 40px;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 左侧项目 */
+.timeline-item.left {
+    left: -50%;
+}
+
+/* 右侧项目 */
+.timeline-item.right {
+    left: 50%;
+}
+
+/* 时间线内容 */
+.timeline-content {
+    padding: 25px;
+    background-color: #C6D39C;
+    border: 4px solid #000;
+    box-shadow: 5px 5px 0 #000;
+    position: relative;
+}
+
+/* 时间线内容链接 */
+.timeline-content-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 链接悬停效果 */
+.timeline-content-link:hover {
+    transform: translateY(-3px);
+}
+
+.timeline-content-link:hover .timeline-content {
+    box-shadow: 8px 8px 0 #000;
+    background-color: #D6E3AC; /* 稍微变亮的背景色 */
+    cursor: pointer; /* 显示指针光标 */
+}
+
+/* 左侧内容添加右侧箭头 */
+.timeline-item.left .timeline-content::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 20px solid #C6D39C;
+    top: 30px;
+    right: -20px;
+    z-index: 1;
+}
+
+.timeline-item.left .timeline-content::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 24px solid transparent;
+    border-bottom: 24px solid transparent;
+    border-left: 24px solid #000;
+    top: 26px;
+    right: -24px;
+    z-index: 0;
+}
+
+/* 右侧内容添加左侧箭头 */
+.timeline-item.right .timeline-content::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 20px solid #C6D39C;
+    top: 30px;
+    left: -20px;
+    z-index: 1;
+}
+
+.timeline-item.right .timeline-content::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 24px solid transparent;
+    border-bottom: 24px solid transparent;
+    border-right: 24px solid #000;
+    top: 26px;
+    left: -24px;
+    z-index: 0;
+}
+
+/* 时间日期 */
+.timeline-date {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #FFF;
+    background-color: #5D7031;
+    padding: 8px 12px;
+    border: 3px solid #000;
+    display: inline-block;
+    margin-bottom: 15px;
+    box-shadow: 3px 3px 0 #000;
+}
+
+/* 时间线标题 */
+.timeline-title {
+    font-size: 1.3rem;
+    color: #FFFF55;
+    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 15px;
+    background-color: #8BAA36;
+    padding: 10px;
+    border: 3px solid #000;
+    display: inline-block;
+    box-shadow: 4px 4px 0 #000;
+}
+
+/* 时间线描述 */
+.timeline-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    background-color: #E8F5E8;
+    padding: 15px;
+    border: 2px solid #000;
+    box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 20px;
+    }
+    
+    .timeline-item {
+        width: 100%;
+        padding-left: 60px;
+        padding-right: 20px;
+    }
+    
+    .timeline-item.right {
+        left: 0;
+    }
+    
+    .timeline-dot {
+        left: 10px;
+        right: auto;
+    }
+    
+    .timeline-item.left .timeline-dot,
+    .timeline-item.right .timeline-dot {
+        left: 10px;
+    }
+    
+    .timeline-item.left .timeline-content::after,
+    .timeline-item.left .timeline-content::before,
+    .timeline-item.right .timeline-content::after,
+    .timeline-item.right .timeline-content::before {
+        display: none;
+    }
+}
 
 .container {
     width: 100%;
@@ -87,6 +344,8 @@ header {
     z-index: 1000;
     border-bottom: 4px solid #666;
     transition: all 0.2s ease;
+    /* 添加导航栏轨迹容器 */
+    overflow: visible;
 }
 
 header.scrolled {
@@ -120,12 +379,29 @@ header.scrolled {
     list-style: none;
     margin: 0;
     padding: 0;
+    position: relative;
 }
 
 .menu ul li {
     margin-left: 15px;
+    position: relative;
 }
 
+/* 导航栏轨迹效果 */
+.menu ul::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 20px;
+    right: 0px;
+    height: 4px;
+    background-color: #5D5D5D;
+    border: 2px solid #000;
+    border-radius: 0;
+    z-index: -1;
+}
+
+/* 导航项样式 */
 .menu ul li a {
     color: #FFFFFF;
     text-decoration: none;
@@ -138,8 +414,10 @@ header.scrolled {
     border: 2px solid #000;
     box-shadow: 2px 2px 0 #000;
     position: relative;
+    z-index: 1;
 }
 
+/* 导航项悬停效果 */
 .menu ul li a:hover {
     background-color: #7B7B7B;
     top: -2px;
@@ -147,10 +425,24 @@ header.scrolled {
     box-shadow: 4px 4px 0 #000;
 }
 
+/* 导航项点击效果 */
 .menu ul li a:active {
     top: 0;
     left: 0;
     box-shadow: 1px 1px 0 #000;
+}
+
+/* 导航项当前状态轨迹效果 */
+.menu ul li.current a::after {
+    content: '';
+    position: absolute;
+    bottom: -14px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #FFFF55;
+    border: 2px solid #000;
+    border-radius: 0;
 }
 
 .menu-toggle {

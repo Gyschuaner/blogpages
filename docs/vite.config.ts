@@ -3,6 +3,7 @@ import Components from 'unplugin-vue-components/vite';
 import { ArcoResolver } from 'unplugin-vue-components/resolvers';
 
 export default defineConfig({
+  base: '/blogpages/',
   plugins: [
     Components({
       dirs: ['.vitepress/theme/components'],

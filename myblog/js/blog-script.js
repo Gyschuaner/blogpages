@@ -13,6 +13,16 @@ class BlogLoader {
             // 直接定义博客数据，与blog-config.json内容相同
             let rawBlogs = [
         {
+            "title": "RAG 查询优化 new",
+            "path": "notes/rag-query-optimization-new.html",
+            "date": "2026-05-26",
+            "category": "AI",
+            "author": "xgg",
+            "readTime": "30分钟",
+            "tags": ["RAG", "查询优化", "大语言模型", "检索增强生成"],
+            "excerpt": "系统梳理 RAG 查询优化中的 Multi-Query、RAG-Fusion、查询分解、Step Back Prompting 和 HyDE，并配合代码与图解理解每种方法的作用。"
+        },
+        {
             "title": "注意力机制详解",
             "path": "notes/attention-mechanism.html",
             "date": "2025-10-27",

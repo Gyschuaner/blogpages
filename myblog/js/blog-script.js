@@ -13,6 +13,16 @@ class BlogLoader {
             // 直接定义博客数据，与blog-config.json内容相同
             let rawBlogs = [
         {
+            "title": "DQN 深度强化学习网络",
+            "path": "notes/dqn-deep-q-network.html",
+            "date": "2026-05-26",
+            "category": "强化学习",
+            "author": "xgg",
+            "readTime": "12分钟",
+            "tags": ["DQN", "强化学习", "Deep Q-Network", "RL"],
+            "excerpt": "用直观类比解释 DQN 如何把 Q-learning 和神经网络结合起来，并梳理目标网络、经验回放与 off-policy 的核心思想。"
+        },
+        {
             "title": "RAG 查询优化",
             "path": "notes/RAG 查询优化.html",
             "date": "2025-12-02",

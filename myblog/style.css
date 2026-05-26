@@ -2453,3 +2453,56 @@ section.blog-content {
         font-size: 0.84rem;
     }
 }
+
+/* High-specificity article overrides for pages with their own inline styles */
+body .blog-main-content {
+    background-color: #F4EEDC !important;
+    color: #26231E !important;
+}
+
+body .article-body,
+body .article-body p,
+body .article-body li {
+    color: #26231E !important;
+}
+
+body .article-body p,
+body .article-body li {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+body .article-body h2 {
+    background: transparent !important;
+    color: #1F6F42 !important;
+    border: 0 !important;
+    border-left: 7px solid #4ADE80 !important;
+    border-bottom: 2px solid #1F1F1F !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+body .article-body h3 {
+    color: #2F3A24 !important;
+    text-shadow: none !important;
+}
+
+body .article-body pre {
+    background-color: #20251F !important;
+    color: #EEF5E5 !important;
+    border: 3px solid #000 !important;
+    box-shadow: 5px 5px 0 #000 !important;
+}
+
+body .article-body pre > code,
+body .article-body pre code {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+body .article-body :not(pre) > code {
+    background-color: #E6DCC4 !important;
+    color: #7A2B2B !important;
+    border: 1px solid #A89674 !important;
+}

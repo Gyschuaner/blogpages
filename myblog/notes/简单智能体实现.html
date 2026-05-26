@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单智能体实现 - 我的个人主页</title>
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+    <!-- 引入博客动态加载脚本 -->
+    <script src="../js/blog-script.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    
+    <style>
+        /* 限制中间列最大宽度，确保与其他页面保持一致 */
+        .blog-main-content {
+            max-width: 940px; /* 限制最大宽度 */
+        }
+        /* 确保 pre 标签内的代码块正确显示 */
+        pre {
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            background-color: #A09688 !important;
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        }
+        /* highlight.js 需要 pre > code 结构 */
+        pre > code {
+            font-family: 'Microsoft YaHei UI', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background-color: transparent !important;
+            color: #333 !important;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        /* 修正 .md 中 <hr> 的样式 */
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
+        /* 修正表格样式 */
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        /* 覆盖 highlight.js 的默认样式 */
+        .hljs {
+            background-color: transparent !important;
+            color: #333 !important;
+        }
+        /* 确保代码高亮颜色可见 */
+        .hljs-keyword {
+            color: #7b00ff !important;
+        }
+        .hljs-string {
+            color: #008000 !important;
+        }
+        .hljs-comment {
+            color: #808080 !important;
+        }
+        .hljs-number {
+            color: #ff0000 !important;
+        }
+        .hljs-literal {
+            color: #008000 !important;
+        }
+        /* 行内代码样式 */
+        p code, li code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid #ddd;
+        }
+        /* 引用样式 */
+        blockquote {
+            border-left: 4px solid #ccc;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            font-style: italic;
+        }
+        /* 图片样式 */
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="../home.html">首页</a></li>
+                    <li><a href="../about.html">关于我</a></li>
+                    <li><a href="../skills.html">技能</a></li>
+                    <li><a href="../projects.html">项目</a></li>
+                    <li><a href="../blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+            }
+        }
+    </style>
+    <script>
+        // 导航栏滚动效果脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+            
+            // 移动端菜单切换
+            const menuToggle = document.querySelector('.menu-toggle');
+            const menu = document.querySelector('.menu');
+            
+            if (menuToggle && menu) {
+                menuToggle.addEventListener('click', function() {
+                    menu.classList.toggle('active');
+                });
+            }
+        });
+    </script>
+
+    <div class="blog-container">
+        <aside class="blog-sidebar-left">
+            <nav class="blog-nav">
+                <h3>博客列表</h3>
+                <ul></ul>
+                
+                <h3 style="margin-top: 30px;">分类</h3>
+                <ul>
+                    <li><a href="../blog.html">机器学习</a></li>
+                    <li><a href="../blog.html">深度学习</a></li>
+                    <li><a href="../blog.html">NLP</a></li>
+                    <li><a href="../blog.html">JavaScript</a></li>
+                    <li><a href="../blog.html">Python</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="blog-main-content">
+            <article class="blog-article">
+                <h1>简单智能体实现</h1>
+                <div class="article-meta">
+                    <span class="author"><i class="far fa-user"></i> Xgg</span>
+                    <span class="date"><i class="far fa-calendar-alt"></i> 2025-11-04</span>
+                    <span class="read-time"><i class="far fa-clock"></i> 大约 10 分钟</span>
+                    <span class="tags">
+                        <span class="tag">智能体</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">大模型</span>
+                    </span>
+                </div>
+                <hr>
+                
+                <div class="article-body">
+                    
+                    <h2 id="model">调用大模型</h2>
+                    <p>可以通过HTTP调用网络大模型的API（有钱），也可以本地部署大模型，通过Ollama，默认本地运行在http://localhost:11434/v1中</p>
+                    
+                    <h2 id="code-explanation">代码详解</h2>
+                    
+                    <h3 id="libraries">库</h3>
+                    <p>所需要安装的库tavily-python、openai</p>
+                    <p><code>tavily</code>：Tavily 是一个<strong>专为大型语言模型（LLM）和 AI 智能体（AI Agents）设计的搜索引擎 API</strong>。它返回的是<strong>一个干净、简洁、结构化的 JSON 对象</strong>，其中包含了问题的直接答案、关键信息点和来源链接。</p>
+                    <p><code>openai</code>：是 <strong>OpenAI 官方提供的 Python 软件开发工具包 (SDK)</strong>。它的核心作用是让开发者能够用简单、符合 Python 编程习惯的方式，来调用 OpenAI 提供的各种先进的人工智能模型服务。它不仅能调用openai的各种模型，而且支持所有符合openai库的调用格式的模型，只需更改 <code>base_url</code>即可。</p>
+                    
+                    <h3 id="system-prompt">系统提示 System Prompt</h3>
+                    <p>系统提示（System Prompt）是智能体的"DNA"，它定义了智能体的身份、能力和行为模式。一个好的系统提示应该清晰地说明智能体的角色、可用工具以及输出格式。</p>
+                    <pre><code class="language-python">AGENT_SYSTEM_PROMPT = """
+你是一个智能旅行助手，能够帮助用户规划旅行并提供相关信息。
+
+你有以下工具可以使用：
+1.get_weather(city)：获取指定城市的天气信息
+2.search_attraction(city, weather)：根据城市和天气搜索适合的旅游景点
+
+请按照以下格式回复：
+Thought:[你的思考过程]
+Action:[要执行的动作，格式为函数调用]
+
+如果不需要使用工具，请直接回复用户。
+"""
+</code></pre>
+                    
+                    <h3 id="tool-functions">实现工具函数</h3>
+                    <p>接下来，我们需要实现智能体可以调用的工具函数。这些函数是智能体与外部世界交互的桥梁。</p>
+                    
+                    <p><strong>天气查询工具</strong></p>
+                    <pre><code class="language-python">def get_weather(city):  
+    # 这里使用模拟数据代替实际API调用  
+    weather_data = {  
+        "北京": {"temperature": 25, "condition": "晴", "wind": "微风"},  
+        "上海": {"temperature": 28, "condition": "多云", "wind": "东南风"},  
+        "广州": {"temperature": 32, "condition": "雷阵雨", "wind": "南风"},  
+        "深圳": {"temperature": 30, "condition": "阴", "wind": "无风"}  
+    }  
+  
+    if city in weather_data:  
+        data = weather_data[city]  
+        return f"{city}的天气是{data['condition']}，温度{data['temperature']}°C，风力{data['wind']}。"  
+    else:  
+        return f"抱歉，无法获取{city}的天气信息。"
+</code></pre>
+                    
+                    <p><strong>景点搜索工具</strong></p>
+                    <pre><code class="language-python"># 景点搜索工具  
+from tavily import TavilyClient  
+def search_attraction(city, weather):  
+    #初始化TavilyClient, api_key请替换为实际API密钥  
+    try:  
+        tavily = TavilyClient(api_key="your_api_key")  
+        # 构建查询，就是prompt  
+        query = f"请推荐适合在{city}游玩的景点，当前天气情况是：{weather}。"  
+        # 执行查询搜索  
+        response = tavily.search(query=query, max_results=3)  
+  
+        # 处理搜索结果  
+        attractions = []  
+        for result in response.get("results", []):  
+            attractions.append({  
+                'title': result.get('title', ''),  
+                'content': result.get('content', '')[:200] + '...'  
+            })  
+        # 返回格式化的景点信息  
+        return f"根据{city}的{weather}天气，推荐以下景点：" + "\n".join([f"- {attr['title']}: {attr['content']}" for attr in attractions])  
+  
+    except Exception as e:  
+        return f"抱歉，搜索景点时出现错误{str(e)}"
+</code></pre>
+                    
+                    <hr>
+                    <pre><code class="language-python">for result in response.get("results", []):  
+            attractions.append({  
+                'title': result.get('title', ''),  
+                'content': result.get('content', '')[:200] + '...'  
+            })  
+</code></pre>
+                    <ul>
+                        <li><code>for...in...</code>是一个基本的循环，<code>result</code>是新赋的变量名，代表<code>response</code>中的每一个元素。</li>
+                        <li><code>response.get("results", [])</code>：<code>response</code>是一个字典，<code>.get("results", [])</code>方法可以取出以<code>results</code>为key的value，返回一个像<code>[results1, results2, results3]</code>这样的列表。</li>
+                        <li><code>attractions.append(...)</code>：<code>attractions</code>为先前创建的列表，<code>results</code>也是一个字典，其中包含key<code>title、content、...</code>，取出这两个内容，若没有则用<code>''</code>代替，加入列表<code>attractions</code>中</li>
+                        <li>如下这一个示例</li>
+                    </ul>
+                    <pre><code class="language-python">{
+  "results": [
+    { "title": "卢浮宫", "content": "卢浮宫是世界上最著名的博物馆之一...", "url": "..." },
+    { "title": "埃菲尔铁塔", "content": "埃菲尔铁塔是巴黎的标志性建筑...", "url": "..." }
+  ]
+}</code></pre>
+                    <p>做完这一步骤后得到的<code>attraction = [{"title": "卢浮宫", "content": "卢浮宫是世界上最著名的博物馆之一..."}, { "title": "埃菲尔铁塔", "content": "埃菲尔铁塔是巴黎的标志性建筑..."}]</code></p>
+                    <p><strong>注册工具</strong></p>
+                    <pre><code class="language-python">available_tools = {  
+    "get_weather": get_weather,  
+    "search_attraction": search_attraction  
+}
+</code></pre>
+                    
+                    <h3 id="core-logic">实现智能体核心逻辑</h3>
+                    <p>现在我们来实现智能体的核心逻辑，包括与LLM的交互和工具调用的解析。</p>
+                    <pre><code class="language-python"># 实现智能体核心逻辑  
+from openai import OpenAI  
+import re  
+  
+class MySmallCilent:  
+    def __init__(self):  
+        self.client = OpenAI(  
+            api_key="ollama",  
+            base_url="http://localhost:11434/v1"  
+        )  
+    def chat_completion(self, messages, model="qwen3-4b"):  
+        # 调用本地 llm 进行对话  
+        try:  
+            response = self.client.chat.completions.create(  
+                model=model,  
+                messages=messages,  
+                temperature=0.7,  
+                max_tokens=1000  
+            )  
+            return response[0].message.content # 返回生成的内容  
+        except Exception as e:  
+            return f"调用本地模型时出现错误: {str(e)}"  
+  
+    def parse_action(self, response):  
+        """解析LLM响应中的Action"""
+        # 使用正则表达式提取Action  
+        action_pattern = r'Action:\s*([a-zA-Z_]+)\((.*?)\)'  
+        match = re.search(action_pattern, response)  
+  
+        if match:  
+            function_name = match.group(1)  
+            # 简单解析参数（实际应用中需要更robust的解析）  
+            params_str = match.group(2).strip('"\'')  
+            params = [p.strip().strip('"\'') for p in params_str.split(',') if p.strip()]  
+            return function_name, params  
+  
+        return None, None
+</code></pre>
+                    
+                    <hr>
+                    <ul>
+                        <li><code>response = self.client.chat.completions.create()</code>：
+                            <ul>
+                                <li><code>client</code>：表示之前指定的llm模型</li>
+                                <li><code>chat</code>：表示与聊天模型相关</li>
+                                <li><code>completion</code>：这是一项具体服务，代表补全。我们希望模型通过提供下一句话来"补全（complete）"我们的对话。</li>
+                                <li><code>create</code>：代表动作创建</li>
+                            </ul>
+                        </li>
+                        <li><code>parse_action(self, response)</code>函数是关键部分，它负责阅读模型返回的"思考报告"，并从中找出<strong>可执行的命令</strong>。
+                            <ul>
+                                <li>如我们的模型被训练成会按照一个特定的格式输出，如<code>Action: search_attraction("巴黎", "晴天")</code></li>
+                                <li><strong><code>action_pattern = r'Action: ...'</code></strong>: 这定义了一个"<strong>文本搜索模板</strong>"（专业术语叫正则表达式）。这个模板专门用来寻找形如 <code>Action: 函数名(参数1, 参数2)</code> 这样的文字。
+                                    <ul>
+                                        <li><code>Action:</code>: 寻找开头的 "Action:"</li>
+                                        <li><code>([a-zA-Z_]+)</code>: 寻找并<strong>捕获</strong>一个由字母和下划线组成的函数名。</li>
+                                        <li><code>\((.*?)\)</code>: 寻找并<strong>捕获</strong>括号内的所有内容（也就是参数）。</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><code>match = re.search(action_pattern, response)</code>：执行搜索，模版匹配，若找到了符合条件的对象，则会返回一个<code>match</code>对象，里面包含了匹配的结果。</li>
+                        <li><code>params = [p.strip().strip('"\'') for p in params_str.split(',') if p.strip()] </code>
+                            <ul>
+                                <li>这是对参数字符串进行<strong>清洗和格式化</strong>，因为此时它还只是一个长字符串，我们需要把它变成一个干净的 Python 列表 ，例如<code>['巴黎', '下雨天']</code>。</li>
+                                <li><strong><code>params_str.split(',')</code></strong>: 按逗号分割字符串，得到一个列表 <code>['"巴黎"', ' "下雨天"']</code>。注意，此时列表里还有多余的空格和引号。</li>
+                                <li><strong><code>[... for p in ... if p.strip()]</code></strong>: 这是一个列表推导式，对分割后的列表进行遍历和清洗。
+                                    <ul>
+                                        <li><code>for p in ...</code>: 依次处理列表中的每个元素 <code>p</code>。</li>
+                                        <li><code>if p.strip()</code>: 一个安全检查，如果某个元素是空的或者只包含空格，就忽略它。</li>
+                                        <li><code>p.strip().strip('"\'')</code>: 这是清洗的核心。<code>p.strip()</code> 先去掉元素两边的多余空格（<code>' "下雨天"'</code> -> <code>'"下雨天"'</code>），然后 <code>.strip('"\'')</code> 再去掉两边的引号（<code>'"下雨天"'</code> -> <code>'下雨天'</code>）。</li>
+                                    </ul>
+                                </li>
+                                <li>最后，<code>params</code> 就成了一个干净的列表：<code>['巴黎', '下雨天']</code>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <h3 id="main-loop">主执行循环</h3>
+                    <pre><code class="language-python">def run_agent():  
+    # 初始化客户端  
+    client = MySmallCilent()  
+    # 初始化对话消息  
+    messages = [{"role": "system", "content": AGENT_SYSTEM_PROMPT}]  
+  
+    print("🤖 智能旅行助手已启动！输入 'quit' 退出。\n")  
+  
+    while True:  
+        user_input = input("👤 用户: ").strip() # 获取用户输入,去除多余空格  
+        if user_input == "quit":  
+            print("🤖 智能旅行助手已退出。")  
+            break  
+  
+        # 添加用户消息到历史  
+        messages.append({"role": "user", "content": user_input})  
+      
+        # 开始智能体循环  
+        max_iterations = 5  
+        for iteration in range(max_iterations):  
+            print(f"\n🔄 循环 {iteration + 1}:")  
+            # 1.思考阶段，调用LLM  
+            response = client.chat_completion(messages) # 获取LLM响应  
+            print(f"🧠 智能体响应:\n{response}")  
+      
+            # 2.解析Action  
+            function_name, params = client.parse_action(response)  
+            if function_name and function_name in available_tools:  
+                # 3.执行工具  
+                print (f"⚙️ 执行工具: {function_name}({', '.join(params)})")  
+      
+                try:  
+                    tool_result = available_tools[function_name](*params)  
+                    observation = f"Observation: {tool_result}"  
+                    print(f"👁️ 观察结果: {tool_result}")  
+      
+                    # 4.将观察结果添加到消息历史  
+                    messages.append({"role": "assistant", "content": response})  
+                    messages.append({"role": "user", "content": observation})  
+      
+                except Exception as e:  
+                    error_msg = f"Observation: 工具执行出错 - {str(e)}"  
+                    print(f"❌ 工具执行错误: {str(e)}")  
+                    messages.append({"role": "assistant", "content": response})  
+                    messages.append({"role": "user", "content": error_msg})  
+            else:  
+                # 没有工具需要执行，直接回复用户  
+                messages.append({"role": "assistant", "content": response})  
+                print("✅ 任务完成！")  
+                break
+</code></pre>
+                    
+                    <h3 id="main-function">主函数</h3>
+                    <pre><code class="language-python">if __name__ == "__main__":
+	run_agent()</code></pre>
+                    
+                    <h2 id="implementation-effect">实现效果</h2>
+                    <p><img src="images/simple_agent_response.png" alt="简单智能体实现效果" title="简单智能体实现效果"></p>
+
+                </div>
+            </article>
+        </main>
+        
+        <aside class="blog-sidebar-right">
+            <div class="toc">
+                <h3>文章目录</h3>
+                <ul class="toc-list">
+                    <li><a href="#model">调用大模型</a></li>
+                    <li><a href="#code-explanation">代码详解</a>
+                        <ul class="toc-children">
+                            <li><a href="#libraries">库</a></li>
+                            <li><a href="#system-prompt">系统提示 System Prompt</a></li>
+                            <li><a href="#tool-functions">实现工具函数</a></li>
+                            <li><a href="#core-logic">实现智能体核心逻辑</a></li>
+                            <li><a href="#main-loop">主执行循环</a></li>
+                            <li><a href="#main-function">主函数</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#implementation-effect">实现效果</a></li>
+                </ul>
+            </div>
+        </aside>
+        
+        <style>
+            .toc-toggle {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .toc-icon {
+                width: 16px;
+                height: 16px;
+                margin-right: 5px;
+                transition: transform 0.3s ease;
+            }
+            .toc-toggle.collapsed .toc-icon {
+                transform: rotate(-90deg);
+            }
+            .toc-children {
+                margin-left: 20px;
+                transition: max-height 0.3s ease, opacity 0.3s ease;
+                max-height: 500px;
+                overflow: hidden;
+                opacity: 1;
+            }
+            .toc-children.collapsed {
+                max-height: 0;
+                opacity: 0;
+            }
+            .toc-toggle a {
+                flex: 1;
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 为有子菜单的项目添加点击事件
+                const toggleItems = document.querySelectorAll('.toc-list > li');
+                toggleItems.forEach(item => {
+                    if (item.querySelector('.toc-children')) {
+                        const toggle = document.createElement('div');
+                        toggle.className = 'toc-toggle';
+                        
+                        const icon = document.createElement('i');
+                        icon.className = 'fas fa-chevron-down toc-icon';
+                        toggle.appendChild(icon);
+                        
+                        const a = item.querySelector('a');
+                        item.insertBefore(toggle, a);
+                        toggle.appendChild(a);
+                        
+                        toggle.addEventListener('click', function(e) {
+                            // 如果点击的是链接，不执行折叠操作
+                            if (e.target.tagName === 'A') return;
+                            
+                            const children = item.querySelector('.toc-children');
+                            this.classList.toggle('collapsed');
+                            children.classList.toggle('collapsed');
+                        });
+                    }
+                });
+            });
+        </script>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 我的个人主页. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../index.html">首页</a>
+                    <a href="../blog.html">博客</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="reading-progress">
+        <span class="progress-label">阅读进度</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <span class="progress-text" id="progressText">0%</span>
+        </div>
+    </div>
+
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <style>
+        .reading-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 95px;
+            width: 240px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 100%;
+            transition: width 0.3s ease, background-position 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script>
+        // 阅读进度条功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            window.addEventListener('scroll', function() {
+                // 计算滚动进度
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                
+                // 更新进度条宽度
+                progressBar.style.width = progress + '%';
+                
+                // 更新进度文本
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // 更新渐变背景位置，实现颜色渐变效果
+                const gradientPosition = (progress / 100) * 300;
+                progressBar.style.backgroundPosition = gradientPosition + '% 0';
+            });
+        });
+    </script>
+
+    <script src="../script.js"></script>
+    <script src="../js/blog-script.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script>
+        // 确保在模板的主脚本 script.js 加载 *之后* 再执行高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // 查找所有 <pre><code> 块并应用高亮
+            hljs.highlightAll();
+        });
+    </script>
+
+        <!-- 阅读进度条 -->
+        <div class="progress-container">
+            <div class="progress-label">阅读进度：</div>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+                <span id="progressText" class="progress-text">0%</span>
+            </div>
+        </div>
+    </style>
+        /* 阅读进度条样式 */
+        .progress-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 100%;
+            transition: width 0.3s ease, background-position 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+        }
+    </style>
+    <script>
+        // 阅读进度条功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            window.addEventListener('scroll', function() {
+                // 计算滚动进度
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                
+                // 更新进度条宽度
+                progressBar.style.width = progress + '%';
+                
+                // 更新进度文本
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // 更新渐变背景位置，实现颜色渐变效果
+                const gradientPosition = (progress / 100) * 300;
+                progressBar.style.backgroundPosition = gradientPosition + '% 0';
+            });
+        });
+    </script>
+
+    <script src="../script.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>
+        // 确保在模板的主脚本 script.js 加载 *之后* 再执行高亮
+        // 或者在 DOMContentLoaded 时执行，此时 KaTeX 也已初始化
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // 查找所有 <pre><code> 块并应用高亮
+            hljs.highlightAll();
+        });
+    </script>
+
+</body>
+</html>

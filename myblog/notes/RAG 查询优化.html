@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG 查询优化 - 我的个人主页</title>
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+    <!-- 引入博客动态加载脚本 -->
+    <script src="../js/blog-script.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    
+    <style>
+        /* 确保 pre 标签内的代码块正确显示，并添加水平滚动功能 */
+        pre {
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 500px;
+            max-width: 1000px;
+            background-color: #A09688 !important;
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+            scrollbar-width: thin;
+            scrollbar-color: #666 #A09688;
+            display: block;
+        }
+        /* 滚动条样式优化 */
+        pre::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #A09688;
+            border-radius: 4px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background-color: #666;
+            border-radius: 4px;
+            border: 2px solid #A09688;
+        }
+        pre::-webkit-scrollbar-thumb:hover {
+            background-color: #444;
+        }
+        /* highlight.js 需要 pre > code 结构 */
+        pre > code {
+            font-family: 'Microsoft YaHei UI', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background-color: transparent !important;
+            color: #333 !important;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            white-space: pre;
+            display: block;
+        }
+        /* 修正 .md 中 <hr> 的样式 */
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
+        /* 修正表格样式 */
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        /* 覆盖 highlight.js 的默认样式 */
+        .hljs {
+            background-color: transparent !important;
+            color: #333 !important;
+        }
+        /* 确保代码高亮颜色可见 */
+        .hljs-keyword {
+            color: #7b00ff !important;
+        }
+        .hljs-string {
+            color: #008000 !important;
+        }
+        .hljs-comment {
+            color: #808080 !important;
+        }
+        .hljs-number {
+            color: #ff0000 !important;
+        }
+        .hljs-literal {
+            color: #008000 !important;
+        }
+        /* 行内代码样式 */
+        p code, li code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid #ddd;
+        }
+        /* 引用样式 */
+        blockquote {
+            border-left: 4px solid #ccc;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            font-style: italic;
+        }
+        /* 图片样式 */
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="../home.html">首页</a></li>
+                    <li><a href="../about.html">关于我</a></li>
+                    <li><a href="../skills.html">技能</a></li>
+                    <li><a href="../projects.html">项目</a></li>
+                    <li><a href="../blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="blog-container">
+        <aside class="blog-sidebar-left">
+            <nav class="blog-nav">
+                <h3>博客列表</h3>
+                <ul></ul>
+                
+                <h3 style="margin-top: 30px;">分类</h3>
+                <ul>
+                    <li><a href="../blog.html">机器学习</a></li>
+                    <li><a href="../blog.html">深度学习</a></li>
+                    <li><a href="../blog.html">NLP</a></li>
+                    <li><a href="../blog.html">JavaScript</a></li>
+                    <li><a href="../blog.html">Python</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="blog-main-content">
+            <article class="blog-article">
+                <h1>RAG 查询优化</h1>
+                <div class="article-meta">
+                    <span class="author"><i class="far fa-user"></i> 作者</span>
+                    <span class="date"><i class="far fa-calendar-alt"></i> 2024-01-01</span>
+                    <span class="read-time"><i class="far fa-clock"></i> 大约 15 分钟</span>
+                    <span class="tags">
+                        <span class="tag">RAG</span>
+                        <span class="tag">检索优化</span>
+                        <span class="tag">查询分解</span>
+                        <span class="tag">大语言模型</span>
+                    </span>
+                </div>
+                <hr>
+                
+                <div class="article-body">
+                    
+                    <h2 id="query-optimization">查询优化必要性</h2>
+                    <p>在RAG（检索增强生成）系统中，查询优化是提高检索质量的关键环节。传统的单一查询方法可能无法捕获复杂问题的多个方面，导致检索结果不够全面。通过多种查询优化策略，可以显著提升检索的召回率和精确率，从而为后续的生成提供更优质的上下文信息。</p>
+                    
+                    <h2 id="multi-query">多角度查询(Multi-Query)</h2>
+                    <h3 id="multi-query-core">核心思想</h3>
+                    <p>多角度查询的核心思想是将用户的一个原始查询转换为多个不同角度的表述，然后分别进行检索，最后合并结果。这样可以从不同的视角捕获与问题相关的信息，提高检索的全面性。</p>
+                    
+                    <h3 id="multi-query-code">基础代码实现</h3>
+                    <pre><code class="language-python">from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+
+def generate_query_variants(original_query: str, llm: ChatOpenAI) -> list[str]:
+    """生成查询变体"""
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "你是一个专业的查询改写助手。请将用户的查询转换为3个不同角度的表述，以捕获查询的不同方面。每个表述应该保持查询的核心意图，但使用不同的措辞和视角。每个变体应该在新的一行开始。"),
+        ("human", "原始查询: {query}")
+    ])
+    
+    chain = prompt | llm | StrOutputParser()
+    result = chain.invoke({"query": original_query})
+    variants = [variant.strip() for variant in result.split("\n") if variant.strip()]
+    
+    # 确保返回3个变体，如果不足则补充
+    while len(variants) < 3:
+        variants.append(original_query)
+    
+    # 添加原始查询
+    variants = [original_query] + variants
+    
+    return variants[:4]  # 返回原始查询 + 最多3个变体
+
+# 使用示例
+llm = ChatOpenAI(temperature=0)
+original_query = "RAG系统中的查询优化技术有哪些？"
+query_variants = generate_query_variants(original_query, llm)
+print("查询变体:")
+for i, variant in enumerate(query_variants, 1):
+    print(f"{i}. {variant}")</code></pre>
+                    
+                    <h3 id="multi-query-analysis">优缺点分析</h3>
+                    <p><strong>优点：</strong></p>
+                    <ul>
+                        <li>实现简单，易于集成到现有系统</li>
+                        <li>可以从多个角度捕获查询意图</li>
+                        <li>对于模糊或复杂的查询特别有效</li>
+                    </ul>
+                    <p><strong>缺点：</strong></p>
+                    <ul>
+                        <li>需要额外的LLM调用开销</li>
+                        <li>变体质量依赖于提示词设计</li>
+                        <li>结果合并可能引入噪声</li>
+                    </ul>
+                    
+                    <h2 id="rag-fusion">融合式检索(RAG-Fusion)</h2>
+                    <h3 id="rag-fusion-core">核心思想</h3>
+                    <p>RAG-Fusion是一种高级检索策略，它结合了多角度查询和结果融合技术。通过生成多个查询变体，分别检索后使用特殊的融合算法（如倒数排序融合）来合并结果，从而提高检索质量。</p>
+                    
+                    <h3 id="rag-fusion-algorithm">倒数排序融合算法</h3>
+                    <p>倒数排序融合（Reciprocal Rank Fusion）是一种有效的结果融合方法，它考虑了文档在不同查询结果中的相对位置。</p>
+                    
+                    <h3 id="rag-fusion-code">Python实现</h3>
+                    <pre><code class="language-python">from typing import List, Dict, Any
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+
+
+def reciprocal_rank_fusion(results_lists: List[List[Dict]], k: int = 60) -> List[Dict]:
+    """
+    实现倒数排序融合算法
+    
+    Args:
+        results_lists: 多个查询结果列表
+        k: 融合参数
+        
+    Returns:
+        融合后的文档列表
+    """
+    # 存储每个文档的融合得分
+    fused_scores = {}
+    
+    # 对每个查询结果列表
+    for results in results_lists:
+        # 对每个文档赋予基于其排名的得分
+        for rank, doc in enumerate(results, 1):
+            doc_id = doc.get("id", str(hash(doc.get("page_content", ""))))
+            # 倒数排序融合公式
+            score = 1 / (k + rank)
+            if doc_id in fused_scores:
+                fused_scores[doc_id]["score"] += score
+            else:
+                fused_scores[doc_id] = {"doc": doc, "score": score}
+    
+    # 按得分排序并返回
+    sorted_docs = sorted(fused_scores.values(), key=lambda x: x["score"], reverse=True)
+    return [item["doc"] for item in sorted_docs]
+
+
+class RAGFusion:
+    """RAG-Fusion 实现"""
+    
+    def __init__(self, retriever, llm):
+        self.retriever = retriever
+        self.llm = llm
+    
+    def generate_queries(self, original_query: str, num_queries: int = 4) -> List[str]:
+        """生成多个查询变体"""
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", f"你是一个专业的查询改写助手。请将用户的查询转换为{num_queries-1}个不同角度的表述，以捕获查询的不同方面。每个表述应该保持查询的核心意图，但使用不同的措辞和视角。每个变体应该在新的一行开始。"),
+            ("human", "原始查询: {query}")
+        ])
+        
+        chain = prompt | self.llm | StrOutputParser()
+        result = chain.invoke({"query": original_query})
+        variants = [variant.strip() for variant in result.split("\n") if variant.strip()]
+        
+        # 添加原始查询并确保数量足够
+        all_queries = [original_query] + variants
+        return all_queries[:num_queries]
+    
+    def retrieve_and_fuse(self, queries: List[str], k: int = 4) -> List[Dict]:
+        """执行多个查询并融合结果"""
+        # 为每个查询获取结果
+        all_results = []
+        for query in queries:
+            results = self.retriever.get_relevant_documents(query, k=k)
+            # 转换为字典格式（如果需要）
+            result_dicts = []
+            for i, doc in enumerate(results):
+                # 确保是字典格式
+                if hasattr(doc, "dict"):
+                    result_dicts.append(doc.dict())
+                elif isinstance(doc, dict):
+                    result_dicts.append(doc)
+                else:
+                    # 如果是其他类型，尝试转换
+                    result_dicts.append({"page_content": str(doc), "id": str(i)})
+            all_results.append(result_dicts)
+        
+        # 融合结果
+        fused_results = reciprocal_rank_fusion(all_results)
+        return fused_results
+    
+    def query(self, original_query: str, num_queries: int = 4, k: int = 4) -> List[Dict]:
+        """执行RAG-Fusion查询"""
+        # 生成多个查询
+        queries = self.generate_queries(original_query, num_queries)
+        
+        # 检索并融合
+        results = self.retrieve_and_fuse(queries, k)
+        
+        return results
+
+# 使用示例
+# from langchain.vectorstores import Chroma
+# vectorstore = Chroma(persist_directory="./chroma_db")
+# retriever = vectorstore.as_retriever()
+# llm = ChatOpenAI(temperature=0)
+# rag_fusion = RAGFusion(retriever, llm)
+# results = rag_fusion.query("RAG系统中的查询优化技术有哪些？")
+# print(f"融合后检索到 {len(results)} 个文档")</code></pre>
+                    
+                    <h3 id="rag-fusion-explanation">代码详解</h3>
+                    <p><strong>reciprocal_rank_fusion函数</strong></p>
+                    <ul>
+                        <li><strong>参数</strong>：
+                            <ul>
+                                <li><code>results_lists</code>：多个查询结果列表</li>
+                                <li><code>k</code>：融合参数，默认60</li>
+                            </ul>
+                        </li>
+                        <li><strong>返回值</strong>：融合后的文档列表</li>
+                        <li><strong>核心逻辑</strong>：对每个查询结果中的文档，根据其排名计算倒数分数，并累加所有查询中同一文档的分数，最后按分数排序返回</li>
+                    </ul>
+                    
+                    <p><strong>RAGFusion类</strong></p>
+                    <ul>
+                        <li><strong>初始化参数</strong>：
+                            <ul>
+                                <li><code>retriever</code>：文档检索器</li>
+                                <li><code>llm</code>：大语言模型实例</li>
+                            </ul>
+                        </li>
+                        <li><strong>generate_queries方法</strong>：使用LLM生成多个查询变体</li>
+                        <li><strong>retrieve_and_fuse方法</strong>：执行多个查询并融合结果</li>
+                        <li><strong>query方法</strong>：整合查询生成和结果融合的完整流程</li>
+                    </ul>
+                    
+                    <h2 id="query-decomposition">查询分解(Query Decomposition)</h2>
+                    <h3 id="recursive-decomposition">递归分解策略</h3>
+                    <p>查询分解是将复杂问题拆解为多个简单子问题，分别解答后再综合的方法。递归分解策略在处理每个子问题时，会利用之前子问题的答案作为上下文，逐步构建对复杂问题的理解。</p>
+                    
+                    <h3 id="recursive-decomposition-code">Python实现</h3>
+                    <pre><code class="language-python">from typing import List, Dict, Any
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+
+
+class RecursiveDecomposition:
+    """递归查询分解"""
+    
+    def __init__(self, vectorstore, llm):
+        self.vectorstore = vectorstore
+        self.retriever = vectorstore.as_retriever()
+        self.llm = llm
+    
+    def decompose_query(self, question: str) -> List[str]:
+        """分解复杂查询为子问题"""
+        decompose_prompt = ChatPromptTemplate.from_messages([
+            ("system", """将复杂问题分解为2-4个简单的子问题。
+            要求：
+            1. 子问题应该按逻辑顺序排列
+            2. 每个子问题都应该是独立可回答的
+            3. 每行一个问题"""),
+            ("human", "{question}")
+        ])
+        
+        chain = decompose_prompt | self.llm | StrOutputParser()
+        sub_questions_str = chain.invoke({"question": question})
+        sub_questions = [q.strip() for q in sub_questions_str.split("\n") if q.strip()]
+        
+        return sub_questions
+    
+    def answer_sub_question(
+        self, 
+        question: str, 
+        context: str = ""
+    ) -> str:
+        """回答单个子问题"""
+        # 检索相关文档
+        docs = self.retriever.get_relevant_documents(question)
+        doc_context = "\n\n".join([doc.page_content for doc in docs[:3]])
+        
+        # 构建提示词
+        if context:
+            full_context = f"已知信息:\n{context}\n\n相关文档:\n{doc_context}"
+        else:
+            full_context = f"相关文档:\n{doc_context}"
+        
+        answer_prompt = ChatPromptTemplate.from_messages([
+            ("system", "基于提供的信息简洁地回答问题。"),
+            ("human", "{context}\n\n问题: {question}")
+        ])
+        
+        chain = answer_prompt | self.llm | StrOutputParser()
+        answer = chain.invoke({
+            "context": full_context,
+            "question": question
+        })
+        
+        return answer
+    
+    def query(self, question: str) -> dict:
+        """执行递归分解查询"""
+        print(f"📋 原始问题: {question}\n")
+        
+        # 1. 分解问题
+        sub_questions = self.decompose_query(question)
+        print(f"🔍 分解为 {len(sub_questions)} 个子问题:")
+        for i, sq in enumerate(sub_questions, 1):
+            print(f"   {i}. {sq}")
+        
+        # 2. 递归回答
+        accumulated_context = ""
+        sub_answers = []
+        
+        print("\n💡 逐步回答:")
+        for i, sq in enumerate(sub_questions, 1):
+            print(f"\n   子问题{i}: {sq}")
+            answer = self.answer_sub_question(sq, accumulated_context)
+            sub_answers.append(answer)
+            accumulated_context += f"\n\n问题{i}: {sq}\n答案: {answer}"
+            print(f"   答案: {answer[:100]}...")
+        
+        # 3. 综合最终答案
+        final_prompt = ChatPromptTemplate.from_messages([
+            ("system", "基于以下子问题和答案，综合回答原始问题。"),
+            ("human", """原始问题: {question}
+            
+			子问题和答案:
+			{sub_qa}
+
+			请给出完整的综合答案:""")
+        ])
+        
+        sub_qa = "\n\n".join([
+            f"Q{i}: {q}\nA{i}: {a}" 
+            for i, (q, a) in enumerate(zip(sub_questions, sub_answers), 1)
+        ])
+        
+        chain = final_prompt | self.llm | StrOutputParser()
+        final_answer = chain.invoke({
+            "question": question,
+            "sub_qa": sub_qa
+        })
+        
+        return {
+            "question": question,
+            "sub_questions": sub_questions,
+            "sub_answers": sub_answers,
+            "final_answer": final_answer
+        }</code></pre>
+                    
+                    <h3 id="flowchart">流程图</h3>
+                    <p><img src="images/Answer Recursively3.png" alt="递归分解流程图"></p>
+                    
+                    <h3 id="parallel-decomposition">并行分解</h3>
+                    <p><img src="images/Answer Individually.png" alt="并行分解流程图"></p>
+                    <p><strong>核心思想</strong>：将原问题分解成多个子问题，一起解答后再综合回答。</p>
+                    
+                    <pre><code class="language-python">import asyncio
+
+class ParallelDecomposition:
+    """并行查询分解"""
+    
+    def __init__(self, vectorstore, llm):
+        self.vectorstore = vectorstore
+        self.retriever = vectorstore.as_retriever()
+        self.llm = llm
+    
+    def decompose_query(self, question: str) -> List[str]:
+        """分解查询（同上）"""
+        # ... 相同的实现
+        pass
+    
+    async def answer_sub_question_async(self, question: str) -> str:
+        """异步回答子问题"""
+        docs = await self.retriever.aget_relevant_documents(question)
+        doc_context = "\n\n".join([doc.page_content for doc in docs[:3]])
+        
+        answer_prompt = ChatPromptTemplate.from_messages([
+            ("system", "基于文档简洁回答问题。"),
+            ("human", "文档:\n{context}\n\n问题: {question}")
+        ])
+        
+        chain = answer_prompt | self.llm | StrOutputParser()
+        answer = await chain.ainvoke({
+            "context": doc_context,
+            "question": question
+        })
+        
+        return answer
+    
+    async def query_async(self, question: str) -> dict:
+        """异步执行并行分解"""
+        # 1. 分解问题
+        sub_questions = self.decompose_query(question)
+        
+        # 2. 并行回答所有子问题
+        tasks = [
+            self.answer_sub_question_async(sq) 
+            for sq in sub_questions
+        ]
+        sub_answers = await asyncio.gather(*tasks)
+        
+        # 3. 综合答案（同递归版本）
+        # ...
+        
+        return {
+            "question": question,
+            "sub_questions": sub_questions,
+            "sub_answers": sub_answers,
+            "final_answer": final_answer
+        }
+
+# 使用
+parallel_decomp = ParallelDecomposition(vectorstore, llm)
+result = asyncio.run(
+    parallel_decomp.query_async("Python vs JavaScript in Web Development")
+)</code></pre>
+                    
+                    <p>这段代码用到了很多异步执行：</p>
+                    <ul>
+                        <li><code>async def answer_sub_question_async(self, question: str) -> str:</code>：这是一个<strong>协程函数 (Coroutine Function)</strong> 的声明（使用 <code>async def</code>）。它是一个可以被暂停和恢复的特殊函数。当它被调用时，它返回一个<strong>协程对象 (Coroutine Object)</strong>，这个对象必须被'驱动'（如被 <code>await</code>）才能执行。
+                            <ul>
+                                <li><code>docs = await self.retriever.aget_relevant_documents(question)</code>：这是一个<code>await</code> 表达式。它用于<strong>暂停</strong>当前协程 (<code>answer_sub_question_async</code>) 的执行，直到 <code>self.retriever.aget_relevant_documents()</code> 这个<strong>可等待对象 (Awaitable)</strong> 完成。<code>aget...</code> 是 <code>get...</code> 的<strong>异步版本</strong>。在等待期间，<strong>事件循环 (Event Loop)</strong> 会切换去执行其他已就绪的协程。</li>
+                                <li><code>answer = await chain.ainvoke(...)</code>：这是<strong>第二次 <code>await</code></strong>。协程再次暂停，等待 <code>chain.ainvoke</code> (LLM链的<strong>异步调用</strong>) 完成。这展示了 <code>asyncio</code> 的核心优势：在一个协程的生命周期中，可以<strong>多次</strong>在I/O密集型操作（如数据库查询、API调用）上'让出'控制权。</li>
+                            </ul>
+                        </li>
+                        <li><code>async def query_async(self, question: str) -> dict:</code>：这是<strong>主协程函数</strong>，它负责编排整个并行工作流。
+                            <ul>
+                                <li><code>tasks = [ self.answer_sub_question_async(sq) for sq in sub_questions ]</code>：这是一个<strong>列表推导式 (List Comprehension)</strong>。它不会执行协程，而是创建了一个<strong>协程对象 (Coroutine Object)</strong> 的列表。此时，这些协程尚未开始执行；它们只是被"实例化"了，准备被调度。</li>
+                                <li><code>sub_answers = await asyncio.gather(*tasks)</code>：这是<strong>并发执行 (Concurrent Execution)</strong> 的核心。<code>asyncio.gather()</code> 函数接收一个或多个<strong>可等待对象</strong> (<code>*tasks</code> 使用"解包"操作符将 <code>tasks</code> 列表中的所有协程对象作为独立参数传入)。<code>gather</code> 会<strong>并发地</strong>调度所有这些协程在事件循环上运行。<code>await</code> 在这里会暂停 <code>query_async</code>，直到 <code>tasks</code> 列表中的所有协程都执行完毕。<code>sub_answers</code> 将是一个列表，其顺序与 <code>tasks</code> 列表的顺序一一对应。</li>
+                            </ul>
+                        </li>
+                        <li><code>asyncio.run( parallel_decomp.query_async(...) )</code>：这是<strong>启动异步事件循环</strong>的入口点。<code>asyncio.run()</code> 函数负责创建和管理事件循环，运行传入的主协程 (<code>query_async(...)</code>) 直到它完成，然后关闭事件循环。这是在顶层（非 <code>async</code> 函数中）启动异步代码的标准方式。</li>
+                    </ul>
+
+                </div>
+            </article>
+        </main>
+        
+        <aside class="blog-sidebar-right">
+            <div class="toc">
+                <h3>文章目录</h3>
+                <ul class="toc-list">
+                    <li><a href="#query-optimization">查询优化必要性</a></li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#multi-query">多角度查询(Multi-Query)</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#multi-query-core">核心思想</a></li>
+                            <li><a href="#multi-query-code">基础代码实现</a></li>
+                            <li><a href="#multi-query-analysis">优缺点分析</a></li>
+                        </ul>
+                    </li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#rag-fusion">融合式检索(RAG-Fusion)</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#rag-fusion-core">核心思想</a></li>
+                            <li><a href="#rag-fusion-algorithm">倒数排序融合算法</a></li>
+                            <li><a href="#rag-fusion-code">Python实现</a></li>
+                            <li><a href="#rag-fusion-explanation">代码详解</a></li>
+                        </ul>
+                    </li>
+                    <li class="toc-item-has-children">
+                        <div class="toc-toggle">
+                            <i class="fas fa-chevron-down toc-icon"></i>
+                            <a href="#query-decomposition">查询分解(Query Decomposition)</a>
+                        </div>
+                        <ul class="toc-children">
+                            <li><a href="#recursive-decomposition">递归分解策略</a></li>
+                            <li><a href="#recursive-decomposition-code">Python实现</a></li>
+                            <li><a href="#flowchart">流程图</a></li>
+                            <li><a href="#parallel-decomposition">并行分解</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        
+        <style>
+            .toc-toggle {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .toc-icon {
+                width: 16px;
+                height: 16px;
+                margin-right: 5px;
+                transition: transform 0.3s ease;
+            }
+            .toc-toggle.collapsed .toc-icon {
+                transform: rotate(-90deg);
+            }
+            .toc-children {
+                margin-left: 20px;
+                transition: max-height 0.3s ease, opacity 0.3s ease;
+                max-height: 500px;
+                overflow: hidden;
+                opacity: 1;
+            }
+            .toc-children.collapsed {
+                max-height: 0;
+                opacity: 0;
+            }
+            .toc-toggle a {
+                flex: 1;
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 为有子菜单的项目添加点击事件
+                const toggleItems = document.querySelectorAll('.toc-toggle');
+                toggleItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        // 如果点击的是链接，不执行折叠操作
+                        if (e.target.tagName === 'A') return;
+                        
+                        const parent = this.closest('.toc-item-has-children');
+                        const children = parent.querySelector('.toc-children');
+                        
+                        this.classList.toggle('collapsed');
+                        children.classList.toggle('collapsed');
+                    });
+                });
+            });
+        </script>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 我的个人主页. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../index.html">首页</a>
+                    <a href="../blog.html">博客</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="reading-progress">
+        <span class="progress-label">阅读进度</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <span class="progress-text" id="progressText">0%</span>
+        </div>
+    </div>
+
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <style>
+        .reading-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 95px;
+            width: 240px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 100%;
+            transition: width 0.3s ease, background-position 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script>
+        // 阅读进度条功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            window.addEventListener('scroll', function() {
+                // 计算滚动进度
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                
+                // 更新进度条宽度
+                progressBar.style.width = progress + '%';
+                
+                // 更新进度文本
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // 更新渐变背景位置，实现颜色渐变效果
+                const gradientPosition = (progress / 100) * 300;
+                progressBar.style.backgroundPosition = gradientPosition + '% 0';
+            });
+        });
+    </script>
+
+    <script src="../script.js"></script>
+    <script src="../js/blog-script.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script>
+        // 确保在模板的主脚本 script.js 加载 *之后* 再执行高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // 查找所有 <pre><code> 块并应用高亮
+            hljs.highlightAll();
+        });
+    </script>
+
+</body>
+</html>

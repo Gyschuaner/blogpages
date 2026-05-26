@@ -143,13 +143,13 @@ body::before {
 .timeline-item {
     padding: 10px 40px;
     position: relative;
-    width: 100%;
+    width: 50%;
     box-sizing: border-box;
 }
 
 /* 左侧项目 */
 .timeline-item.left {
-    left: -50%;
+    left: 0;
 }
 
 /* 右侧项目 */
@@ -288,6 +288,7 @@ body::before {
         padding-right: 20px;
     }
     
+    .timeline-item.left,
     .timeline-item.right {
         left: 0;
     }

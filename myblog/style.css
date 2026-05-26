@@ -2320,10 +2320,10 @@ section.blog-content {
 }
 
 .article-body pre {
-    background-color: #20251F !important;
-    color: #EEF5E5 !important;
-    border: 3px solid #000;
-    box-shadow: 5px 5px 0 #000;
+    background-color: #262A21 !important;
+    color: #E8DFC7 !important;
+    border: 2px solid #11130F;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.72), inset 0 0 0 1px #3F4734;
     padding: 18px;
     font-size: 0.94rem;
     line-height: 1.62;
@@ -2336,9 +2336,9 @@ section.blog-content {
 }
 
 .article-body :not(pre) > code {
-    background-color: #E6DCC4 !important;
-    color: #7A2B2B !important;
-    border: 1px solid #A89674;
+    background-color: #E1D6BC !important;
+    color: #6F3529 !important;
+    border: 1px solid #B7A27A;
     padding: 2px 5px;
 }
 
@@ -2489,10 +2489,11 @@ body .article-body h3 {
 }
 
 body .article-body pre {
-    background-color: #20251F !important;
-    color: #EEF5E5 !important;
-    border: 3px solid #000 !important;
-    box-shadow: 5px 5px 0 #000 !important;
+    background-color: #262A21 !important;
+    color: #E8DFC7 !important;
+    border: 2px solid #11130F !important;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.72), inset 0 0 0 1px #3F4734 !important;
+    border-radius: 2px !important;
 }
 
 body .article-body pre > code,
@@ -2502,7 +2503,108 @@ body .article-body pre code {
 }
 
 body .article-body :not(pre) > code {
-    background-color: #E6DCC4 !important;
-    color: #7A2B2B !important;
-    border: 1px solid #A89674 !important;
+    background-color: #E1D6BC !important;
+    color: #6F3529 !important;
+    border: 1px solid #B7A27A !important;
+}
+
+body .article-body .hljs {
+    background-color: transparent !important;
+    color: #E8DFC7 !important;
+}
+
+body .article-body .hljs-keyword,
+body .article-body .hljs-built_in,
+body .article-body .hljs-type,
+body .article-body .hljs-selector-tag {
+    color: #9FBE78 !important;
+}
+
+body .article-body .hljs-string,
+body .article-body .hljs-symbol,
+body .article-body .hljs-bullet {
+    color: #D4B36A !important;
+}
+
+body .article-body .hljs-number,
+body .article-body .hljs-literal {
+    color: #D6815C !important;
+}
+
+body .article-body .hljs-comment,
+body .article-body .hljs-quote {
+    color: #8C927F !important;
+    font-style: italic;
+}
+
+body .article-body .hljs-title,
+body .article-body .hljs-title.function_,
+body .article-body .hljs-function .hljs-title {
+    color: #8FB7C5 !important;
+}
+
+body .article-body .hljs-variable,
+body .article-body .hljs-template-variable,
+body .article-body .hljs-attr,
+body .article-body .hljs-attribute {
+    color: #C9A6D6 !important;
+}
+
+body .article-body .hljs-meta,
+body .article-body .hljs-doctag {
+    color: #B6A889 !important;
+}
+
+body .article-body .hljs-operator,
+body .article-body .hljs-punctuation,
+body .article-body .hljs-params {
+    color: #CFC5AA !important;
+}
+
+@media (max-width: 992px) {
+    body .blog-container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        overflow-x: hidden !important;
+    }
+
+    body .blog-main-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    body .blog-article h1,
+    body .article-meta,
+    body .article-body,
+    body .article-body p,
+    body .article-body li {
+        max-width: 100% !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    body .article-body pre {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 560px) {
+    body .blog-main-content {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    body .article-body pre {
+        margin-left: -4px !important;
+        margin-right: -4px !important;
+        padding: 14px !important;
+        font-size: 0.82rem !important;
+    }
 }

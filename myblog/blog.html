@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>博客 - 个人主页</title>
-    <link rel="stylesheet" href="style.css?v=20260526-code1">
+    <link rel="stylesheet" href="style.css?v=20260526-folders1">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -51,8 +51,25 @@
         <div class="container">
             <h2 class="section-title">我的博客</h2>
             
-            <div class="blog-list">
-                <!-- 博客列表将通过JavaScript动态生成 -->
+            <div class="blog-index-layout">
+                <aside class="blog-folder-panel" aria-label="博客分类">
+                    <div class="folder-panel-title">
+                        <i class="fas fa-folder"></i>
+                        <span>分类文件夹</span>
+                    </div>
+                    <div class="blog-folder-list" role="list">
+                        <!-- 分类文件夹将通过JavaScript动态生成 -->
+                    </div>
+                </aside>
+
+                <div class="blog-list-shell">
+                    <div class="blog-list-toolbar">
+                        <span class="blog-list-status">全部文章</span>
+                    </div>
+                    <div class="blog-list">
+                        <!-- 博客列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -83,160 +100,45 @@
     <script>
         // 博客搜索功能
         document.addEventListener('DOMContentLoaded', function() {
-            // 等待BlogLoader初始化完成
-            function waitForBlogLoader() {
-                if (window.BlogLoader && window.blogLoaderInstance) {
-                    initSearch();
-                } else {
-                    // 覆盖原来的initBlogLoader函数以获取实例引用
-                    const originalInitBlogLoader = window.initBlogLoader;
-                    window.initBlogLoader = function() {
-                        const blogLoader = new BlogLoader();
-                        window.blogLoaderInstance = blogLoader;
-                        originalInitBlogLoader();
-                        initSearch();
-                    };
-                    
-                    // 如果已经加载完成但我们错过了
-                    setTimeout(() => {
-                        if (window.blogLoaderInstance) {
-                            initSearch();
-                        } else {
-                            // 使用备用方法 - 自己创建一个BlogLoader实例
-                            createBlogLoader();
-                        }
-                    }, 1000);
-                }
-            }
-            
-            // 创建备用的BlogLoader实例
-            function createBlogLoader() {
-                const blogLoader = new BlogLoader();
-                window.blogLoaderInstance = blogLoader;
-                blogLoader.loadBlogs().then(() => {
-                    initSearch();
-                });
-            }
-            
             // 初始化搜索功能
             function initSearch() {
                 const blogLoader = window.blogLoaderInstance;
-                if (!blogLoader) {
+                if (!blogLoader || initSearch.initialized) {
                     console.error('BlogLoader not initialized');
                     return;
                 }
+                initSearch.initialized = true;
                 
                 const searchInput = document.getElementById('search-input');
                 const searchButton = document.getElementById('search-button');
-                const blogListContainer = document.querySelector('.blog-list');
-                
-                // 保存原始的博客列表HTML，用于重置
-                let originalBlogListHTML = '';
-                
-                // 搜索函数
-                function searchBlogs(query) {
-                    if (!query.trim()) {
-                        // 如果搜索框为空，显示原始博客列表
-                        if (originalBlogListHTML) {
-                            blogListContainer.innerHTML = originalBlogListHTML;
-                        }
-                        return;
-                    }
-                    
-                    // 保存原始列表以便后续重置
-                    if (!originalBlogListHTML) {
-                        originalBlogListHTML = blogListContainer.innerHTML;
-                    }
-                    
-                    const lowercaseQuery = query.toLowerCase();
-                    const results = blogLoader.blogs.filter(blog => 
-                        blog.title.toLowerCase().includes(lowercaseQuery) ||
-                        blog.excerpt.toLowerCase().includes(lowercaseQuery) ||
-                        blog.category.toLowerCase().includes(lowercaseQuery) ||
-                        blog.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
-                    );
-                    
-                    displaySearchResults(results, lowercaseQuery);
-                }
-                
-                // 显示搜索结果
-                function displaySearchResults(results, query) {
-                    // 显示搜索提示信息
-                    if (results.length === 0) {
-                        blogListContainer.innerHTML = `
-                            <div class="search-results-message">
-                                没有找到包含 "${query}" 的博客文章
-                            </div>
-                        `;
-                    } else {
-                        // 生成带有高亮的搜索结果HTML
-                        let html = `
-                            <div class="search-results-message highlight">
-                                找到 ${results.length} 篇包含 "${query}" 的博客文章
-                            </div>
-                        `;
-                        
-                        results.forEach(blog => {
-                            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-                            // 高亮匹配的文本
-                            const highlightQuery = (text) => {
-                                const regex = new RegExp(`(${escapedQuery})`, 'gi');
-                                return text.replace(regex, '<mark>$1</mark>');
-                            };
-                            
-                            const correctPath = blogLoader.getBlogPath(blog.path);
-                            const title = highlightQuery(blog.title);
-                            const excerpt = highlightQuery(blog.excerpt);
-                            const category = highlightQuery(blog.category);
-                            const tags = blog.tags.map(tag => 
-                                highlightQuery(tag)
-                            ).join(', ');
-                            
-                            html += `
-                            <article class="blog-post">
-                                <div class="blog-header">
-                                    <h3 class="blog-title"><a href="${correctPath}">${title}</a></h3>
-                                    <div class="blog-meta">
-                                        <span class="blog-date"><i class="far fa-calendar-alt"></i> ${blog.date}</span>
-                                        <span class="blog-category"><i class="far fa-folder"></i> ${category}</span>
-                                    </div>
-                                </div>
-                                <div class="blog-excerpt">
-                                    <p>${excerpt}</p>
-                                </div>
-                                <div class="blog-tags">
-                                    <span>标签: ${tags}</span>
-                                </div>
-                                <a href="${correctPath}" class="blog-readmore">阅读全文</a>
-                            </article>
-                            `;
-                        });
-                        
-                        blogListContainer.innerHTML = html;
-                    }
+                function runSearch() {
+                    blogLoader.setSearchQuery(searchInput.value);
                 }
                 
                 // 点击搜索按钮
                 searchButton.addEventListener('click', () => {
-                    searchBlogs(searchInput.value);
+                    runSearch();
                 });
                 
                 // 输入框输入
                 searchInput.addEventListener('input', () => {
-                    searchBlogs(searchInput.value);
+                    runSearch();
                 });
                 
                 // 输入框回车
                 searchInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
-                        searchBlogs(searchInput.value);
+                        runSearch();
                     }
                 });
             }
             
-            // 开始等待BlogLoader
-            waitForBlogLoader();
+            if (window.blogLoaderInstance) {
+                initSearch();
+            } else {
+                document.addEventListener('blogLoaderReady', initSearch);
+            }
         });
     </script>
     </body>

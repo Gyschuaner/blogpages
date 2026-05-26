@@ -110,33 +110,145 @@ class BlogLoader {
         let html = '';
         this.blogs.forEach(blog => {
             const correctPath = this.getBlogPath(blog.path);
-            html += `<li><a href="${correctPath}">${blog.title}</a></li>`;
+            html += `<li><a href="${correctPath}">${this.escapeHTML(blog.title)}</a></li>`;
         });
         return html;
     }
 
-    // 生成博客页面的文章列表HTML
-    generateBlogPostsHTML() {
-        let html = '';
+    escapeHTML(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    getCategoryCounts() {
+        const counts = new Map();
         this.blogs.forEach(blog => {
+            counts.set(blog.category, (counts.get(blog.category) || 0) + 1);
+        });
+        return Array.from(counts.entries())
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN'));
+    }
+
+    getVisibleBlogs() {
+        const query = (this.searchQuery || '').trim().toLowerCase();
+        return this.blogs.filter(blog => {
+            const categoryMatch = !this.activeCategory || this.activeCategory === 'all' || blog.category === this.activeCategory;
+            if (!categoryMatch) return false;
+            if (!query) return true;
+
+            return blog.title.toLowerCase().includes(query) ||
+                blog.excerpt.toLowerCase().includes(query) ||
+                blog.category.toLowerCase().includes(query) ||
+                blog.tags.some(tag => tag.toLowerCase().includes(query));
+        });
+    }
+
+    generateCategoryFoldersHTML() {
+        const activeCategory = this.activeCategory || 'all';
+        const allActive = activeCategory === 'all' ? ' active' : '';
+        let html = `
+            <button class="blog-folder-item${allActive}" type="button" data-category="all">
+                <span class="folder-icon"><i class="fas fa-folder-open"></i></span>
+                <span class="folder-name">全部文章</span>
+                <span class="folder-count">${this.blogs.length}</span>
+            </button>
+        `;
+
+        this.getCategoryCounts().forEach(([category, count]) => {
+            const active = activeCategory === category ? ' active' : '';
+            html += `
+            <button class="blog-folder-item${active}" type="button" data-category="${this.escapeHTML(category)}">
+                <span class="folder-icon"><i class="fas fa-folder"></i></span>
+                <span class="folder-name">${this.escapeHTML(category)}</span>
+                <span class="folder-count">${count}</span>
+            </button>
+            `;
+        });
+
+        return html;
+    }
+
+    // 生成博客页面的文章列表HTML
+    generateBlogPostsHTML(blogs = this.blogs) {
+        let html = '';
+        blogs.forEach(blog => {
             const correctPath = this.getBlogPath(blog.path);
+            const tags = blog.tags.map(tag => `<span class="blog-tag">${this.escapeHTML(tag)}</span>`).join('');
             html += `
             <article class="blog-post">
                 <div class="blog-header">
-                    <h3 class="blog-title"><a href="${correctPath}">${blog.title}</a></h3>
+                    <h3 class="blog-title"><a href="${correctPath}">${this.escapeHTML(blog.title)}</a></h3>
                     <div class="blog-meta">
-                        <span class="blog-date"><i class="far fa-calendar-alt"></i> ${blog.date}</span>
-                        <span class="blog-category"><i class="far fa-folder"></i> ${blog.category}</span>
+                        <span class="blog-date"><i class="far fa-calendar-alt"></i> ${this.escapeHTML(blog.date)}</span>
+                        <span class="blog-category"><i class="far fa-folder"></i> ${this.escapeHTML(blog.category)}</span>
                     </div>
                 </div>
                 <div class="blog-excerpt">
-                    <p>${blog.excerpt}</p>
+                    <p>${this.escapeHTML(blog.excerpt)}</p>
+                </div>
+                <div class="blog-tags">
+                    ${tags}
                 </div>
                 <a href="${correctPath}" class="blog-readmore">阅读全文</a>
             </article>
             `;
         });
         return html;
+    }
+
+    renderBlogIndex() {
+        const folderList = document.querySelector('.blog-folder-list');
+        const blogListContainer = document.querySelector('.blog-list');
+        const status = document.querySelector('.blog-list-status');
+
+        if (folderList) {
+            folderList.innerHTML = this.generateCategoryFoldersHTML();
+        }
+
+        if (!blogListContainer) return;
+
+        const visibleBlogs = this.getVisibleBlogs();
+        const query = (this.searchQuery || '').trim();
+        const categoryLabel = !this.activeCategory || this.activeCategory === 'all' ? '全部文章' : this.activeCategory;
+
+        if (status) {
+            const queryText = query ? ` · 搜索“${query}”` : '';
+            status.textContent = `${categoryLabel} · ${visibleBlogs.length} 篇${queryText}`;
+        }
+
+        if (!visibleBlogs.length) {
+            const emptyText = query ? `没有找到包含“${query}”的博客文章` : '这个文件夹里暂时还没有文章';
+            blogListContainer.innerHTML = `<div class="search-results-message">${this.escapeHTML(emptyText)}</div>`;
+            return;
+        }
+
+        blogListContainer.innerHTML = this.generateBlogPostsHTML(visibleBlogs);
+    }
+
+    setActiveCategory(category) {
+        this.activeCategory = category || 'all';
+        this.renderBlogIndex();
+    }
+
+    setSearchQuery(query) {
+        this.searchQuery = query || '';
+        this.renderBlogIndex();
+    }
+
+    initBlogFolderPanel() {
+        const folderList = document.querySelector('.blog-folder-list');
+        if (!folderList || folderList.dataset.bound === 'true') return;
+
+        folderList.dataset.bound = 'true';
+        folderList.addEventListener('click', (event) => {
+            const button = event.target.closest('.blog-folder-item');
+            if (!button) return;
+            this.setActiveCategory(button.dataset.category || 'all');
+        });
     }
 
     // 生成文章元数据HTML
@@ -163,6 +275,7 @@ class BlogLoader {
     async init() {
         console.log('Initializing blog loader...');
         await this.loadBlogs();
+        window.blogLoaderInstance = this;
         
         // 更新左侧导航栏的博客列表
         console.log('Attempting to update sidebar blog lists...');
@@ -182,13 +295,15 @@ class BlogLoader {
         console.log('Blog list container found:', !!blogListContainer);
         
         if (blogListContainer) {
-            const blogPostsHTML = this.generateBlogPostsHTML();
-            console.log('Generated HTML for main blog list:', blogPostsHTML);
-            blogListContainer.innerHTML = blogPostsHTML;
+            this.activeCategory = this.activeCategory || 'all';
+            this.searchQuery = this.searchQuery || '';
+            this.initBlogFolderPanel();
+            this.renderBlogIndex();
             console.log('Main blog list updated successfully');
         }
         
         console.log('Blog loader initialization complete');
+        document.dispatchEvent(new CustomEvent('blogLoaderReady'));
     }
 }
 

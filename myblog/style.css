@@ -83,7 +83,7 @@ body::before {
 
 /* 时间线部分样式 - Minecraft风格 */
 .timeline-section {
-    padding: 80px 0;
+    padding: 120px 0 80px;
     background-color: #8BAA36;
     border-top: 4px solid #000;
     border-bottom: 4px solid #000;
@@ -340,7 +340,7 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    height: 100px;
+    height: 84px;
     z-index: 1000;
     border-bottom: 4px solid #666;
     transition: all 0.2s ease;
@@ -350,15 +350,7 @@ header {
 
 header.scrolled {
     background-color: #3C3C3C;
-    padding: 10px 0;
-    height: 50px;
-}
-
-.container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
+    height: 64px;
 }
 
 .logo a {
@@ -383,7 +375,7 @@ header.scrolled {
 }
 
 .menu ul li {
-    margin-left: 15px;
+    margin-left: 12px;
     position: relative;
 }
 
@@ -405,11 +397,11 @@ header.scrolled {
 .menu ul li a {
     color: #FFFFFF;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: bold;
     transition: all 0.2s ease;
     display: inline-block;
-    padding: 5px 10px;
+    padding: 6px 10px;
     background-color: #5D5D5D;
     border: 2px solid #000;
     box-shadow: 2px 2px 0 #000;
@@ -456,11 +448,135 @@ header.scrolled {
 .hero {
     background-color: transparent;
     color: #FFFFFF;
-    padding: 150px 0 120px;
-    margin-top: 60px;
+    padding: 118px 0 72px;
+    margin-top: 0;
     position: relative;
-    overflow: visible;
-    min-height: 80vh;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.hero-inner {
+    min-height: calc(100vh - 190px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 380px);
+    align-items: center;
+    gap: 56px;
+    position: relative;
+    z-index: 10;
+}
+
+.hero-copy {
+    max-width: 680px;
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 8px 12px;
+    color: #FFFFFF;
+    background-color: #5D7031;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.hero-intro {
+    max-width: 620px;
+    margin-top: 20px;
+    color: #FFFFFF;
+    background-color: #3C3C3C;
+    padding: 16px 18px;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.pixel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    color: #FFFFFF;
+    background-color: #5D5D5D;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.pixel-button-primary {
+    color: #1F1F1F;
+    background-color: #FFFF55;
+}
+
+.pixel-button:hover {
+    transform: translateY(-3px) translateX(-3px);
+    box-shadow: 7px 7px 0 #000;
+}
+
+.pixel-button:active {
+    transform: translateY(0) translateX(0);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.progress-container {
+    width: min(100%, 430px);
+    margin-top: 28px;
+    padding: 16px;
+    background-color: rgba(198, 211, 156, 0.94);
+    border: 4px solid #000;
+    box-shadow: 5px 5px 0 #000;
+}
+
+.progress-item + .progress-item {
+    margin-top: 14px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    color: #253113;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 14px;
+    background-color: #E8F5E8;
+    border: 2px solid #000;
+    overflow: hidden;
+    box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.18);
+}
+
+.progress-bar-fill {
+    width: 0;
+    height: 100%;
+    transition: width 1.2s ease-out;
+}
+
+#build-progress-bar {
+    background-color: #4ADE80;
+}
+
+#optimize-progress-bar {
+    background-color: #3C8BDF;
 }
 
 /* 树木样式 - 简化版本 */
@@ -691,20 +807,22 @@ header.scrolled {
 
 /* profile-picture: 头像的内层容器样式 */
 .profile-picture {
-    margin-bottom: 20px; /* 头像底部边距，与下方元素保持距离 */
+    margin-bottom: 0;
     border: 4px solid #000; /* 4像素宽的黑色边框 */
     box-shadow: 4px 4px 0 #000; /* 向右下方偏移4像素的黑色阴影，增强立体感 */
     position: relative; /* 相对定位，允许后续使用绝对定位的子元素相对于此容器定位 */
-    /* 移除left偏移，确保图片位置固定 */
+    background-color: #C6D39C;
 }
 
 /* avatar: 头像图片样式 */
 .avatar {
-    width: 320px; /* 头像宽度设置为300像素 */
-    height: 460px; /* 头像高度设置为400像素 */
+    width: min(320px, 30vw);
+    height: min(460px, 58vh);
+    min-height: 360px;
     border-radius: 0; /* 边框圆角设为0，符合Minecraft像素风格 */
     object-fit: cover; /* 图片保持比例并填充整个容器，可能会裁剪部分内容 */
-    image-rendering: pixelated; /* 像素风格渲染，保持Minecraft游戏的像素感 */
+    image-rendering: auto;
+    display: block;
 }
 
 /* 右侧部分 - 其他信息 */
@@ -719,47 +837,45 @@ header.scrolled {
 
 /* 头像容器样式 - 外层容器，控制头像在页面中的水平位置 */
 .avatar-container {
-    display: inline-block; /* 行内块元素，使元素可以在一行内显示，同时保持块元素的特性 */
-    vertical-align: middle; /* 垂直居中对齐，确保与旁边的名字容器在同一水平线上 */
-    margin-right: 40px; /* 头像与文字之间的间距，设置为40像素 */
-    margin-left: 300px; /* 头像距离页面最左侧300像素 */
+    justify-self: end;
+    position: relative;
 }
 
 /* 名字容器样式 */
 .name-container {
     display: block;
-    position: absolute;
-    left: 800px;
-    top: calc(50% - 200px);
-    text-align: center;
-    width: 100%;
-    max-width: 600px;
+    position: static;
+    text-align: left;
+    width: auto;
+    max-width: 680px;
 }
 
 /* 文字部分样式 */
 .text-section {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 /* 确保两个容器在同一水平线上 */
 .hero .container {
-    text-align: center;
-    margin-top: 40px;
+    text-align: left;
 }
 
 /* 打字机效果相关样式 */
 #typing-text {
-    font-size: 2.5rem;
+    font-size: clamp(2.25rem, 4vw, 4.4rem);
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.12;
+    min-height: 3.4em;
+    letter-spacing: 0;
 }
 
 #typing-text .highlight {
-    color: #FF5500; /* 保持原有的高亮颜色 */
+    color: #FFFF55;
     position: relative;
     display: inline-block;
+    text-shadow: 4px 4px 0 #000;
 }
 
 .hero h1 {
@@ -845,7 +961,7 @@ header .social-icon {
 
 /* 关于我部分样式 - Minecraft风格 */
 .about {
-    padding: 80px 0;
+    padding: 120px 0 80px;
     background-color: #8BAA36;
     border-top: 4px solid #000;
     border-bottom: 4px solid #000;
@@ -861,7 +977,8 @@ header .social-icon {
     background-color: #5D7031;
     padding: 15px;
     border: 4px solid #000;
-    display: inline-block;
+    display: block;
+    width: fit-content;
     margin-left: auto;
     margin-right: auto;
     box-shadow: 4px 4px 0 #000;
@@ -896,7 +1013,7 @@ header .social-icon {
 
 /* 技能部分样式 - Minecraft风格 */
 .skills {
-    padding: 80px 0;
+    padding: 120px 0 80px;
     background-color: #2C62A0;
     border-top: 4px solid #000;
     border-bottom: 4px solid #000;
@@ -961,7 +1078,7 @@ header .social-icon {
 /* 项目经验部分样式 - Minecraft风格 */
 .projects {
     background-color: #A55233;
-    padding: 80px 0;
+    padding: 120px 0 80px;
     border-top: 4px solid #000;
     border-bottom: 4px solid #000;
 }
@@ -1112,10 +1229,18 @@ header .social-icon {
 
 /* 博客页面样式 - Minecraft风格 */
 .blog {
-    padding: 80px 0;
+    padding: 120px 0 80px;
     background-color: #7C7463;
     border-top: 4px solid #000;
     border-bottom: 4px solid #000;
+}
+
+.blog .container,
+.about .container,
+.skills .container,
+.projects .container,
+.timeline-section .container {
+    display: block;
 }
 
 .blog-list {
@@ -1124,6 +1249,84 @@ header .social-icon {
     gap: 40px;
     max-width: 800px;
     margin: 0 auto;
+}
+
+.search-container {
+    position: fixed;
+    top: 100px;
+    left: max(20px, calc((100vw - 1200px) / 2 + 20px));
+    z-index: 900;
+    width: min(320px, calc(100vw - 40px));
+}
+
+.search-box {
+    display: flex;
+    background: #8B4513;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.1s ease;
+}
+
+.search-box:focus-within {
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+#search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: none;
+    border-right: 3px solid #000;
+    outline: none;
+    background: #F5DEB3;
+    color: #4A2511;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+.search-button {
+    width: 44px;
+    border: none;
+    background: #654321;
+    color: #F5DEB3;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+}
+
+.search-button:hover {
+    background: #8B5A2B;
+}
+
+.search-button:active {
+    background: #5D4037;
+    transform: translateY(2px);
+}
+
+.search-results-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #654321;
+    font-style: italic;
+}
+
+.search-results-message.highlight {
+    background-color: #D2B48C;
+    border: 3px solid #000;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    color: #4A2511;
+    box-shadow: 3px 3px 0 #000;
+}
+
+mark {
+    background-color: #FFFF55;
+    color: #1F1F1F;
+    padding: 0 2px;
+    border: 1px solid #000;
 }
 
 .blog-post {
@@ -1750,6 +1953,46 @@ section.blog-content {
 
 /* 响应式设计 - Minecraft风格 */
 @media (max-width: 992px) {
+    header .social-links {
+        display: none;
+    }
+
+    .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .hero-copy {
+        margin: 0 auto;
+    }
+
+    .avatar-container {
+        justify-self: center;
+        order: -1;
+    }
+
+    .avatar {
+        width: min(260px, 62vw);
+        height: 330px;
+        min-height: 0;
+    }
+
+    .name-container,
+    .hero .container {
+        text-align: center;
+    }
+
+    .text-section {
+        justify-content: center;
+    }
+
+    .hero-intro,
+    .progress-container {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
     .contact-container {
         grid-template-columns: 1fr;
     }
@@ -1760,12 +2003,24 @@ section.blog-content {
 }
 
 @media (max-width: 768px) {
+    header {
+        height: 72px;
+    }
+
+    header.scrolled {
+        height: 64px;
+    }
+
+    .logo a {
+        font-size: 1.2rem;
+    }
+
     .menu {
         position: fixed;
-        top: 60px;
+        top: 72px;
         left: -100%;
         width: 100%;
-        height: calc(100vh - 60px);
+        height: calc(100vh - 72px);
         background-color: #3C3C3C;
         transition: left 0.3s ease;
         z-index: 999;
@@ -1779,6 +2034,10 @@ section.blog-content {
     .menu ul {
         flex-direction: column;
         padding: 20px;
+    }
+
+    .menu ul::after {
+        display: none;
     }
 
     .menu ul li {
@@ -1806,6 +2065,14 @@ section.blog-content {
         grid-template-columns: 1fr;
     }
 
+    .hero {
+        padding: 100px 0 56px;
+    }
+
+    .hero-inner {
+        min-height: auto;
+    }
+
     .hero h1 {
         font-size: 2rem;
     }
@@ -1822,6 +2089,17 @@ section.blog-content {
     .right-section {
         padding-left: 0;
     }
+
+    .search-container {
+        top: 82px;
+        left: 15px;
+        right: 15px;
+        width: auto;
+    }
+
+    .blog {
+        padding-top: 145px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1834,8 +2112,38 @@ section.blog-content {
     }
 
     .avatar {
-        width: 150px;
-        height: 150px;
+        width: min(190px, 66vw);
+        height: 230px;
+        min-height: 0;
+    }
+
+    #typing-text {
+        font-size: 1.72rem;
+        min-height: 3.45em;
+    }
+
+    .hero-eyebrow {
+        font-size: 0.85rem;
+    }
+
+    .hero-intro {
+        margin-top: 16px;
+        padding: 13px 14px;
+        font-size: 0.95rem;
+    }
+
+    .hero-actions {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .pixel-button {
+        flex: 1 1 145px;
+        padding: 9px 12px;
+    }
+
+    .progress-container {
+        padding: 14px;
     }
 
     .social-icon {

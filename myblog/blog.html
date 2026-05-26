@@ -77,123 +77,6 @@
     </button>
 
     <!-- 引入JavaScript文件 -->
-    <style>
-        /* 搜索功能样式 - Minecraft风格 */
-        .search-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            margin-bottom: 0;
-        }
-        
-        .search-box {
-            display: flex;
-            background: #8b4513;
-            border: 2px solid #000000;
-            box-shadow: 
-                0 0 0 2px #d2b48c,
-                4px 4px 0 0 #000000;
-            transition: all 0.1s ease;
-            margin: 0;
-            transform: scale(0.95);
-        }
-        
-        .search-box:focus-within {
-            transform: scale(0.95) translateY(2px);
-            box-shadow: 
-                0 0 0 2px #d2b48c,
-                2px 2px 0 0 #000000;
-        }
-        
-        #search-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            outline: none;
-            font-family: 'Minecraft', monospace;
-            font-size: 14px;
-            background: #f5deb3;
-            border-right: 2px solid #000000;
-            color: #4a2511;
-        }
-        
-        .search-button {
-            padding: 0 12px;
-            background: #654321;
-            border: none;
-            color: #f5deb3;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Minecraft', monospace;
-            transition: all 0.1s ease;
-        }
-        
-        .search-button:hover {
-            background: #8b5a2b;
-        }
-        
-        .search-button:active {
-            background: #5d4037;
-            transform: translateY(2px);
-        }
-        
-        /* 搜索结果样式 */
-        .search-results-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #654321;
-            font-style: italic;
-            font-family: 'Minecraft', monospace;
-        }
-        
-        .search-results-message.highlight {
-            background-color: #d2b48c;
-            border: 2px solid #000000;
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            font-family: 'Minecraft', monospace;
-            color: #4a2511;
-        }
-        
-        /* 高亮搜索匹配的文本 */
-        mark {
-            background-color: #deb887;
-            color: #4a2511;
-            padding: 0 2px;
-            border: 1px solid #000000;
-        }
-        
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .search-container {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                right: 10px;
-                max-width: 280px;
-            }
-            
-            .search-box {
-                width: 100%;
-            }
-        }
-        
-        /* Minecraft风格的通用样式 */
-        @keyframes minecraftBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        /* 尝试引入Minecraft字体效果，虽然实际字体可能不可用，但样式会模拟像素风格 */
-        body {
-            font-smooth: never;
-            -webkit-font-smoothing: none;
-        }
-    </style>
-    
     <script src="script.js"></script>
     <script src="js/blog-script.js"></script>
     
@@ -294,9 +177,11 @@
                         `;
                         
                         results.forEach(blog => {
+                            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
                             // 高亮匹配的文本
                             const highlightQuery = (text) => {
-                                const regex = new RegExp(`(${query})`, 'gi');
+                                const regex = new RegExp(`(${escapedQuery})`, 'gi');
                                 return text.replace(regex, '<mark>$1</mark>');
                             };
                             

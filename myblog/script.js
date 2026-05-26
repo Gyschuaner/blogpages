@@ -2,6 +2,7 @@
 function highlightCurrentNavItem() {
     // 获取当前页面的文件名
     const currentPage = window.location.pathname.split('/').pop();
+    const isHomePage = currentPage === '' || currentPage === 'index.html' || currentPage === 'home.html';
     
     // 获取所有导航项
     const navItems = document.querySelectorAll('.menu ul li a');
@@ -12,11 +13,10 @@ function highlightCurrentNavItem() {
         const href = item.getAttribute('href');
         
         // 简单的页面匹配逻辑
-        if (href === currentPage || 
-            (href === 'index.html' && currentPage === '') ||
+        if (href === currentPage ||
+            (href === 'home.html' && isHomePage) ||
             (currentPage.includes('blog-') && href === 'blog.html') ||
             (currentPage.includes('notes/') && href === 'blog.html') ||
-            (href === 'home.html' && currentPage === '') ||
             (currentPage.includes('birthday_') && href === 'timeline.html')) {
             // 添加current类到父元素li
             item.parentElement.classList.add('current');
@@ -56,12 +56,78 @@ function setupBackToTop() {
 function setupMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const menu = document.querySelector('.menu');
+    const menuLinks = document.querySelectorAll('.menu a');
     
     if (menuToggle && menu) {
         menuToggle.addEventListener('click', () => {
             menu.classList.toggle('active');
         });
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.remove('active');
+            });
+        });
     }
+}
+
+// 首页打字机效果
+function setupHeroTyping() {
+    const typingElement = document.getElementById('typing-text');
+    const highlightElement = typingElement ? typingElement.querySelector('.highlight') : null;
+
+    if (!highlightElement) {
+        return;
+    }
+
+    const lines = [
+        '很高兴见到你，我是 Xgg',
+        '这里是我的方块博客基地',
+        '记录 AI、代码与奇思妙想'
+    ];
+    const typeDelay = 48;
+    const lineDelay = 420;
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    highlightElement.textContent = '';
+
+    function type() {
+        const currentLine = lines[lineIndex];
+
+        if (charIndex < currentLine.length) {
+            highlightElement.append(currentLine.charAt(charIndex));
+            charIndex += 1;
+            window.setTimeout(type, typeDelay);
+            return;
+        }
+
+        lineIndex += 1;
+        charIndex = 0;
+
+        if (lineIndex < lines.length) {
+            highlightElement.append(document.createElement('br'));
+            window.setTimeout(type, lineDelay);
+        }
+    }
+
+    type();
+}
+
+// 首页进度条动画
+function setupProgressBars() {
+    const buildProgressBar = document.getElementById('build-progress-bar');
+    const optimizeProgressBar = document.getElementById('optimize-progress-bar');
+
+    window.setTimeout(() => {
+        if (buildProgressBar) {
+            buildProgressBar.style.width = '30%';
+        }
+
+        if (optimizeProgressBar) {
+            optimizeProgressBar.style.width = '8%';
+        }
+    }, 500);
 }
 
 // 页面加载完成后执行
@@ -70,6 +136,8 @@ window.addEventListener('DOMContentLoaded', () => {
     handleHeaderScroll();
     setupBackToTop();
     setupMobileMenu();
+    setupHeroTyping();
+    setupProgressBars();
     
     // 监听滚动事件
     window.addEventListener('scroll', handleHeaderScroll);

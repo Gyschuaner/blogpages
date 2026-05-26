@@ -38,38 +38,64 @@
 
     <!-- 主页部分 -->
     <section id="home" class="hero">
-        <!-- 树木元素 -->
         <div class="tree-left"></div>
         <div class="tree-right"></div>
         <div class="tree-small"></div>
-        
-        <!-- 云朵元素 -->
         <div class="cloud-1"></div>
         <div class="cloud-2"></div>
         <div class="cloud-3"></div>
-        
-        <!-- 装饰物品 -->
         <div class="grass-block"></div>
         <div class="grass-block-2"></div>
         <div class="flower"></div>
         <div class="mushroom"></div>
-        
-        <!-- 个人头像部分 -->
-        <!-- avatar-container: 头像的外层容器，用于控制头像在页面中的水平布局和位置 -->
-        <div class="avatar-container">
-            <!-- profile-picture: 头像的内层容器，用于添加边框和阴影效果 -->
-            <div class="profile-picture">
-                <!-- avatar: 实际的头像图片，设置了特定的尺寸和样式 -->
-                <!-- src: 头像图片的路径 -->
-                <!-- alt: 头像的替代文本，用于屏幕阅读器或图片加载失败时显示 -->
-                <img src="images/handson.png" alt="个人头像" class="avatar">
+
+        <div class="hero-inner container">
+            <div class="hero-copy">
+                <p class="hero-eyebrow"><i class="fas fa-cube"></i><span>个人博客基地 / Minecraft Style</span></p>
+
+                <div class="name-container">
+                    <div class="text-section">
+                        <h1 id="typing-text"><span class="highlight"></span></h1>
+                    </div>
+                </div>
+
+                <p class="hero-intro">
+                    这里像一块慢慢扩建的方块世界，用来记录 AI、代码、学习笔记和一些突然冒出来的奇思妙想。
+                </p>
+
+                <div class="hero-actions">
+                    <a href="blog.html" class="pixel-button pixel-button-primary"><i class="fas fa-book-open"></i> 看博客</a>
+                    <a href="projects.html" class="pixel-button"><i class="fas fa-hammer"></i> 看项目</a>
+                    <a href="todo.html" class="pixel-button"><i class="fas fa-tasks"></i> 施工清单</a>
+                </div>
+
+                <div class="progress-container" aria-label="网站建设进度">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>建站进度</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="build-progress-bar" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>优化进度</span>
+                            <span>8%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="optimize-progress-bar" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <!-- 个人名字部分 -->
-        <div class="name-container">
-            <div class="text-section">
-                <h1 id="typing-text"><span class="highlight"></span></h1>
+
+            <div class="avatar-container">
+                <div class="profile-picture">
+                    <img src="images/handson.png" alt="个人头像" class="avatar">
+                </div>
             </div>
         </div>
     </section>
@@ -79,151 +105,6 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- 进度条样式 -->
-    <style>
-        /* 进度条容器 */
-        .progress-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 250px;
-            z-index: 1000;
-        }
-        
-        /* 进度条项目 */
-        .progress-item {
-            margin-bottom: 15px;
-        }
-        
-        /* 进度条标签 */
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        /* 进度条背景 */
-        .progress-bar-bg {
-            width: 100%;
-            height: 12px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(4px);
-        }
-        
-        /* 进度条填充 */
-        .progress-bar-fill {
-            height: 100%;
-            transition: width 1.5s ease-out;
-            border-radius: 6px;
-        }
-        
-        /* 建站进度条颜色 */
-        #build-progress-bar {
-            background-color: #4CAF50;
-            width: 0;
-        }
-        
-        /* 优化进度条颜色 */
-        #optimize-progress-bar {
-            background-color: #2196F3;
-            width: 0;
-        }
-        
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .progress-container {
-                width: 200px;
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .progress-label {
-                font-size: 12px;
-            }
-            
-            .progress-bar-bg {
-                height: 10px;
-            }
-        }
-    </style>
-    
-    <!-- 进度条容器 -->
-    <div class="progress-container">
-        <!-- 建站进度条 -->
-        <div class="progress-item">
-            <div class="progress-label">
-                <span>建站进度</span>
-                <span>30%</span>
-            </div>
-            <div class="progress-bar-bg">
-                <div id="build-progress-bar" class="progress-bar-fill"></div>
-            </div>
-        </div>
-        
-        <!-- 优化进度条 -->
-        <div class="progress-item">
-            <div class="progress-label">
-                <span>优化进度</span>
-                <span>0%</span>
-            </div>
-            <div class="progress-bar-bg">
-                <div id="optimize-progress-bar" class="progress-bar-fill"></div>
-            </div>
-        </div>
-    </div>
-    
     <script src="script.js"></script>
-    <script>
-        // 打字机效果
-        document.addEventListener('DOMContentLoaded', function() {
-            const text1 = "很高兴见到你，我是Xgg";
-            const text2 = "这里是我打造的异世界";
-            const text3 = "存放我的学习笔记与奇思妙想";
-            const typingElement = document.getElementById('typing-text');
-            const highlightElement = typingElement.querySelector('.highlight');
-            let index = 0;
-            let currentText = text1;
-            let isFirstTextComplete = false;
-            let isSecondTextComplete = false;
-            
-            function type() {
-                if (index < currentText.length) {
-                    // 使用innerHTML而不是textContent，确保换行正确显示
-                    highlightElement.innerHTML += currentText.charAt(index);
-                    index++;
-                    setTimeout(type, 50); // 将打字间隔缩短到50毫秒
-                } else if (!isFirstTextComplete) {
-                    // 第一行完成后添加换行
-                    highlightElement.innerHTML += '<br>';
-                    isFirstTextComplete = true;
-                    currentText = text2;
-                    index = 0;
-                    setTimeout(type, 500); // 换行后暂停半秒再继续打字
-                } else if (!isSecondTextComplete) {
-                    // 第二行完成后添加换行
-                    highlightElement.innerHTML += '<br>';
-                    isSecondTextComplete = true;
-                    currentText = text3;
-                    index = 0;
-                    setTimeout(type, 500); // 换行后暂停半秒再继续打字
-                }
-            }
-            
-            // 开始打字效果
-            type();
-            
-            // 进度条动画效果
-            setTimeout(() => {
-                const progressBar1 = document.getElementById('build-progress-bar');
-                progressBar1.style.width = '30%';
-            }, 1000);
-        });
-    </script>
 </body>
 </html>

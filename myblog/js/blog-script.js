@@ -13,9 +13,9 @@ class BlogLoader {
             // 直接定义博客数据，与blog-config.json内容相同
             let rawBlogs = [
         {
-            "title": "RAG 查询优化 new",
-            "path": "notes/rag-query-optimization-new.html",
-            "date": "2026-05-26",
+            "title": "RAG 查询优化",
+            "path": "notes/RAG 查询优化.html",
+            "date": "2025-12-02",
             "category": "AI",
             "author": "xgg",
             "readTime": "30分钟",
@@ -61,16 +61,6 @@ class BlogLoader {
                 "readTime": "10分钟",
                 "tags": ["智能体", "Python", "大模型"],
                 "excerpt": "详细介绍如何使用 Python 和大模型实现一个简单的智能体系统"
-            },
-            {
-                "title": "RAG 查询优化",
-                "path": "notes/RAG 查询优化.html",
-                "date": "2024-01-01",
-                "category": "AI",
-                "author": "作者",
-                "readTime": "15分钟",
-                "tags": ["RAG", "检索优化", "查询分解", "大语言模型"],
-                "excerpt": "本文详细介绍了RAG系统中的查询优化技术，包括多角度查询、融合式检索和查询分解等方法，帮助提升检索质量。"
             }
     ];
             

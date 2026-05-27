@@ -137,7 +137,7 @@
                         <p>这些表共同构成一个可被工具访问和修改的企业数据库世界。</p>
                         <p>在数据生成时，系统不是完全随机地凭空造记录，而是先通过模板数据库确定基础表结构和初始实体，再通过规则化的业务场景包批量扩展数据。</p>
                         <p>核心思想是：<strong>每个业务场景包对应一类真实企业工作流，按照业务逻辑自动生成跨表记录，并建立合理的实体关系</strong>。</p>
-                        <ul><li>例如 <code>document_collab_pack</code> 会先选择一个 uploader 创建文档，再自动赋予 uploader owner 权限，生成 2-4 个文档版本，选择若干 receiver 创建文档分享记录，同时创建对应的文档权限；部分 receiver 还会产生下载记录，其他用户可能进一步发起权限申请。这样生成出来的数据天然包含“用户上传文档 -\&amp;gt; 文档有版本 -\&amp;gt; 文档被分享 -\&amp;gt; 被分享人有权限 -\&amp;gt; 有人下载 -\&amp;gt; 有人申请权限”的链式关系，更贴近真实企业工作流，也方便后续构造多步任务。</li><li><code>meeting_coordination_pack</code> 会生成会议、参会人、会议室预订、会议纪要和会议分享；</li><li><code>project_delivery_pack</code> 会生成项目、成员、任务、待办、提醒和相关文档；</li><li><code>cross_domain_pack</code> 会把项目、文档权限请求、会议、待办、提醒连接起来；</li><li>HR 场景包则覆盖请假审批和入职任务。</li></ul>
+                        <ul><li>例如 <code>document_collab_pack</code> 会先选择一个 uploader 创建文档，再自动赋予 uploader owner 权限，生成 2-4 个文档版本，选择若干 receiver 创建文档分享记录，同时创建对应的文档权限；部分 receiver 还会产生下载记录，其他用户可能进一步发起权限申请。这样生成出来的数据天然包含“用户上传文档 → 文档有版本 → 文档被分享 → 被分享人有权限 → 有人下载 → 有人申请权限”的链式关系，更贴近真实企业工作流，也方便后续构造多步任务。</li><li><code>meeting_coordination_pack</code> 会生成会议、参会人、会议室预订、会议纪要和会议分享；</li><li><code>project_delivery_pack</code> 会生成项目、成员、任务、待办、提醒和相关文档；</li><li><code>cross_domain_pack</code> 会把项目、文档权限请求、会议、待办、提醒连接起来；</li><li>HR 场景包则覆盖请假审批和入职任务。</li></ul>
                         <p>最终，系统会对生成的数据进行质量校验，包括外键关系是否存在、时间顺序是否合理、项目/会议人数分布是否正常、是否有足够的可查询和可操作样本等。通过这种方式，数据库中的主要节点，如用户、文档、项目、会议等，会和 metadata 一起构成一张企业关系网络，用于后续任务 seed 抽取和任务生成。</p>
                         <p>同时，系统定义了 <strong>107 个</strong>企业工具，覆盖 <strong>system、HR、document、permission、meeting、project、schedule 等类别</strong>。每个工具都对应真实的数据库读写能力，例如查询用户、搜索文档、审批权限请求、创建会议、更新任务、创建提醒等。工具库和数据库世界是一一配套的：数据库提供可操作对象，工具提供对这些对象的查询和修改接口，二者共同构成企业 Agent benchmark 的模拟沙盒环境。</p>
                         <div class="project-md-table-wrap"><table><thead><tr><th>业务域</th><th>数量</th><th>工具名</th><th>覆盖能力</th></tr></thead><tbody><tr><td>系统</td><td>2</td><td><code>get_current_time</code>, <code>query_users</code></td><td>时间理解、相对日期解析、用户查询与用户 ID 解析</td></tr><tr><td>HR</td><td>18</td><td><code>get_employee</code>, <code>query_employees</code>, <code>get_manager</code>, <code>list_direct_reports</code>, <code>get_department</code>, <code>list_department_members</code>, <code>create_leave_request</code>, <code>get_leave_request</code>, <code>list_leave_requests</code>, <code>list_employee_leaves</code>, <code>approve_leave_request</code>, <code>reject_leave_request</code>, <code>check_leave_balance</code>, <code>get_onboarding_plan</code>, <code>list_onboarding_tasks</code>, <code>get_onboarding_task</code>, <code>update_onboarding_task_status</code>, <code>create_onboarding_reminder</code></td><td>员工/部门查询、上下级关系、请假申请与审批、假期余额、入职计划/任务/提醒</td></tr><tr><td>文档</td><td>21</td><td><code>create_document</code>, <code>get_document</code>, <code>update_document</code>, <code>delete_document</code>, <code>query_documents</code>, <code>list_documents_by_owner</code>, <code>create_document_version</code>, <code>list_document_versions</code>, <code>get_document_version</code>, <code>delete_document_version</code>, <code>compare_document_versions</code>, <code>restore_document_version</code>, <code>grant_document_permission</code>, <code>revoke_document_permission</code>, <code>list_document_permissions</code>, <code>check_document_permission</code>, <code>create_document_share</code>, <code>list_received_shares</code>, <code>download_document</code>, <code>list_document_downloads</code>, <code>get_download_detail</code></td><td>文档 CRUD、搜索、版本管理、权限管理、分享、下载与下载历史</td></tr><tr><td>权限</td><td>5</td><td><code>request_document_permission</code>, <code>list_permission_requests</code>, <code>approve_permission_request</code>, <code>reject_permission_request</code>, <code>get_user_permission_summary</code></td><td>文档权限申请、申请列表查询、审批/拒绝、用户权限汇总</td></tr><tr><td>会议</td><td>27</td><td><code>list_rooms</code>, <code>book_room</code>, <code>list_bookings</code>, <code>update_booking</code>, <code>cancel_booking</code>, <code>check_room_availability</code>, <code>release_room</code>, <code>create_meeting</code>, <code>get_meeting</code>, <code>list_meetings</code>, <code>update_meeting_information</code>, <code>cancel_meeting</code>, <code>add_meeting_attendee</code>, <code>remove_meeting_attendee</code>, <code>list_meeting_attendees</code>, <code>update_attendee_status</code>, <code>create_meeting_minutes</code>, <code>get_meeting_minutes</code>, <code>share_meeting_minutes</code>, <code>export_meeting_minutes</code>, <code>update_meeting_minutes</code>, <code>grant_meeting_permission</code>, <code>revoke_meeting_permission</code>, <code>list_meeting_permissions</code>, <code>check_meeting_permission</code>, <code>share_meeting</code>, <code>list_received_meeting_shares</code></td><td>会议室查询/预订/释放、会议创建/更新/取消、参会人管理、会议纪要、会议权限与分享</td></tr><tr><td>项目</td><td>16</td><td><code>create_project</code>, <code>get_project</code>, <code>list_projects</code>, <code>update_project</code>, <code>assign_project_member</code>, <code>list_project_members</code>, <code>list_user_projects</code>, <code>create_task</code>, <code>get_task</code>, <code>list_project_tasks</code>, <code>list_user_tasks</code>, <code>update_task</code>, <code>update_task_status</code>, <code>update_task_completion</code>, <code>get_task_progress</code>, <code>get_project_progress</code></td><td>项目创建/查询/更新、成员管理、任务创建/查询/更新、任务进度与项目进度统计</td></tr><tr><td>日程</td><td>18</td><td><code>create_event</code>, <code>get_event</code>, <code>list_events</code>, <code>list_user_events</code>, <code>update_event</code>, <code>delete_event</code>, <code>create_todo</code>, <code>get_todo</code>, <code>list_todos</code>, <code>list_user_todos</code>, <code>update_todo</code>, <code>complete_todo</code>, <code>create_reminder</code>, <code>get_reminder</code>, <code>list_reminders</code>, <code>list_user_reminders</code>, <code>update_reminder</code>, <code>delete_reminder</code></td><td>日程事件、待办事项、提醒的创建、查询、更新、完成和删除</td></tr></tbody></table></div>
@@ -1589,7 +1589,7 @@
                         <pre><code class="language-plain">list_permission_requests
                           -&gt; approve_permission_request
                           -&gt; list_document_permissions</code></pre>
-                        <p>其中 <code>list_permission_requests</code> 是前置定位工具，<code>list_document_permissions</code> 是后置验证工具。它们不一定会在用户请求中显式出现，因此单次语义检索容易漏掉。Path Mining 则能从历史成功轨迹中学到这些“前置查询 -\&amp;gt; 核心动作 -\&amp;gt; 后置验证”的结构。</p>
+                        <p>其中 <code>list_permission_requests</code> 是前置定位工具，<code>list_document_permissions</code> 是后置验证工具。它们不一定会在用户请求中显式出现，因此单次语义检索容易漏掉。Path Mining 则能从历史成功轨迹中学到这些“前置查询 → 核心动作 → 后置验证”的结构。</p>
                         <hr>
                         <h5>2. 不需要人工标注工具链</h5>
                         <p>成功日志本身就是监督信号：</p>
@@ -2100,9 +2100,9 @@
                         <ul><li>用户请求 user_says</li><li>selected_domain：模型选择的业务域</li><li>selected_tools：模型选择的候选工具</li><li>stage1_thought / stage2_thought：模型选择领域和工具时的推理过程</li><li>tool_calls_detail：真实调用了哪些工具、参数是什么、结果是否成功</li><li>agent_response：最终回复</li><li>evaluation_result：评测是否通过、状态检查是否满足</li></ul>
                         <p>这些日志保存在 benchmark/task_logs 下，生成逻辑在 benchmark/real_benchmark.py 中。</p>
                         <p>因此，每条成功样本都可以被看作一条可复用的工具链轨迹，例如：</p>
-                        <p>query_documents -\&amp;gt; get_document -\&amp;gt; list_document_permissions</p>
-                        <p>list_received_shares -\&amp;gt; get_document</p>
-                        <p>list_permission_requests -\&amp;gt; approve_permission_request -\&amp;gt; list_document_permissions</p>
+                        <p>query_documents → get_document → list_document_permissions</p>
+                        <p>list_received_shares → get_document</p>
+                        <p>list_permission_requests → approve_permission_request → list_document_permissions</p>
                         <p>这些轨迹就是后续构建历史调用图的原始数据。</p>
                         <hr>
                         <h4>7.4 Path Mining：从成功日志中挖掘可解工具路径</h4>
@@ -2116,11 +2116,11 @@
                         <hr>
                         <h4>7.5 从 Path Mining 到工具历史图</h4>
                         <p>基于成功工具路径，可以进一步构建历史调用图：</p>
-                        <ul><li>节点：工具，例如 query_documents、get_document、approve_permission_request。</li><li>有向边：工具调用顺序，例如 query_documents -\&amp;gt; get_document。</li><li>边权重：这条工具转移在成功日志中出现的频率。</li><li>节点属性：工具所属领域、调用次数、成功次数、平均路径位置等。</li></ul>
+                        <ul><li>节点：工具，例如 query_documents、get_document、approve_permission_request。</li><li>有向边：工具调用顺序，例如 query_documents → get_document。</li><li>边权重：这条工具转移在成功日志中出现的频率。</li><li>节点属性：工具所属领域、调用次数、成功次数、平均路径位置等。</li></ul>
                         <p>例如，如果成功日志中多次出现：</p>
-                        <p>query_documents -\&amp;gt; get_document</p>
-                        <p>get_document -\&amp;gt; list_document_permissions</p>
-                        <p>list_permission_requests -\&amp;gt; approve_permission_request</p>
+                        <p>query_documents → get_document</p>
+                        <p>get_document → list_document_permissions</p>
+                        <p>list_permission_requests → approve_permission_request</p>
                         <p>那么图中这些边的权重会更高，代表它们是企业工作流中更稳定的工具链模式。</p>
                         <p>这和普通语义检索不同：语义检索只看“用户请求和工具描述像不像”，历史图还会看“这个工具在成功任务里通常和哪些工具一起用”。</p>
                         <hr>
@@ -2144,14 +2144,14 @@
                         <ul><li>前置工具：list_permission_requests</li><li>目标工具：approve_permission_request</li><li>后续验证工具：list_document_permissions / check_document_permission</li><li>桥接工具：query_users / get_document</li></ul>
                         <ol><li>输出 Top-k 工具候选。</li></ol>
                         <ul><li>这些工具再交给 Agent 进行规划和执行。</li></ul>
-                        <p>最终效果是：即使用户请求只显式提到“approve”，系统也能通过历史工具链补全“查请求 -\&amp;gt; 审批 -\&amp;gt; 验证权限”的完整工具集合。</p>
+                        <p>最终效果是：即使用户请求只显式提到“approve”，系统也能通过历史工具链补全“查请求 → 审批 → 验证权限”的完整工具集合。</p>
                         <hr>
                         <h4>7.8 指标评测</h4>
                         <figure><img src="images/projects/entbench-agent/entbench-5.png" alt="EntBench-Agent ???" loading="lazy"></figure>
                         <p>这张图就是我们项目里“工具图检索”的核心证据：在复杂企业任务开始执行前，系统先从 100+ 工具里召回 Top-k 候选工具。表里评的不是最终 Agent 成功率，而是“候选工具集是否覆盖真实工具链”。</p>
                         <p><strong>指标OC@k/R@k</strong></p>
                         <ul><li>OC@k：任务级完全覆盖率。Top-k 里只要少了一个必需工具，这个任务就是 0；全覆盖才是 1。它最能反映多步任务是否能跑通。</li><li>R@k：工具级召回率。真实需要 5 个工具，召回 4 个就是 0.8。它比 OC 宽松。</li></ul>
-                        <p>所以对我们项目来说，OC 更关键，因为企业工作流经常是“查人 -\&amp;gt; 查权限 -\&amp;gt; 查会议 -\&amp;gt; 查文档 -\&amp;gt; 发提醒”这种链式调用，漏一个前置工具就断。</p>
+                        <p>所以对我们项目来说，OC 更关键，因为企业工作流经常是“查人 → 查权限 → 查会议 → 查文档 → 发提醒”这种链式调用，漏一个前置工具就断。</p>
                         <p><strong>8个方法</strong></p>
                         <ul><li>SSR：普通语义检索，只看任务描述和工具描述的相似度。</li><li>BM25 / Bigram：关键词或简单 n-gram baseline。</li><li>IF：意图拆解融合，把任务拆成多个子意图再检索。</li><li>SPPR-Sem：只用语义工具图做 PPR 扩散。</li><li>HPPR-Hist：只用历史调用图，也就是从成功任务日志里统计工具共现/调用轨迹。</li><li>SHPPR：语义图 + 历史图混合。</li><li>sub-SHPPR：先定位相关子图，再在子图里做语义历史混合传播，减少无关工具扩散。</li></ul>
                         <p>我们的核心想法就是：复杂任务需要的不只是“语义相似工具”，还需要“工作流相邻工具”。比如用户说“共享会议纪要给项目成员”，语义检索可能只召回 share_meeting_minutes，但真实链条还可能需要 get_meeting、list_meeting_attendees、check_meeting_permission、grant_meeting_permission、create_reminder。历史图能把这些“经常一起出现但语义不完全相似”的桥接工具带出来。</p>

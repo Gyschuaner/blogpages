@@ -3899,6 +3899,7 @@ body .article-body .hljs-params {
     grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 1fr);
     align-items: stretch;
     gap: 10px;
+    max-width: 100%;
 }
 
 .ppr-step-card {
@@ -3908,6 +3909,7 @@ body .article-body .hljs-params {
     box-shadow: 3px 3px 0 #000;
     padding: 16px;
     min-width: 0;
+    max-width: 100%;
 }
 
 .ppr-step-card-strong {
@@ -3938,6 +3940,7 @@ body .article-body .hljs-params {
     line-height: 1.65;
     font-weight: bold;
     overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .ppr-flow-arrow {
@@ -3955,6 +3958,8 @@ body .article-body .hljs-params {
     border: 3px solid #000;
     box-shadow: 3px 3px 0 #000;
     padding: 18px;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .ppr-graph-title {
@@ -3965,6 +3970,111 @@ body .article-body .hljs-params {
     margin-bottom: 16px;
     font-weight: bold;
     text-shadow: 2px 2px 0 #000;
+}
+
+.ppr-network-wrap {
+    background-color: #F4EEDC;
+    border: 3px solid #000;
+    box-shadow: inset 4px 4px 0 rgba(0, 0, 0, 0.12);
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.ppr-network-svg {
+    display: block;
+    width: 100%;
+    min-width: 860px;
+    height: auto;
+}
+
+.ppr-svg-edge {
+    stroke: #B8B8B8;
+    stroke-width: 1.8;
+    opacity: 0.72;
+}
+
+.ppr-svg-edge.is-spread {
+    stroke: #1F1F1F;
+    stroke-width: 3;
+    opacity: 0.82;
+}
+
+.ppr-svg-edge.is-strong {
+    stroke: #000000;
+    stroke-width: 5.5;
+    opacity: 1;
+}
+
+.ppr-arrow-thin {
+    fill: #B8B8B8;
+}
+
+.ppr-arrow-strong {
+    fill: #000000;
+}
+
+.ppr-svg-node {
+    fill: #E6E6E6;
+    stroke: #1F1F1F;
+    stroke-width: 3;
+}
+
+.ppr-svg-node.seed {
+    fill: #FF3333;
+}
+
+.ppr-svg-node.gold {
+    fill: #138A18;
+}
+
+.ppr-svg-node.other {
+    fill: #E0E0E0;
+}
+
+.ppr-svg-node.is-top {
+    stroke-width: 5;
+}
+
+.ppr-svg-label {
+    fill: #111111;
+    font-size: 18px;
+    font-weight: 900;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.ppr-tool-map {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.ppr-tool-map span {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 7px;
+    align-items: center;
+    color: #FFFFFF;
+    background-color: #6A655B;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 #000;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.ppr-tool-map b {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: #111111;
+    background-color: #FFFF55;
+    border: 2px solid #000;
+    text-shadow: none;
 }
 
 .ppr-graph {
@@ -4044,7 +4154,7 @@ body .article-body .hljs-params {
 }
 
 .legend-box.seed {
-    background-color: #FFFF55;
+    background-color: #FF3333;
 }
 
 .legend-box.hit {
@@ -4052,7 +4162,18 @@ body .article-body .hljs-params {
 }
 
 .legend-box.bridge {
-    background-color: #6A655B;
+    background-color: #E0E0E0;
+}
+
+.legend-line {
+    display: inline-block;
+    width: 30px;
+    border-top: 4px solid #000;
+}
+
+.legend-line.thin {
+    border-top-color: #B8B8B8;
+    border-top-width: 3px;
 }
 
 .demo-code-snippet {
@@ -4095,10 +4216,16 @@ body .article-body .hljs-params {
     .ppr-flow-arrow {
         min-height: 24px;
         transform: rotate(90deg);
+        justify-self: center;
+        width: 34px;
     }
 
     .ppr-node::after {
         display: none;
+    }
+
+    .ppr-tool-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -4109,7 +4236,7 @@ body .article-body .hljs-params {
     }
 
     .entbench-demo-shell {
-        width: calc(100vw - 32px);
+        width: calc(100vw - 48px);
     }
 
     .project-detail-heading-action {
@@ -4138,6 +4265,10 @@ body .article-body .hljs-params {
     .demo-kv-row {
         grid-template-columns: 1fr;
     }
+
+    .ppr-network-svg {
+        min-width: 760px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -4158,5 +4289,9 @@ body .article-body .hljs-params {
     .demo-step {
         width: 44px;
         height: 44px;
+    }
+
+    .ppr-tool-map {
+        grid-template-columns: 1fr;
     }
 }

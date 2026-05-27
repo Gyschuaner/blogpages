@@ -443,13 +443,67 @@ function setupEntbenchDemo() {
         const firstBankPath = firstStagePaths[0]?.path || [];
         const observedPath = firstComparison.observed_tool_path || firstBankPath;
         const centerTool = observedPath[0] || 'list_permission_requests';
-        const pprTools = [
-            centerTool,
-            ...observedPath.slice(1),
-            'approve_permission_request',
-            'list_document_permissions',
-            'check_room_availability'
-        ].filter((tool, index, list) => tool && list.indexOf(tool) === index).slice(0, 7);
+        const graphNodes = [
+            { id: 1, name: centerTool, x: 410, y: 215, type: 'seed', shape: 'circle', top: true },
+            { id: 2, name: observedPath[1] || 'get_document', x: 560, y: 170, type: 'gold', shape: 'square', top: true },
+            { id: 3, name: observedPath[2] || 'query_users', x: 690, y: 250, type: 'gold', shape: 'square', top: true },
+            { id: 4, name: 'approve_permission_request', x: 520, y: 325, type: 'gold', shape: 'square', top: true },
+            { id: 5, name: 'list_document_permissions', x: 330, y: 330, type: 'gold', shape: 'square', top: true },
+            { id: 6, name: 'check_room_availability', x: 785, y: 150, type: 'other', shape: 'circle', top: true },
+            { id: 7, name: 'list_meetings', x: 845, y: 300, type: 'seed', shape: 'circle', top: true },
+            { id: 8, name: 'get_meeting', x: 680, y: 375, type: 'other', shape: 'circle', top: true },
+            { id: 9, name: 'query_documents', x: 215, y: 225, type: 'other', shape: 'circle', top: true },
+            { id: 10, name: 'request_document_permission', x: 175, y: 385, type: 'other', shape: 'circle' },
+            { id: 11, name: 'check_document_permission', x: 135, y: 135, type: 'other', shape: 'circle' },
+            { id: 12, name: 'get_current_time', x: 535, y: 80, type: 'other', shape: 'circle' },
+            { id: 13, name: 'list_bookings', x: 900, y: 220, type: 'other', shape: 'circle' },
+            { id: 14, name: 'query_employees', x: 650, y: 105, type: 'seed', shape: 'circle', top: true },
+            { id: 15, name: 'create_reminder', x: 790, y: 430, type: 'other', shape: 'circle' },
+            { id: 16, name: 'get_project', x: 330, y: 90, type: 'other', shape: 'circle' },
+            { id: 17, name: 'list_user_tasks', x: 90, y: 300, type: 'other', shape: 'circle' },
+            { id: 18, name: 'update_task_status', x: 925, y: 90, type: 'other', shape: 'circle' }
+        ];
+        const graphEdges = [
+            { from: 11, to: 9 }, { from: 9, to: 1 }, { from: 16, to: 1 },
+            { from: 16, to: 12 }, { from: 12, to: 14 }, { from: 14, to: 2 },
+            { from: 14, to: 3 }, { from: 1, to: 5 }, { from: 5, to: 4 },
+            { from: 4, to: 3 }, { from: 3, to: 8 }, { from: 8, to: 7 },
+            { from: 7, to: 13 }, { from: 13, to: 6 }, { from: 7, to: 15 },
+            { from: 17, to: 10 }, { from: 10, to: 5 }, { from: 9, to: 2 },
+            { from: 2, to: 12 }, { from: 5, to: 11 }, { from: 4, to: 6 },
+            { from: 18, to: 13 },
+            { from: 1, to: 2, kind: 'strong' },
+            { from: 2, to: 3, kind: 'strong' },
+            { from: 1, to: 5, kind: 'spread' },
+            { from: 5, to: 4, kind: 'spread' }
+        ];
+        const nodesById = new Map(graphNodes.map(node => [node.id, node]));
+        const renderGraphEdge = edge => {
+            const from = nodesById.get(edge.from);
+            const to = nodesById.get(edge.to);
+            if (!from || !to) {
+                return '';
+            }
+            const marker = edge.kind === 'strong' ? 'ppr-arrow-strong' : 'ppr-arrow-thin';
+            return `
+                <line
+                    class="ppr-svg-edge ${edge.kind === 'strong' ? 'is-strong' : edge.kind === 'spread' ? 'is-spread' : ''}"
+                    x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}"
+                    marker-end="url(#${marker})"
+                />
+            `;
+        };
+        const renderGraphNode = node => {
+            const shape = node.shape === 'square'
+                ? `<rect class="ppr-svg-node ${node.type} ${node.top ? 'is-top' : ''}" x="${node.x - 25}" y="${node.y - 25}" width="50" height="50"></rect>`
+                : `<circle class="ppr-svg-node ${node.type} ${node.top ? 'is-top' : ''}" cx="${node.x}" cy="${node.y}" r="25"></circle>`;
+            return `
+                <g class="ppr-svg-node-group">
+                    ${shape}
+                    <text class="ppr-svg-label" x="${node.x}" y="${node.y + 6}">${node.id}</text>
+                </g>
+            `;
+        };
 
         setHtml('[data-demo-ppr-diagram]', `
             <div class="ppr-diagram">
@@ -482,19 +536,39 @@ function setupEntbenchDemo() {
                 <div class="ppr-graph-board">
                     <div class="ppr-graph-title">
                         <i class="fas fa-project-diagram"></i>
-                        <span>工具图上的传播示意</span>
+                        <span>PPR 工具图传播结果</span>
                     </div>
-                    <div class="ppr-graph">
-                        ${pprTools.map((tool, index) => `
-                            <span class="ppr-node ${index === 0 ? 'is-seed' : ''} ${observedPath.includes(tool) ? 'is-hit' : ''}">
-                                ${escapeHtml(tool)}
-                            </span>
-                        `).join('')}
+                    <div class="ppr-network-wrap">
+                        <svg class="ppr-network-svg" viewBox="0 0 1000 520" role="img" aria-label="PPR 工具图传播示意">
+                            <defs>
+                                <marker id="ppr-arrow-thin" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L10,5 L0,10 Z" class="ppr-arrow-thin"></path>
+                                </marker>
+                                <marker id="ppr-arrow-strong" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L11,5.5 L0,11 Z" class="ppr-arrow-strong"></path>
+                                </marker>
+                            </defs>
+                            <g class="ppr-svg-edges">
+                                ${graphEdges.filter(edge => !edge.kind).map(renderGraphEdge).join('')}
+                                ${graphEdges.filter(edge => edge.kind === 'spread').map(renderGraphEdge).join('')}
+                                ${graphEdges.filter(edge => edge.kind === 'strong').map(renderGraphEdge).join('')}
+                            </g>
+                            <g class="ppr-svg-nodes">
+                                ${graphNodes.map(renderGraphNode).join('')}
+                            </g>
+                        </svg>
                     </div>
                     <div class="ppr-legend">
-                        <span><i class="legend-box seed"></i> 语义召回种子</span>
-                        <span><i class="legend-box hit"></i> PPR 后进入候选链</span>
-                        <span><i class="legend-box bridge"></i> 跨域桥接候选</span>
+                        <span><i class="legend-box seed"></i> Seed</span>
+                        <span><i class="legend-box hit"></i> Gold / 候选链</span>
+                        <span><i class="legend-box bridge"></i> Other</span>
+                        <span><i class="legend-line strong"></i> PPR 命中路径</span>
+                        <span><i class="legend-line thin"></i> 扩散候选边</span>
+                    </div>
+                    <div class="ppr-tool-map">
+                        ${graphNodes.slice(0, 10).map(node => `
+                            <span><b>${node.id}</b>${escapeHtml(node.name)}</span>
+                        `).join('')}
                     </div>
                 </div>
             </div>

@@ -343,15 +343,9 @@ function setupEntbenchDemo() {
         const draftRequiredTools = [...new Set(stages.flatMap(stage => (
             Array.isArray(stage.required_tools) ? stage.required_tools : []
         )))];
-        const mutationStages = stages.filter(stage => stage.state_change && stage.state_change !== 'none');
         const formatCondition = condition => objectEntries(condition)
             .map(([key, value]) => `${key}=${value}`)
             .join(', ');
-        const renderSeedList = items => `
-            <ul class="seed-state-list">
-                ${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
-            </ul>
-        `;
         const renderStateChecks = checks => {
             if (!checks.length) {
                 return '<p class="demo-empty">task_draft 中暂无 final_state_checks</p>';
@@ -443,6 +437,10 @@ function setupEntbenchDemo() {
                             </g>
                         </svg>
                     </div>
+                    <div class="seed-motif-card">
+                        <strong>业务 motif：跨域权限审批协调</strong>
+                        <p>这个 motif 从一个待处理的文档权限请求出发，把“谁申请、申请哪份文档、谁有审批权”和“近期会议/房间预订上下文”连成 seed 子图。生成任务时，草稿不会只问单点查询，而是要求 Agent 先读权限请求和用户关系，再结合会议记录做审批判断，最后验证 PermissionRequest、DocumentPermission 和 RoomBooking 三类状态是否一致。</p>
+                    </div>
                     <div class="seed-graph-legend">
                         <span><i class="seed-legend actor"></i> Actor</span>
                         <span><i class="seed-legend request"></i> Request</span>
@@ -452,20 +450,6 @@ function setupEntbenchDemo() {
                     </div>
                 </div>
                 <div class="seed-state-panel">
-                    <div>
-                        <strong>初始状态</strong>
-                        ${renderSeedList([
-                            `PermissionRequest ${seedFacts.request_id || 'req000001'}: status=pending, requested_permission=${seedFacts.requested_permission || 'edit'}, document_id=${seedFacts.document_id || 'doc000021'}, requester_id=${seedFacts.requester_id || 'user010'}`,
-                            `Document ${seedFacts.document_id || 'doc000021'}: owner_id=${seedFacts.owner_id || 'user002'}, title=接口规范v3.1草案`,
-                            `Meeting ${seedFacts.meeting_id || 'meeting_003'} / RoomBooking ${seedFacts.booking_id || 'meeting_003'}: room_id=${seedFacts.room_id || 'room003'}, ${seedFacts.meeting_start_time || '2026-03-17 10:00'} - ${seedFacts.meeting_end_time || '2026-03-17 11:00'}, meeting_status=completed, booking_status=confirmed`
-                        ])}
-                    </div>
-                    <div>
-                        <strong>状态变化</strong>
-                        ${mutationStages.length
-                            ? renderSeedList(mutationStages.map(stage => `Stage ${stage.stage_id}: ${stage.state_change}`))
-                            : '<p class="demo-empty">task_draft 未声明写入状态变化</p>'}
-                    </div>
                     <div>
                         <strong>目标状态检查</strong>
                         ${renderStateChecks(finalStateChecks)}

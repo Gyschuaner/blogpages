@@ -4037,6 +4037,28 @@ body .article-body .hljs-params {
     gap: 6px;
 }
 
+.seed-motif-card {
+    margin-top: 12px;
+    padding: 12px;
+    color: #FFFFFF;
+    background-color: #5D5D5D;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0 #000;
+}
+
+.seed-motif-card strong {
+    display: block;
+    color: #FFFF55;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.seed-motif-card p {
+    line-height: 1.65;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
 .seed-legend {
     display: inline-block;
     width: 14px;
@@ -4090,7 +4112,6 @@ body .article-body .hljs-params {
     overflow-wrap: anywhere;
 }
 
-.seed-state-list,
 .seed-check-list {
     display: grid;
     gap: 8px;
@@ -4099,7 +4120,6 @@ body .article-body .hljs-params {
     list-style: none;
 }
 
-.seed-state-list li,
 .seed-check-list li {
     position: relative;
     padding-left: 18px;
@@ -4108,7 +4128,6 @@ body .article-body .hljs-params {
     overflow-wrap: anywhere;
 }
 
-.seed-state-list li::before,
 .seed-check-list li::before {
     content: "";
     position: absolute;

@@ -337,6 +337,105 @@ function setupEntbenchDemo() {
         const taskMeta = taskDraft.task_meta || {};
         const stages = Array.isArray(taskDraft.stages) ? taskDraft.stages : [];
         const seedFacts = solvability.seed_facts || {};
+        const seedGraphNodes = [
+            { id: 'owner', label: seedFacts.owner_name || '张明', sub: seedFacts.owner_id || 'user002', x: 120, y: 115, type: 'actor' },
+            { id: 'requester', label: seedFacts.requester_name || '郑鹏', sub: seedFacts.requester_id || 'user010', x: 120, y: 305, type: 'actor' },
+            { id: 'request', label: seedFacts.request_id || 'req000001', sub: 'pending edit request', x: 365, y: 210, type: 'request' },
+            { id: 'document', label: seedFacts.document_id || 'doc000021', sub: '接口规范v3.1草案', x: 590, y: 125, type: 'document' },
+            { id: 'meeting', label: seedFacts.meeting_id || 'meeting_003', sub: seedFacts.meeting_date || '2026-03-17', x: 590, y: 305, type: 'meeting' },
+            { id: 'organizer', label: '孙丽', sub: 'user009 / 市场总监', x: 835, y: 305, type: 'actor' },
+            { id: 'target', label: '目标状态', sub: 'approve + verify', x: 835, y: 125, type: 'target' }
+        ];
+        const seedNodeMap = new Map(seedGraphNodes.map(node => [node.id, node]));
+        const seedGraphEdges = [
+            { from: 'requester', to: 'request', label: '申请 edit 权限' },
+            { from: 'request', to: 'document', label: '关联文档' },
+            { from: 'owner', to: 'document', label: '文档 owner' },
+            { from: 'organizer', to: 'meeting', label: '组织会议' },
+            { from: 'meeting', to: 'document', label: '会议上下文' },
+            { from: 'owner', to: 'target', label: '执行审批' },
+            { from: 'document', to: 'target', label: '权限状态更新' }
+        ];
+        const renderSeedEdge = edge => {
+            const from = seedNodeMap.get(edge.from);
+            const to = seedNodeMap.get(edge.to);
+            if (!from || !to) {
+                return '';
+            }
+            const midX = (from.x + to.x) / 2;
+            const midY = (from.y + to.y) / 2;
+            return `
+                <g class="seed-edge-group">
+                    <line class="seed-graph-edge" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="url(#seed-arrow)"></line>
+                    <text class="seed-edge-label" x="${midX}" y="${midY - 8}">${escapeHtml(edge.label)}</text>
+                </g>
+            `;
+        };
+        const renderSeedNode = node => `
+            <g class="seed-node ${escapeHtml(node.type)}">
+                <rect x="${node.x - 78}" y="${node.y - 38}" width="156" height="76"></rect>
+                <text class="seed-node-label" x="${node.x}" y="${node.y - 5}">${escapeHtml(node.label)}</text>
+                <text class="seed-node-sub" x="${node.x}" y="${node.y + 19}">${escapeHtml(node.sub)}</text>
+            </g>
+        `;
+
+        setHtml('[data-demo-seed-graph]', `
+            <div class="seed-generation-flow">
+                <span>业务 motif</span>
+                <i class="fas fa-arrow-right"></i>
+                <span>Seed 数据子图</span>
+                <i class="fas fa-arrow-right"></i>
+                <span>约束工具集</span>
+                <i class="fas fa-arrow-right"></i>
+                <span>Task Draft</span>
+                <i class="fas fa-arrow-right"></i>
+                <span>可解性门控</span>
+            </div>
+            <div class="seed-graph-layout">
+                <div class="seed-graph-board">
+                    <div class="seed-graph-title">
+                        <i class="fas fa-share-nodes"></i>
+                        <span>L4_CROSS_DOMAIN / 文档权限审批 + 会议跟进</span>
+                    </div>
+                    <div class="seed-graph-wrap">
+                        <svg class="seed-graph-svg" viewBox="0 0 960 430" role="img" aria-label="L4_1006 seed 数据子图">
+                            <defs>
+                                <marker id="seed-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L10,5 L0,10 Z" class="seed-arrow"></path>
+                                </marker>
+                            </defs>
+                            <g class="seed-graph-edges">
+                                ${seedGraphEdges.map(renderSeedEdge).join('')}
+                            </g>
+                            <g class="seed-graph-nodes">
+                                ${seedGraphNodes.map(renderSeedNode).join('')}
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="seed-graph-legend">
+                        <span><i class="seed-legend actor"></i> Actor</span>
+                        <span><i class="seed-legend request"></i> Request</span>
+                        <span><i class="seed-legend document"></i> Document</span>
+                        <span><i class="seed-legend meeting"></i> Meeting</span>
+                        <span><i class="seed-legend target"></i> Target</span>
+                    </div>
+                </div>
+                <div class="seed-state-panel">
+                    <div>
+                        <strong>初始状态</strong>
+                        <p>权限请求 ${escapeHtml(seedFacts.request_id || 'req000001')} 仍为 pending；文档 ${escapeHtml(seedFacts.document_id || 'doc000021')} 已存在；会议 ${escapeHtml(seedFacts.meeting_id || 'meeting_003')} 提供业务上下文。</p>
+                    </div>
+                    <div>
+                        <strong>目标状态</strong>
+                        <p>审批 ${escapeHtml(seedFacts.requester_name || '郑鹏')} 的 edit 权限，并验证文档权限、会议安排和后续状态一致。</p>
+                    </div>
+                    <div>
+                        <strong>候选工具约束</strong>
+                        ${renderTags(['list_permission_requests', 'get_document', 'query_users', 'approve_permission_request'], 'warn')}
+                    </div>
+                </div>
+            </div>
+        `);
 
         setHtml('[data-demo-task-meta]', `
             ${renderKeyValues({

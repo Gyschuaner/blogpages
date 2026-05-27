@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EntBench-Agent - 项目演示</title>
-    <link rel="stylesheet" href="style.css?v=20260527-demo1">
+    <link rel="stylesheet" href="style.css?v=20260527-demo2">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -46,65 +46,22 @@
                     <div>
                         <p class="project-kicker">Live JSON Demo</p>
                         <h1>EntBench-Agent 项目演示</h1>
-                        <p>按项目总览、企业沙盒、任务生成、Agent 执行、Path Mining 和失败分析串起真实样例。</p>
+                        <p>按任务生成、Agent 执行、PPR 工具搜索和失败分析串起真实样例。</p>
                     </div>
                 </div>
 
                 <nav class="demo-module-nav" aria-label="EntBench 演示模块">
-                    <a href="#demo-overview"><i class="fas fa-map"></i> 项目总览</a>
-                    <a href="#demo-sandbox"><i class="fas fa-building"></i> 企业沙盒</a>
                     <a href="#demo-task"><i class="fas fa-seedling"></i> 任务生成</a>
                     <a href="#demo-agent"><i class="fas fa-terminal"></i> Agent 执行</a>
-                    <a href="#demo-path"><i class="fas fa-route"></i> Path Mining</a>
+                    <a href="#demo-ppr"><i class="fas fa-route"></i> PPR 工具搜索</a>
                     <a href="#demo-failure"><i class="fas fa-bug"></i> 失败分析</a>
                 </nav>
 
                 <div class="demo-load-status" data-demo-status>正在读取演示 JSON...</div>
 
-                <section id="demo-overview" class="demo-module">
-                    <div class="demo-module-title">
-                        <span class="demo-step">01</span>
-                        <div>
-                            <p class="project-kicker">Project Overview</p>
-                            <h2>项目总览</h2>
-                        </div>
-                    </div>
-                    <div class="demo-stat-grid" data-demo-overview-stats></div>
-                    <div class="demo-grid two-col">
-                        <div class="demo-panel">
-                            <h3><i class="fas fa-chart-bar"></i> 业务域密度</h3>
-                            <div data-demo-density></div>
-                        </div>
-                        <div class="demo-panel">
-                            <h3><i class="fas fa-shield-alt"></i> 语料检查</h3>
-                            <div data-demo-validation></div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="demo-sandbox" class="demo-module">
-                    <div class="demo-module-title">
-                        <span class="demo-step">02</span>
-                        <div>
-                            <p class="project-kicker">Enterprise Sandbox</p>
-                            <h2>企业沙盒</h2>
-                        </div>
-                    </div>
-                    <div class="demo-grid two-col">
-                        <div class="demo-panel">
-                            <h3><i class="fas fa-table"></i> 数据表记录</h3>
-                            <div data-demo-table-counts></div>
-                        </div>
-                        <div class="demo-panel">
-                            <h3><i class="fas fa-toolbox"></i> 工具域</h3>
-                            <div data-demo-domains></div>
-                        </div>
-                    </div>
-                </section>
-
                 <section id="demo-task" class="demo-module">
                     <div class="demo-module-title">
-                        <span class="demo-step">03</span>
+                        <span class="demo-step">01</span>
                         <div>
                             <p class="project-kicker">Seed To Draft</p>
                             <h2>任务生成</h2>
@@ -128,7 +85,7 @@
 
                 <section id="demo-agent" class="demo-module">
                     <div class="demo-module-title">
-                        <span class="demo-step">04</span>
+                        <span class="demo-step">02</span>
                         <div>
                             <p class="project-kicker">Agent Replay</p>
                             <h2>Agent 执行回放</h2>
@@ -145,29 +102,30 @@
                     </div>
                 </section>
 
-                <section id="demo-path" class="demo-module">
+                <section id="demo-ppr" class="demo-module">
                     <div class="demo-module-title">
-                        <span class="demo-step">05</span>
+                        <span class="demo-step">03</span>
                         <div>
-                            <p class="project-kicker">Tool Graph</p>
-                            <h2>Path Mining / 工具图</h2>
+                            <p class="project-kicker">PPR Tool Search</p>
+                            <h2>PPR 传播 / 工具搜索</h2>
                         </div>
                     </div>
+                    <div data-demo-ppr-diagram></div>
                     <div class="demo-grid two-col">
                         <div class="demo-panel">
-                            <h3><i class="fas fa-project-diagram"></i> Stage Path Bank</h3>
-                            <div data-demo-path-bank></div>
+                            <h3><i class="fas fa-link"></i> 真实样例工具链</h3>
+                            <div data-demo-ppr-sample></div>
                         </div>
                         <div class="demo-panel">
-                            <h3><i class="fas fa-ruler-combined"></i> 当前路径对比</h3>
-                            <div data-demo-path-compare></div>
+                            <h3><i class="fas fa-filter"></i> 搜索约束</h3>
+                            <div data-demo-ppr-notes></div>
                         </div>
                     </div>
                 </section>
 
                 <section id="demo-failure" class="demo-module">
                     <div class="demo-module-title">
-                        <span class="demo-step">06</span>
+                        <span class="demo-step">04</span>
                         <div>
                             <p class="project-kicker">Failure Analysis</p>
                             <h2>失败分析</h2>
@@ -192,6 +150,6 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <script src="script.js?v=20260527-demo1"></script>
+    <script src="script.js?v=20260527-demo2"></script>
 </body>
 </html>

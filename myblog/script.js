@@ -190,9 +190,6 @@ function setupEntbenchDemo() {
 
     const status = root.querySelector('[data-demo-status]');
     const dataFiles = {
-        corpus: 'data/entbench/corpus-inspection.json',
-        metadata: 'data/entbench/generated-metadata.json',
-        tools: 'data/entbench/tool-metadata.json',
         draft: 'data/entbench/l4-1006-draft.json',
         agentLog: 'data/entbench/l4-1006-agent-log.json',
         pathMining: 'data/entbench/l4-1006-path-mining.json',
@@ -241,13 +238,6 @@ function setupEntbenchDemo() {
         const text = String(value ?? '');
         return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
     };
-
-    const sumCounts = counts => objectEntries(counts)
-        .filter(([key, value]) => key !== 'metadata' && typeof value === 'number')
-        .reduce((total, [, value]) => total + value, 0);
-
-    const countTables = counts => objectEntries(counts)
-        .filter(([, value]) => typeof value === 'number').length;
 
     const renderStats = stats => stats.map(stat => `
         <div class="demo-stat-card">
@@ -340,44 +330,6 @@ function setupEntbenchDemo() {
     const renderCode = value => {
         const text = typeof value === 'string' ? value : JSON.stringify(value ?? {}, null, 2);
         return `<pre class="demo-code-snippet">${escapeHtml(shortText(text, 1400))}</pre>`;
-    };
-
-    const renderOverview = ({ corpus, metadata, tools }) => {
-        const counts = metadata.counts || corpus.counts || {};
-        const domainEntries = objectEntries(tools.domains);
-        const toolCount = Object.keys(tools.full_tool_info || {}).length;
-
-        setHtml('[data-demo-overview-stats]', renderStats([
-            { icon: 'fas fa-table', value: formatNumber(countTables(counts)), label: '企业数据表', note: metadata.preset ? `preset: ${metadata.preset}` : '完整企业沙盒结构' },
-            { icon: 'fas fa-database', value: formatNumber(sumCounts(counts)), label: '模拟记录', note: metadata.anchor_date ? `锚定日期 ${metadata.anchor_date}` : '跨域业务记录' },
-            { icon: 'fas fa-layer-group', value: formatNumber(domainEntries.length), label: '工具域', note: domainEntries.map(([key]) => key).join(' / ') },
-            { icon: 'fas fa-toolbox', value: formatNumber(toolCount), label: '企业工具', note: '用于 Agent 读写企业沙盒' }
-        ]));
-
-        setHtml('[data-demo-density]', renderMeters(corpus.domain_density || {}));
-        setHtml('[data-demo-validation]', renderKeyValues({
-            语料通过: corpus.validation_summary?.passed,
-            错误数: corpus.validation_summary?.error_count,
-            警告数: corpus.validation_summary?.warning_count,
-            生成时间: metadata.generated_at,
-            随机种子: metadata.seed,
-            源数据库: metadata.source_database
-        }));
-    };
-
-    const renderSandbox = ({ metadata, tools }) => {
-        const countRows = objectEntries(metadata.counts || {})
-            .filter(([key]) => key !== 'metadata')
-            .sort((a, b) => Number(b[1]) - Number(a[1]))
-            .map(([table, count]) => [table, formatNumber(count)]);
-        const domainRows = objectEntries(tools.domains || {}).map(([domain, info]) => {
-            const toolList = Array.isArray(info.tools) ? info.tools : [];
-            const preview = toolList.slice(0, 4).map(tool => Array.isArray(tool) ? tool[0] : tool).join(', ');
-            return [info.display || domain, domain, formatNumber(toolList.length), preview];
-        });
-
-        setHtml('[data-demo-table-counts]', renderTable(['数据表', '记录数'], countRows));
-        setHtml('[data-demo-domains]', renderTable(['工具域', 'domain', '数量', '代表工具'], domainRows));
     };
 
     const renderTask = ({ draft, solvability }) => {
@@ -480,36 +432,104 @@ function setupEntbenchDemo() {
         `);
     };
 
-    const renderPathMining = ({ pathMining }) => {
+    const renderPprSearch = ({ pathMining }) => {
         const mining = pathMining.path_mining || {};
         const stageBank = mining.stage_path_bank || {};
         const comparisons = Array.isArray(pathMining.current_run_path_comparison)
             ? pathMining.current_run_path_comparison
             : [];
+        const firstComparison = comparisons[0] || {};
+        const firstStagePaths = Array.isArray(stageBank['1']) ? stageBank['1'] : [];
+        const firstBankPath = firstStagePaths[0]?.path || [];
+        const observedPath = firstComparison.observed_tool_path || firstBankPath;
+        const centerTool = observedPath[0] || 'list_permission_requests';
+        const pprTools = [
+            centerTool,
+            ...observedPath.slice(1),
+            'approve_permission_request',
+            'list_document_permissions',
+            'check_room_availability'
+        ].filter((tool, index, list) => tool && list.indexOf(tool) === index).slice(0, 7);
 
-        setHtml('[data-demo-path-bank]', objectEntries(stageBank).map(([stageId, paths]) => {
-            const firstPath = Array.isArray(paths) ? paths[0] : null;
-            return `
-                <article class="demo-stage-card">
-                    <h4>Stage ${escapeHtml(stageId)} · ${formatNumber(firstPath?.length || 0)} tools</h4>
-                    ${renderPath(firstPath?.path || [])}
-                    <span class="demo-mini-label">source</span>
-                    ${renderTags(firstPath?.sources || ['__current_run__'], 'warn')}
-                </article>
-            `;
-        }).join(''));
+        setHtml('[data-demo-ppr-diagram]', `
+            <div class="ppr-diagram">
+                <div class="ppr-flow">
+                    <article class="ppr-step-card">
+                        <span class="ppr-step-icon"><i class="fas fa-comment-dots"></i></span>
+                        <h3>用户请求 + Seed</h3>
+                        <p>从任务 seed 和当前 stage 中抽出实体、目标状态、候选业务域。</p>
+                    </article>
+                    <span class="ppr-flow-arrow">→</span>
+                    <article class="ppr-step-card">
+                        <span class="ppr-step-icon"><i class="fas fa-magnifying-glass"></i></span>
+                        <h3>语义召回</h3>
+                        <p>先找最像当前意图的种子工具，不把 107 个工具一次性丢给 Agent。</p>
+                    </article>
+                    <span class="ppr-flow-arrow">→</span>
+                    <article class="ppr-step-card ppr-step-card-strong">
+                        <span class="ppr-step-icon"><i class="fas fa-share-nodes"></i></span>
+                        <h3>PPR 传播</h3>
+                        <p>在历史工具调用图上扩散，把前置、后续、跨域桥接工具一起带出来。</p>
+                    </article>
+                    <span class="ppr-flow-arrow">→</span>
+                    <article class="ppr-step-card">
+                        <span class="ppr-step-icon"><i class="fas fa-list-check"></i></span>
+                        <h3>约束重排</h3>
+                        <p>结合 required tools、forbidden tools、业务域和历史路径，形成候选工具链。</p>
+                    </article>
+                </div>
 
-        setHtml('[data-demo-path-compare]', comparisons.map(item => `
+                <div class="ppr-graph-board">
+                    <div class="ppr-graph-title">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>工具图上的传播示意</span>
+                    </div>
+                    <div class="ppr-graph">
+                        ${pprTools.map((tool, index) => `
+                            <span class="ppr-node ${index === 0 ? 'is-seed' : ''} ${observedPath.includes(tool) ? 'is-hit' : ''}">
+                                ${escapeHtml(tool)}
+                            </span>
+                        `).join('')}
+                    </div>
+                    <div class="ppr-legend">
+                        <span><i class="legend-box seed"></i> 语义召回种子</span>
+                        <span><i class="legend-box hit"></i> PPR 后进入候选链</span>
+                        <span><i class="legend-box bridge"></i> 跨域桥接候选</span>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        setHtml('[data-demo-ppr-sample]', `
             <article class="demo-stage-card">
-                <h4>Stage ${escapeHtml(item.stage_id)} · efficiency ${formatMetric(item.path_efficiency_score)}</h4>
-                <span class="demo-mini-label">observed</span>
-                ${renderPath(item.observed_tool_path || [])}
+                <h4>Stage ${escapeHtml(firstComparison.stage_id || 1)} · L4_1006 权限请求读取</h4>
+                <span class="demo-mini-label">observed path</span>
+                ${renderPath(observedPath)}
                 <span class="demo-mini-label">shortest baseline</span>
-                ${renderPath(item.shortest_solvable_path || [])}
-                <span class="demo-mini-label">count</span>
-                ${renderTags([`actual: ${item.actual_tool_count}`, `optimal: ${item.optimal_tool_count}`], 'warn')}
+                ${renderPath(firstComparison.shortest_solvable_path || observedPath)}
+                <span class="demo-mini-label">efficiency</span>
+                ${renderTags([
+                    `score: ${formatMetric(firstComparison.path_efficiency_score ?? 1)}`,
+                    `actual: ${firstComparison.actual_tool_count ?? observedPath.length}`,
+                    `optimal: ${firstComparison.optimal_tool_count ?? observedPath.length}`
+                ], 'warn')}
             </article>
-        `).join(''));
+        `);
+
+        setHtml('[data-demo-ppr-notes]', `
+            ${renderKeyValues({
+                历史窗口: mining.history_window,
+                路径库: `${objectEntries(stageBank).length} stages`,
+                最短基线: `${objectEntries(mining.shortest_baseline || {}).length} stages`,
+                当前对比: `${comparisons.length} stages`
+            })}
+            <span class="demo-mini-label">为什么不用纯语义搜索</span>
+            ${renderTags([
+                '语义相似只能找到当前意图附近的工具',
+                'PPR 会把历史上常一起出现的前置和后续工具带出来',
+                '再用任务规则过滤删除、撤销等危险或无关工具'
+            ])}
+        `);
     };
 
     const renderFailure = ({ failure }) => {
@@ -567,15 +587,13 @@ function setupEntbenchDemo() {
     ))
         .then(entries => {
             const data = Object.fromEntries(entries);
-            renderOverview(data);
-            renderSandbox(data);
             renderTask(data);
             renderAgentReplay(data);
-            renderPathMining(data);
+            renderPprSearch(data);
             renderFailure(data);
 
             if (status) {
-                status.textContent = '演示数据已加载：L4_1006 成功回放 + L4_1124 失败分析。';
+                status.textContent = '演示数据已加载：L4_1006 成功回放 + PPR 工具搜索 + L4_1124 失败分析。';
                 status.classList.add('is-ready');
             }
         })

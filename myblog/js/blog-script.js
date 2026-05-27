@@ -149,18 +149,9 @@ class BlogLoader {
 
     generateCategoryFoldersHTML() {
         const activeCategory = this.activeCategory || 'all';
-        const allActive = activeCategory === 'all' ? ' active' : '';
         const closedChest = 'images/project-chest-closed.png';
         const openChest = 'images/project-chest-open.png';
-        let html = `
-            <button class="blog-folder-item${allActive}" type="button" data-category="all">
-                <span class="folder-icon">
-                    <img src="${allActive ? openChest : closedChest}" alt="" class="folder-chest-img" aria-hidden="true">
-                </span>
-                <span class="folder-name">全部文章</span>
-                <span class="folder-count">${this.blogs.length}</span>
-            </button>
-        `;
+        let html = '';
 
         this.getCategoryCounts().forEach(([category, count]) => {
             const active = activeCategory === category ? ' active' : '';
@@ -208,11 +199,21 @@ class BlogLoader {
 
     renderBlogIndex() {
         const folderList = document.querySelector('.blog-folder-list');
+        const allButton = document.querySelector('.blog-folder-all');
+        const allCount = document.querySelector('.folder-title-count');
         const blogListContainer = document.querySelector('.blog-list');
         const status = document.querySelector('.blog-list-status');
 
         if (folderList) {
             folderList.innerHTML = this.generateCategoryFoldersHTML();
+        }
+
+        if (allButton) {
+            allButton.classList.toggle('active', !this.activeCategory || this.activeCategory === 'all');
+        }
+
+        if (allCount) {
+            allCount.textContent = this.blogs.length;
         }
 
         if (!blogListContainer) return;
@@ -247,6 +248,15 @@ class BlogLoader {
 
     initBlogFolderPanel() {
         const folderList = document.querySelector('.blog-folder-list');
+        const allButton = document.querySelector('.blog-folder-all');
+
+        if (allButton && allButton.dataset.bound !== 'true') {
+            allButton.dataset.bound = 'true';
+            allButton.addEventListener('click', () => {
+                this.setActiveCategory('all');
+            });
+        }
+
         if (!folderList || folderList.dataset.bound === 'true') return;
 
         folderList.dataset.bound = 'true';

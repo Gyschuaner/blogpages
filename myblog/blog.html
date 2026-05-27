@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>博客 - 个人主页</title>
-    <link rel="stylesheet" href="style.css?v=20260527-chests1">
+    <link rel="stylesheet" href="style.css?v=20260527-chests2">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -53,10 +53,10 @@
             
             <div class="blog-index-layout">
                 <aside class="blog-folder-panel" aria-label="博客分类">
-                    <div class="folder-panel-title">
-                        <img src="images/project-chest-open.png" alt="" class="folder-title-chest" aria-hidden="true">
-                        <span>分类文件夹</span>
-                    </div>
+                    <button class="folder-panel-title blog-folder-all active" type="button" data-category="all">
+                        <span class="folder-name">全部文章</span>
+                        <span class="folder-count folder-title-count">0</span>
+                    </button>
                     <div class="blog-folder-list" role="list">
                         <!-- 分类文件夹将通过JavaScript动态生成 -->
                     </div>

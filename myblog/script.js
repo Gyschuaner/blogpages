@@ -732,20 +732,6 @@ function setupEntbenchDemo() {
 
     const renderFailure = ({ failure }) => {
         const failedStages = Array.isArray(failure.failed_stages) ? failure.failed_stages : [];
-        const labelCounts = failure.summary?.label_counts || {};
-
-        setHtml('[data-demo-failure-summary]', `
-            <div class="demo-stat-grid demo-stat-grid-compact">
-                ${renderStats([
-                { icon: 'fas fa-triangle-exclamation', value: formatNumber(failure.summary?.failed_stage_count || failedStages.length), label: '失败阶段' },
-                { icon: 'fas fa-tags', value: formatNumber(Object.keys(labelCounts).length), label: '错误标签' },
-                { icon: 'fas fa-check-double', value: formatNumber(failure.summary?.labeled_in_scope_count ?? 0), label: '已归因' },
-                { icon: 'fas fa-circle-question', value: formatNumber(failure.summary?.unlabeled_count ?? 0), label: '未归因' }
-                ])}
-            </div>
-            <span class="demo-mini-label">label_counts</span>
-            ${renderMeters(labelCounts)}
-        `);
 
         setHtml('[data-demo-failure-list]', failedStages.slice(0, 4).map(stage => {
             const calls = stage.agent_trace?.tool_calls_detail || [];
@@ -753,7 +739,7 @@ function setupEntbenchDemo() {
             const stateChecks = stage.evidence?.failed_state_checks || [];
             return `
                 <article class="demo-stage-card">
-                    <h4>Stage ${escapeHtml(stage.stage_id)} · ${escapeHtml(stage.label || stage.error_label || 'UNKNOWN')}</h4>
+                    <h4>Stage ${escapeHtml(stage.stage_id)} · 失败证据</h4>
                     <p>${escapeHtml(stage.rule_reason || '暂无规则说明')}</p>
                     <span class="demo-mini-label">observed_tool_path</span>
                     ${renderPath(stage.observed_tool_path || [])}

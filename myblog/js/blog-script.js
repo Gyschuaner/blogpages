@@ -150,9 +150,13 @@ class BlogLoader {
     generateCategoryFoldersHTML() {
         const activeCategory = this.activeCategory || 'all';
         const allActive = activeCategory === 'all' ? ' active' : '';
+        const closedChest = 'images/project-chest-closed.png';
+        const openChest = 'images/project-chest-open.png';
         let html = `
             <button class="blog-folder-item${allActive}" type="button" data-category="all">
-                <span class="folder-icon"><i class="fas fa-folder-open"></i></span>
+                <span class="folder-icon">
+                    <img src="${allActive ? openChest : closedChest}" alt="" class="folder-chest-img" aria-hidden="true">
+                </span>
                 <span class="folder-name">全部文章</span>
                 <span class="folder-count">${this.blogs.length}</span>
             </button>
@@ -162,7 +166,9 @@ class BlogLoader {
             const active = activeCategory === category ? ' active' : '';
             html += `
             <button class="blog-folder-item${active}" type="button" data-category="${this.escapeHTML(category)}">
-                <span class="folder-icon"><i class="fas fa-folder"></i></span>
+                <span class="folder-icon">
+                    <img src="${active ? openChest : closedChest}" alt="" class="folder-chest-img" aria-hidden="true">
+                </span>
                 <span class="folder-name">${this.escapeHTML(category)}</span>
                 <span class="folder-count">${count}</span>
             </button>

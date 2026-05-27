@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EntBench-Agent - 项目详情</title>
+    <link rel="stylesheet" href="style.css?v=20260527-projects4">
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="home.html">首页</a></li>
+                    <li><a href="about.html">关于我</a></li>
+                    <li><a href="skills.html">技能</a></li>
+                    <li><a href="projects.html">项目</a></li>
+                    <li><a href="blog.html">博客</a></li>
+                    <li><a href="timeline.html">轨迹</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <section class="project-detail-section">
+        <div class="container">
+            <div class="project-detail-shell">
+                <a href="projects.html" class="project-back-link"><i class="fas fa-arrow-left"></i> 返回项目工坊</a>
+
+                <div class="project-detail-heading">
+                    <div class="project-detail-icon"><i class="fas fa-network-wired"></i></div>
+                    <div>
+                        <p class="project-kicker">Agent / Benchmark</p>
+                        <h1>EntBench-Agent</h1>
+                        <p>企业工作流任务合成与工具图检索系统，用可执行企业沙盒生成复杂 Agent 任务，并用历史工具调用图增强工具链召回。</p>
+                    </div>
+                </div>
+
+                <div class="project-detail-grid">
+                    <main class="project-detail-main">
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-map"></i> 项目目标</h2>
+                            <p>解决企业 Agent benchmark 难以人工构造、工具链选择容易漏关键工具的问题。项目把企业数据库、业务工具、任务 seed、LLM 任务生成、规则门控、可解性验证和真实 Agent 评测串成一条闭环流水线。</p>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-layer-group"></i> 系统模块</h2>
+                            <ul class="project-detail-list">
+                                <li>企业模拟数据库：覆盖组织用户、HR、文档、会议、项目和日程等业务域。</li>
+                                <li>工具库：定义 107 个企业工具，支持查询、审批、会议、文档、任务和提醒等读写操作。</li>
+                                <li>任务 seed 子图：从企业关系图中按业务 motif 抽取实体、关系证据、初始状态和目标状态。</li>
+                                <li>任务编译器：把 LLM 生成的结构化草稿编译成可执行、可评测的 benchmark task。</li>
+                                <li>规则门控与可解性门控：检查任务一致性，并真实执行工具链过滤不可解任务。</li>
+                            </ul>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-project-diagram"></i> 工具图检索</h2>
+                            <p>从成功任务日志中挖掘可解工具路径，把工具作为节点、调用顺序作为边构建历史调用图；在线检索时先用语义方法召回 seed tools，再用 PPR 图传播补全前置、后续和跨域桥接工具，让工具选择不只依赖当前请求和工具描述。</p>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-star"></i> 项目亮点</h2>
+                            <ul class="project-detail-list">
+                                <li>用规则化业务场景包生成跨表一致的数据，而不是完全随机造数据。</li>
+                                <li>任务必须经过规则检查和可解性验证，避免只“看起来合理”。</li>
+                                <li>真实 Agent 运行日志会反哺工具图，让评测和检索形成循环。</li>
+                                <li>训练无关的工具图检索适合冷启动，新工具可先靠元数据进入语义图。</li>
+                            </ul>
+                        </section>
+                    </main>
+
+                    <aside class="project-detail-sidebar">
+                        <div class="project-detail-panel">
+                            <span class="project-status status-building">构建中</span>
+                            <div class="project-progress">
+                                <div class="project-progress-label"><span>完成度</span><span>72%</span></div>
+                                <div class="project-progress-track"><span style="width: 72%"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="project-detail-panel">
+                            <h2>技术栈</h2>
+                            <div class="project-tech">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">LLM</span>
+                                <span class="tech-tag">Agent</span>
+                                <span class="tech-tag">Benchmark</span>
+                                <span class="tech-tag">Tool Graph</span>
+                                <span class="tech-tag">PPR</span>
+                            </div>
+                        </div>
+
+                        <div class="project-detail-panel">
+                            <h2>当前规模</h2>
+                            <ul class="project-detail-list compact-list">
+                                <li>29 张企业数据表</li>
+                                <li>4000+ 条模拟记录</li>
+                                <li>107 个企业工具</li>
+                                <li>4 级任务难度</li>
+                            </ul>
+                        </div>
+
+                        <div class="project-detail-actions">
+                            <a href="projects.html" class="project-link"><i class="fas fa-box-open"></i> 回项目页</a>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>项目经验 - 个人主页</title>
-    <link rel="stylesheet" href="style.css?v=20260527-projects3">
+    <link rel="stylesheet" href="style.css?v=20260527-projects4">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -45,7 +45,7 @@
                 <aside class="project-chest-panel" aria-label="项目分类">
                     <button class="project-filter-button project-filter-all active" type="button" data-project-filter="all" data-filter-label="全部项目">
                         <span class="project-filter-name">全部项目</span>
-                        <span class="project-filter-count">1</span>
+                        <span class="project-filter-count">2</span>
                     </button>
 
                     <div class="project-filter-list">
@@ -54,12 +54,17 @@
                             <span class="project-filter-name">Web 站点</span>
                             <span class="project-filter-count">1</span>
                         </button>
+                        <button class="project-filter-button" type="button" data-project-filter="ai-benchmark" data-filter-label="AI Benchmark">
+                            <span class="project-chest-slot"><img src="images/project-chest-closed.png" alt="" class="project-chest-img" aria-hidden="true"></span>
+                            <span class="project-filter-name">AI Benchmark</span>
+                            <span class="project-filter-count">1</span>
+                        </button>
                     </div>
                 </aside>
 
                 <div class="project-board">
                     <div class="project-board-toolbar">
-                        <span class="project-board-status">全部项目 · 1 件</span>
+                        <span class="project-board-status">全部项目 · 2 件</span>
                     </div>
 
                     <div class="project-grid">
@@ -83,6 +88,31 @@
                                 </div>
                                 <div class="project-actions">
                                     <a href="project-blog-site.html" class="project-link"><i class="fas fa-door-open"></i> 项目详情</a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="project-card" data-project-category="ai-benchmark">
+                            <div class="project-card-top">
+                                <div class="project-item-icon"><i class="fas fa-network-wired"></i></div>
+                                <span class="project-status status-building">构建中</span>
+                            </div>
+                            <div class="project-content">
+                                <p class="project-kicker">Agent / Benchmark</p>
+                                <h3 class="project-title">EntBench-Agent</h3>
+                                <p class="project-description">企业工作流任务合成与工具图检索系统，用可执行企业沙盒、任务生成流水线和历史工具图提升复杂 Agent 评测与工具选择。</p>
+                                <div class="project-progress">
+                                    <div class="project-progress-label"><span>完成度</span><span>72%</span></div>
+                                    <div class="project-progress-track"><span style="width: 72%"></span></div>
+                                </div>
+                                <div class="project-tech">
+                                    <span class="tech-tag">Python</span>
+                                    <span class="tech-tag">Agent</span>
+                                    <span class="tech-tag">Benchmark</span>
+                                    <span class="tech-tag">Tool Graph</span>
+                                </div>
+                                <div class="project-actions">
+                                    <a href="project-entbench-agent.html" class="project-link"><i class="fas fa-door-open"></i> 项目详情</a>
                                 </div>
                             </div>
                         </article>

@@ -337,6 +337,37 @@ function setupEntbenchDemo() {
         const taskMeta = taskDraft.task_meta || {};
         const stages = Array.isArray(taskDraft.stages) ? taskDraft.stages : [];
         const seedFacts = solvability.seed_facts || {};
+        const finalStateChecks = Array.isArray(taskDraft.evaluation_outline?.final_state_checks)
+            ? taskDraft.evaluation_outline.final_state_checks
+            : [];
+        const draftRequiredTools = [...new Set(stages.flatMap(stage => (
+            Array.isArray(stage.required_tools) ? stage.required_tools : []
+        )))];
+        const mutationStages = stages.filter(stage => stage.state_change && stage.state_change !== 'none');
+        const formatCondition = condition => objectEntries(condition)
+            .map(([key, value]) => `${key}=${value}`)
+            .join(', ');
+        const renderSeedList = items => `
+            <ul class="seed-state-list">
+                ${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+            </ul>
+        `;
+        const renderStateChecks = checks => {
+            if (!checks.length) {
+                return '<p class="demo-empty">task_draft 中暂无 final_state_checks</p>';
+            }
+            return `
+                <ul class="seed-check-list">
+                    ${checks.map(check => `
+                        <li>
+                            <span>${escapeHtml(check.table || '-')}</span>
+                            <code>${escapeHtml(formatCondition(check.condition || {}))}</code>
+                            <em>count=${escapeHtml(check.expected_count ?? '-')}</em>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+        };
         const seedGraphNodes = [
             { id: 'owner', label: seedFacts.owner_name || '张明', sub: seedFacts.owner_id || 'user002', x: 120, y: 115, type: 'actor' },
             { id: 'requester', label: seedFacts.requester_name || '郑鹏', sub: seedFacts.requester_id || 'user010', x: 120, y: 305, type: 'actor' },
@@ -423,15 +454,25 @@ function setupEntbenchDemo() {
                 <div class="seed-state-panel">
                     <div>
                         <strong>初始状态</strong>
-                        <p>权限请求 ${escapeHtml(seedFacts.request_id || 'req000001')} 仍为 pending；文档 ${escapeHtml(seedFacts.document_id || 'doc000021')} 已存在；会议 ${escapeHtml(seedFacts.meeting_id || 'meeting_003')} 提供业务上下文。</p>
+                        ${renderSeedList([
+                            `PermissionRequest ${seedFacts.request_id || 'req000001'}: status=pending, requested_permission=${seedFacts.requested_permission || 'edit'}, document_id=${seedFacts.document_id || 'doc000021'}, requester_id=${seedFacts.requester_id || 'user010'}`,
+                            `Document ${seedFacts.document_id || 'doc000021'}: owner_id=${seedFacts.owner_id || 'user002'}, title=接口规范v3.1草案`,
+                            `Meeting ${seedFacts.meeting_id || 'meeting_003'} / RoomBooking ${seedFacts.booking_id || 'meeting_003'}: room_id=${seedFacts.room_id || 'room003'}, ${seedFacts.meeting_start_time || '2026-03-17 10:00'} - ${seedFacts.meeting_end_time || '2026-03-17 11:00'}, meeting_status=completed, booking_status=confirmed`
+                        ])}
                     </div>
                     <div>
-                        <strong>目标状态</strong>
-                        <p>审批 ${escapeHtml(seedFacts.requester_name || '郑鹏')} 的 edit 权限，并验证文档权限、会议安排和后续状态一致。</p>
+                        <strong>状态变化</strong>
+                        ${mutationStages.length
+                            ? renderSeedList(mutationStages.map(stage => `Stage ${stage.stage_id}: ${stage.state_change}`))
+                            : '<p class="demo-empty">task_draft 未声明写入状态变化</p>'}
                     </div>
                     <div>
-                        <strong>候选工具约束</strong>
-                        ${renderTags(['list_permission_requests', 'get_document', 'query_users', 'approve_permission_request'], 'warn')}
+                        <strong>目标状态检查</strong>
+                        ${renderStateChecks(finalStateChecks)}
+                    </div>
+                    <div>
+                        <strong>草稿 required_tools</strong>
+                        ${renderTags(draftRequiredTools, 'warn')}
                     </div>
                 </div>
             </div>

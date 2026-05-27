@@ -4090,6 +4090,60 @@ body .article-body .hljs-params {
     overflow-wrap: anywhere;
 }
 
+.seed-state-list,
+.seed-check-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.seed-state-list li,
+.seed-check-list li {
+    position: relative;
+    padding-left: 18px;
+    line-height: 1.55;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.seed-state-list li::before,
+.seed-check-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 8px;
+    height: 8px;
+    background-color: #4ADE80;
+    border: 2px solid #000;
+    box-shadow: 1px 1px 0 #000;
+}
+
+.seed-check-list span {
+    display: block;
+    color: #FFFF55;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.seed-check-list code {
+    display: block;
+    margin: 5px 0;
+    padding: 6px;
+    color: #1F1F1F;
+    background-color: #F4EEDC;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 #000;
+    white-space: normal;
+}
+
+.seed-check-list em {
+    display: inline-block;
+    color: #FFFFFF;
+    font-style: normal;
+}
+
 .ppr-diagram {
     display: grid;
     gap: 18px;

@@ -714,20 +714,6 @@ function setupEntbenchDemo() {
             </article>
         `);
 
-        setHtml('[data-demo-ppr-notes]', `
-            ${renderKeyValues({
-                历史窗口: mining.history_window,
-                路径库: `${objectEntries(stageBank).length} stages`,
-                最短基线: `${objectEntries(mining.shortest_baseline || {}).length} stages`,
-                当前对比: `${comparisons.length} stages`
-            })}
-            <span class="demo-mini-label">为什么不用纯语义搜索</span>
-            ${renderTags([
-                '语义相似只能找到当前意图附近的工具',
-                'PPR 会把历史上常一起出现的前置和后续工具带出来',
-                '再用任务规则过滤删除、撤销等危险或无关工具'
-            ])}
-        `);
     };
 
     const renderFailure = ({ failure }) => {

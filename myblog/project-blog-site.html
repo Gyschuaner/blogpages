@@ -63,15 +63,33 @@
                                 <li>搭建了首页、博客页、项目页、时间线等基础页面。</li>
                                 <li>博客页支持按分类箱子筛选文章，并接入打开/关闭箱子图标。</li>
                                 <li>文章正文页统一成更适合阅读的 MC 风格排版。</li>
+                                <li>搭建了 <code>obsidian-blog-publisher</code> skill，把 Obsidian 笔记发布成博客文章的流程标准化。</li>
                                 <li>通过 GitHub 仓库连接 Cloudflare Pages 自动部署。</li>
                             </ul>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-wand-magic-sparkles"></i> Skill 发布流水线</h2>
+                            <p>这个博客不是手动复制 HTML 维护，而是把“写 Markdown - 生成文章 - 更新列表 - 构建验证 - 发布上线”封装成了一个可复用的 Codex skill。之后只需要在 Obsidian 里写好 Markdown，给出文件路径，skill 就会按同一套规则把它变成站内文章。</p>
+                            <ul class="project-detail-list">
+                                <li>读取 Obsidian Markdown，识别 frontmatter、标题、标签、代码块、表格、数学公式、Wiki 链接和图片引用。</li>
+                                <li>把笔记转换成统一的文章页，保留 MC 风格导航、正文排版、目录、代码高亮和图片懒加载。</li>
+                                <li>自动更新博客注册表，让新文章进入博客列表、分类筛选、搜索和侧边栏。</li>
+                                <li>构建前后执行语法检查、静态构建和差异检查，避免样式断裂、路径错误或坏脚本上线。</li>
+                                <li>发布时走 GitHub 到 Cloudflare Pages 的部署链路，形成从本地知识库到公网博客的闭环。</li>
+                            </ul>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-cubes-stacked"></i> 能力亮点</h2>
+                            <p>这个 skill 最有价值的地方不是“生成一篇网页”，而是把重复工作沉淀成稳定接口：同样的输入格式、同样的样式约束、同样的验证步骤。它让博客更像一个小型内容工程系统，也展示了把个人工作流产品化、自动化和可维护化的能力。</p>
                         </section>
 
                         <section class="project-detail-block">
                             <h2><i class="fas fa-hammer"></i> 下一步施工</h2>
                             <ul class="project-detail-list">
                                 <li>继续补项目详情页，真正的项目会放到这里，而博客笔记留在博客页。</li>
-                                <li>完善 Obsidian 到博客的发布流程，减少手动整理 Markdown 的步骤。</li>
+                                <li>给 skill 增加更细的视觉检查，例如自动截图检查移动端正文、图片和代码块。</li>
                                 <li>绑定正式域名后，把访问入口统一到自己的域名上。</li>
                             </ul>
                         </section>
@@ -92,6 +110,8 @@
                                 <span class="tech-tag">HTML</span>
                                 <span class="tech-tag">CSS</span>
                                 <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">Obsidian</span>
+                                <span class="tech-tag">Codex Skill</span>
                                 <span class="tech-tag">GitHub</span>
                                 <span class="tech-tag">Cloudflare Pages</span>
                             </div>

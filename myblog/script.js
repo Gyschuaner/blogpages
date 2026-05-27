@@ -15,7 +15,8 @@ function highlightCurrentNavItem() {
         // 简单的页面匹配逻辑
         if (href === currentPage ||
             (href === 'home.html' && isHomePage) ||
-            (currentPage.includes('blog-') && href === 'blog.html') ||
+            (currentPage.includes('project-') && href === 'projects.html') ||
+            (currentPage.startsWith('blog-') && href === 'blog.html') ||
             (currentPage.includes('notes/') && href === 'blog.html') ||
             (currentPage.includes('birthday_') && href === 'timeline.html')) {
             // 添加current类到父元素li

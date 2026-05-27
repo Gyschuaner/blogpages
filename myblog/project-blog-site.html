@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人博客基地 - 项目详情</title>
+    <link rel="stylesheet" href="style.css?v=20260527-projects3">
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Xgg的个人主页</a>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="home.html">首页</a></li>
+                    <li><a href="about.html">关于我</a></li>
+                    <li><a href="skills.html">技能</a></li>
+                    <li><a href="projects.html">项目</a></li>
+                    <li><a href="blog.html">博客</a></li>
+                    <li><a href="timeline.html">轨迹</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <section class="project-detail-section">
+        <div class="container">
+            <div class="project-detail-shell">
+                <a href="projects.html" class="project-back-link"><i class="fas fa-arrow-left"></i> 返回项目工坊</a>
+
+                <div class="project-detail-heading">
+                    <div class="project-detail-icon"><i class="fas fa-cubes"></i></div>
+                    <div>
+                        <p class="project-kicker">Web / Blog</p>
+                        <h1>个人博客基地</h1>
+                        <p>一个 MC 风格的个人主页与博客站点，用来沉淀 AI、代码、学习笔记和之后真正完成的项目。</p>
+                    </div>
+                </div>
+
+                <div class="project-detail-grid">
+                    <main class="project-detail-main">
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-map"></i> 项目目标</h2>
+                            <p>把个人主页、博客、时间线、技能和项目展示统一成一个有辨识度的小站。视觉上保持方块、箱子、像素边框这些 MC 元素，但阅读内容要比纯装饰更清爽。</p>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-check-square"></i> 已完成</h2>
+                            <ul class="project-detail-list">
+                                <li>搭建了首页、博客页、项目页、时间线等基础页面。</li>
+                                <li>博客页支持按分类箱子筛选文章，并接入打开/关闭箱子图标。</li>
+                                <li>文章正文页统一成更适合阅读的 MC 风格排版。</li>
+                                <li>通过 GitHub 仓库连接 Cloudflare Pages 自动部署。</li>
+                            </ul>
+                        </section>
+
+                        <section class="project-detail-block">
+                            <h2><i class="fas fa-hammer"></i> 下一步施工</h2>
+                            <ul class="project-detail-list">
+                                <li>继续补项目详情页，真正的项目会放到这里，而博客笔记留在博客页。</li>
+                                <li>完善 Obsidian 到博客的发布流程，减少手动整理 Markdown 的步骤。</li>
+                                <li>绑定正式域名后，把访问入口统一到自己的域名上。</li>
+                            </ul>
+                        </section>
+                    </main>
+
+                    <aside class="project-detail-sidebar">
+                        <div class="project-detail-panel">
+                            <span class="project-status status-online">已上线</span>
+                            <div class="project-progress">
+                                <div class="project-progress-label"><span>完成度</span><span>90%</span></div>
+                                <div class="project-progress-track"><span style="width: 90%"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="project-detail-panel">
+                            <h2>技术栈</h2>
+                            <div class="project-tech">
+                                <span class="tech-tag">HTML</span>
+                                <span class="tech-tag">CSS</span>
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">GitHub</span>
+                                <span class="tech-tag">Cloudflare Pages</span>
+                            </div>
+                        </div>
+
+                        <div class="project-detail-actions">
+                            <a href="blog.html" class="project-link"><i class="fas fa-book-open"></i> 打开博客</a>
+                            <a href="home.html" class="project-link project-link-secondary"><i class="fas fa-home"></i> 回到首页</a>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

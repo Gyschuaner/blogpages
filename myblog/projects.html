@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>项目经验 - 个人主页</title>
-    <link rel="stylesheet" href="style.css?v=20260526-code1">
+    <link rel="stylesheet" href="style.css?v=20260527-projects2">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -39,12 +39,54 @@
     <!-- 项目经验部分 -->
     <section id="projects" class="projects">
         <div class="container">
-            <h2 class="section-title">项目经验</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <div class="project-content">
-                        <h3 class="project-title">项目</h3>
-                        <p class="project-description">todo - 还没做完</p>
+            <h2 class="section-title">项目工坊</h2>
+
+            <div class="project-layout">
+                <aside class="project-chest-panel" aria-label="项目分类">
+                    <button class="project-filter-button project-filter-all active" type="button" data-project-filter="all" data-filter-label="全部项目">
+                        <span class="project-filter-name">全部项目</span>
+                        <span class="project-filter-count">1</span>
+                    </button>
+
+                    <div class="project-filter-list">
+                        <button class="project-filter-button" type="button" data-project-filter="web" data-filter-label="Web 站点">
+                            <span class="project-chest-slot"><img src="images/project-chest-closed.png" alt="" class="project-chest-img" aria-hidden="true"></span>
+                            <span class="project-filter-name">Web 站点</span>
+                            <span class="project-filter-count">1</span>
+                        </button>
+                    </div>
+                </aside>
+
+                <div class="project-board">
+                    <div class="project-board-toolbar">
+                        <span class="project-board-status">全部项目 · 1 件</span>
+                    </div>
+
+                    <div class="project-grid">
+                        <article class="project-card" data-project-category="web">
+                            <div class="project-card-top">
+                                <div class="project-item-icon"><i class="fas fa-cubes"></i></div>
+                                <span class="project-status status-online">已上线</span>
+                            </div>
+                            <div class="project-content">
+                                <p class="project-kicker">Web / Blog</p>
+                                <h3 class="project-title">个人博客基地</h3>
+                                <p class="project-description">MC 风格个人主页与博客站点，包含文章分类、像素边框、Cloudflare Pages 自动部署。</p>
+                                <div class="project-progress">
+                                    <div class="project-progress-label"><span>完成度</span><span>90%</span></div>
+                                    <div class="project-progress-track"><span style="width: 90%"></span></div>
+                                </div>
+                                <div class="project-tech">
+                                    <span class="tech-tag">HTML</span>
+                                    <span class="tech-tag">CSS</span>
+                                    <span class="tech-tag">Cloudflare</span>
+                                </div>
+                                <div class="project-actions">
+                                    <a href="blog.html" class="project-link"><i class="fas fa-door-open"></i> 查看页面</a>
+                                </div>
+                            </div>
+                        </article>
+
                     </div>
                 </div>
             </div>

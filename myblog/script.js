@@ -130,6 +130,55 @@ function setupProgressBars() {
     }, 500);
 }
 
+// 项目页分类箱子
+function setupProjectFilters() {
+    const filterButtons = document.querySelectorAll('.project-filter-button');
+    const projectCards = document.querySelectorAll('.project-card[data-project-category]');
+    const boardStatus = document.querySelector('.project-board-status');
+
+    if (!filterButtons.length || !projectCards.length) {
+        return;
+    }
+
+    const closedChest = 'images/project-chest-closed.png';
+    const openChest = 'images/project-chest-open.png';
+
+    function applyFilter(filter, label) {
+        let visibleCount = 0;
+
+        projectCards.forEach(card => {
+            const shouldShow = filter === 'all' || card.dataset.projectCategory === filter;
+            card.classList.toggle('is-hidden', !shouldShow);
+            if (shouldShow) {
+                visibleCount += 1;
+            }
+        });
+
+        filterButtons.forEach(button => {
+            const isActive = button.dataset.projectFilter === filter;
+            button.classList.toggle('active', isActive);
+
+            const chestImage = button.querySelector('.project-chest-img');
+            if (chestImage) {
+                chestImage.src = isActive ? openChest : closedChest;
+            }
+        });
+
+        if (boardStatus) {
+            boardStatus.textContent = `${label} · ${visibleCount} 件`;
+        }
+    }
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            applyFilter(button.dataset.projectFilter || 'all', button.dataset.filterLabel || '全部项目');
+        });
+    });
+
+    const activeButton = document.querySelector('.project-filter-button.active') || filterButtons[0];
+    applyFilter(activeButton.dataset.projectFilter || 'all', activeButton.dataset.filterLabel || '全部项目');
+}
+
 // 页面加载完成后执行
 window.addEventListener('DOMContentLoaded', () => {
     highlightCurrentNavItem();
@@ -138,6 +187,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setupMobileMenu();
     setupHeroTyping();
     setupProgressBars();
+    setupProjectFilters();
     
     // 监听滚动事件
     window.addEventListener('scroll', handleHeaderScroll);

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EntBench-Agent - 项目详情</title>
-    <link rel="stylesheet" href="style.css?v=20260527-projects4">
+    <link rel="stylesheet" href="style.css?v=20260527-projects5">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -120,6 +120,2070 @@
                         </div>
                     </aside>
                 </div>
+                <!-- BEGIN ENTBENCH_MD_DETAIL -->
+                <section id="project-raw-detail" class="project-markdown-detail">
+                    <h2><i class="fas fa-scroll"></i> ??????</h2>
+                    <div class="project-md-body">
+                        <h2>EntBench-Agent：企业工作流任务合成与工具图检索系统</h2>
+                        <h2>项目整体总览</h2>
+                        <figure><img src="images/projects/entbench-agent/entbench-1.png" alt="EntBench-Agent ???" loading="lazy"></figure>
+                        <h2>1. 企业数据库世界 \&amp; 工具库</h2>
+                        <p>这一部分主要介绍 EntBench-Agent 中企业模拟环境的构建方式。首先，系统会定义一套 JSON 格式的企业数据库表结构，覆盖<strong>组织/用户、HR、文档、会议、项目、日程</strong>等典型业务域。</p>
+                        <ul><li>组织域包含 <code>Department</code>、<code>User</code>、<code>Employee</code>；</li><li>文档域包含 <code>Document</code>、<code>DocumentVersion</code>、<code>DocumentPermission</code>、<code>DocumentShare</code>、<code>DocumentDownload</code>、<code>PermissionRequest</code>；</li><li>会议域包含 <code>MeetingRoom</code>、<code>RoomBooking</code>、<code>Meeting</code>、<code>MeetingAttendee</code>、<code>MeetingMinutes</code> 等；</li><li>项目域包含 <code>Project</code>、<code>ProjectMember</code>、<code>Task</code>；</li><li>日程域包含 <code>Schedule</code>、<code>Event</code>、<code>Todo</code>、<code>Reminder</code>。</li></ul>
+                        <p>这些表共同构成一个可被工具访问和修改的企业数据库世界。</p>
+                        <p>在数据生成时，系统不是完全随机地凭空造记录，而是先通过模板数据库确定基础表结构和初始实体，再通过规则化的业务场景包批量扩展数据。</p>
+                        <p>核心思想是：<strong>每个业务场景包对应一类真实企业工作流，按照业务逻辑自动生成跨表记录，并建立合理的实体关系</strong>。</p>
+                        <ul><li>例如 <code>document_collab_pack</code> 会先选择一个 uploader 创建文档，再自动赋予 uploader owner 权限，生成 2-4 个文档版本，选择若干 receiver 创建文档分享记录，同时创建对应的文档权限；部分 receiver 还会产生下载记录，其他用户可能进一步发起权限申请。这样生成出来的数据天然包含“用户上传文档 -\&amp;gt; 文档有版本 -\&amp;gt; 文档被分享 -\&amp;gt; 被分享人有权限 -\&amp;gt; 有人下载 -\&amp;gt; 有人申请权限”的链式关系，更贴近真实企业工作流，也方便后续构造多步任务。</li><li><code>meeting_coordination_pack</code> 会生成会议、参会人、会议室预订、会议纪要和会议分享；</li><li><code>project_delivery_pack</code> 会生成项目、成员、任务、待办、提醒和相关文档；</li><li><code>cross_domain_pack</code> 会把项目、文档权限请求、会议、待办、提醒连接起来；</li><li>HR 场景包则覆盖请假审批和入职任务。</li></ul>
+                        <p>最终，系统会对生成的数据进行质量校验，包括外键关系是否存在、时间顺序是否合理、项目/会议人数分布是否正常、是否有足够的可查询和可操作样本等。通过这种方式，数据库中的主要节点，如用户、文档、项目、会议等，会和 metadata 一起构成一张企业关系网络，用于后续任务 seed 抽取和任务生成。</p>
+                        <p>同时，系统定义了 <strong>107 个</strong>企业工具，覆盖 <strong>system、HR、document、permission、meeting、project、schedule 等类别</strong>。每个工具都对应真实的数据库读写能力，例如查询用户、搜索文档、审批权限请求、创建会议、更新任务、创建提醒等。工具库和数据库世界是一一配套的：数据库提供可操作对象，工具提供对这些对象的查询和修改接口，二者共同构成企业 Agent benchmark 的模拟沙盒环境。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>业务域</th><th>数量</th><th>工具名</th><th>覆盖能力</th></tr></thead><tbody><tr><td>系统</td><td>2</td><td><code>get_current_time</code>, <code>query_users</code></td><td>时间理解、相对日期解析、用户查询与用户 ID 解析</td></tr><tr><td>HR</td><td>18</td><td><code>get_employee</code>, <code>query_employees</code>, <code>get_manager</code>, <code>list_direct_reports</code>, <code>get_department</code>, <code>list_department_members</code>, <code>create_leave_request</code>, <code>get_leave_request</code>, <code>list_leave_requests</code>, <code>list_employee_leaves</code>, <code>approve_leave_request</code>, <code>reject_leave_request</code>, <code>check_leave_balance</code>, <code>get_onboarding_plan</code>, <code>list_onboarding_tasks</code>, <code>get_onboarding_task</code>, <code>update_onboarding_task_status</code>, <code>create_onboarding_reminder</code></td><td>员工/部门查询、上下级关系、请假申请与审批、假期余额、入职计划/任务/提醒</td></tr><tr><td>文档</td><td>21</td><td><code>create_document</code>, <code>get_document</code>, <code>update_document</code>, <code>delete_document</code>, <code>query_documents</code>, <code>list_documents_by_owner</code>, <code>create_document_version</code>, <code>list_document_versions</code>, <code>get_document_version</code>, <code>delete_document_version</code>, <code>compare_document_versions</code>, <code>restore_document_version</code>, <code>grant_document_permission</code>, <code>revoke_document_permission</code>, <code>list_document_permissions</code>, <code>check_document_permission</code>, <code>create_document_share</code>, <code>list_received_shares</code>, <code>download_document</code>, <code>list_document_downloads</code>, <code>get_download_detail</code></td><td>文档 CRUD、搜索、版本管理、权限管理、分享、下载与下载历史</td></tr><tr><td>权限</td><td>5</td><td><code>request_document_permission</code>, <code>list_permission_requests</code>, <code>approve_permission_request</code>, <code>reject_permission_request</code>, <code>get_user_permission_summary</code></td><td>文档权限申请、申请列表查询、审批/拒绝、用户权限汇总</td></tr><tr><td>会议</td><td>27</td><td><code>list_rooms</code>, <code>book_room</code>, <code>list_bookings</code>, <code>update_booking</code>, <code>cancel_booking</code>, <code>check_room_availability</code>, <code>release_room</code>, <code>create_meeting</code>, <code>get_meeting</code>, <code>list_meetings</code>, <code>update_meeting_information</code>, <code>cancel_meeting</code>, <code>add_meeting_attendee</code>, <code>remove_meeting_attendee</code>, <code>list_meeting_attendees</code>, <code>update_attendee_status</code>, <code>create_meeting_minutes</code>, <code>get_meeting_minutes</code>, <code>share_meeting_minutes</code>, <code>export_meeting_minutes</code>, <code>update_meeting_minutes</code>, <code>grant_meeting_permission</code>, <code>revoke_meeting_permission</code>, <code>list_meeting_permissions</code>, <code>check_meeting_permission</code>, <code>share_meeting</code>, <code>list_received_meeting_shares</code></td><td>会议室查询/预订/释放、会议创建/更新/取消、参会人管理、会议纪要、会议权限与分享</td></tr><tr><td>项目</td><td>16</td><td><code>create_project</code>, <code>get_project</code>, <code>list_projects</code>, <code>update_project</code>, <code>assign_project_member</code>, <code>list_project_members</code>, <code>list_user_projects</code>, <code>create_task</code>, <code>get_task</code>, <code>list_project_tasks</code>, <code>list_user_tasks</code>, <code>update_task</code>, <code>update_task_status</code>, <code>update_task_completion</code>, <code>get_task_progress</code>, <code>get_project_progress</code></td><td>项目创建/查询/更新、成员管理、任务创建/查询/更新、任务进度与项目进度统计</td></tr><tr><td>日程</td><td>18</td><td><code>create_event</code>, <code>get_event</code>, <code>list_events</code>, <code>list_user_events</code>, <code>update_event</code>, <code>delete_event</code>, <code>create_todo</code>, <code>get_todo</code>, <code>list_todos</code>, <code>list_user_todos</code>, <code>update_todo</code>, <code>complete_todo</code>, <code>create_reminder</code>, <code>get_reminder</code>, <code>list_reminders</code>, <code>list_user_reminders</code>, <code>update_reminder</code>, <code>delete_reminder</code></td><td>日程事件、待办事项、提醒的创建、查询、更新、完成和删除</td></tr></tbody></table></div>
+                        <h2>2. 业务 motif 生成任务子图</h2>
+                        <p>这一部分主要介绍如何从企业关系网中抽取任务 seed。系统会基于第一步构建好的企业实体关系图，根据预先定义的业务 motif，从图中抽取一组相关节点和关系边，例如用户、文档、会议、项目、任务、权限申请等，并同时确定该任务可使用的候选工具。最终得到的 seed 不是完整任务，而是一个结构化的任务骨架，包含任务相关实体、实体之间的关系证据、初始状态、目标状态、候选工具和难度约束。</p>
+                        <h3>2.1 任务难度分级</h3>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>难度</th><th>任务特点</th></tr></thead><tbody><tr><td>Level 1</td><td>单节点任务，例如查询一个文档、一个用户或一个任务</td></tr><tr><td>Level 2</td><td>双节点或简单关系任务，例如用户收到某个文档分享、某个任务属于某个项目</td></tr><tr><td>Level 3</td><td>涉及状态变化的任务，例如审批权限、更新任务状态、修改会议或日程</td></tr><tr><td>Level 4</td><td>跨业务域协调任务，通常包含多轮上下文继承和多次工具调用，例如文档权限 + 项目任务 + 会议协调</td></tr></tbody></table></div>
+                        <h3>2.2 seed 子图抽取流程</h3>
+                        <ol><li>先从企业关系图中抽取用户节点。不同难度会要求不同数量和关系复杂度的用户，例如 Level 2 通常需要两个相关用户作为任务主体。</li><li>根据抽到的用户及其关系边，继续扩展相关实体，例如该用户上传的文档、收到的分享、负责的项目、参与的会议或待办事项。</li><li>将抽取到的局部关系子图与预设业务 motif 进行匹配。若满足业务模板要求，就返回该任务 seed；如果不满足，则重新抽取用户和关系。</li><li>seed 中会保留真实实体 ID、实体属性、关系证据、初始状态和目标状态，作为后续 LLM 生成任务草稿的约束输入。</li></ol>
+                        <h3>2.3 候选工具确定流程</h3>
+                        <p>候选工具不是简单地把全部 107 个工具都交给 LLM，而是根据 seed 子图和业务 motif 进行打分筛选。系统会综合五类信号：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>信号</th><th>含义</th></tr></thead><tbody><tr><td>motif preferred tools</td><td>每个业务 motif 预设的高优先级工具，例如权限审批 motif 会偏好 <code>list_permission_requests</code> 和 <code>approve_permission_request</code></td></tr><tr><td>domain hints</td><td>根据 seed 涉及的业务域选择工具，例如 seed 涉及 document/permission，就优先考虑文档和权限工具</td></tr><tr><td>entity hints</td><td>根据 seed 中出现的实体类型选择工具，例如出现 Document、DocumentShare、PermissionRequest，就匹配文档查询、分享查询、权限申请工具</td></tr><tr><td>relation hints</td><td>根据关系边选择工具，例如 <code>pending_permission_request</code> 关系会提示需要查询和审批权限申请</td></tr><tr><td>target_state keyword hints</td><td>根据目标状态中的关键词选择工具，例如 approve/update/revoke/create 等词会提示需要写操作工具</td></tr></tbody></table></div>
+                        <p>系统会根据综合分数对工具排序，并按照任务难度保留不同数量的候选工具。低难度任务只保留少量必要工具，高难度任务会允许更多跨域工具，但仍然会过滤掉危险或无关工具，例如不应该出现的删除、取消、撤销类工具。</p>
+                        <h3>2.4 为什么要先确定 seed 子图和候选工具</h3>
+                        <p>不能让 LLM 直接在所有关系和所有工具中自由生成任务，主要有三个原因：</p>
+                        <ol><li>可解性不可控。LLM 容易编出数据库中不存在的实体关系，例如某人拥有某文档、某会议和某项目相关，但真实数据库里并不存在这条关系，最终任务无法执行。</li><li>工具链不可控。全量工具空间过大，LLM 可能设计出当前工具系统不支持的操作，或者漏掉必要前置工具，导致任务虽然自然，但无法被自动评测。</li><li>难度和分布不可控。benchmark 需要可复现地控制任务难度、业务域覆盖和多跳关系结构。如果完全由 LLM 自由生成，样本容易集中在简单常见任务上，或者生成一批风格相似但结构不稳定的任务。</li></ol>
+                        <p>因此，seed 子图负责保证实体关系真实、任务目标可落地；候选工具负责限制工具空间、提高工具链可执行性；LLM 只在这个受约束的空间内负责把结构化 seed 改写成自然、多阶段的用户任务。</p>
+                        <h2>3. 初步生成任务草稿并编译</h2>
+                        <p>这一部分主要介绍：系统如何基于第二步得到的任务 seed，让 LLM 生成结构化任务草稿，并进一步编译成 benchmark 可执行的 <code>.py</code> 任务文件和人工可读的 <code>.md</code> 任务说明。</p>
+                        <p>整体流程如下：</p>
+                        <pre><code class="language-plain">任务 seed 子图
+                          -&gt; 构造 LLM Prompt
+                          -&gt; LLM 生成 task_draft.json
+                          -&gt; 静态格式/规则检查
+                          -&gt; compiler 确定性编译
+                          -&gt; 输出 task.md + task.py</code></pre>
+                        <p>这里需要注意：LLM 只参与“生成任务草稿 JSON”这一步；JSON 编译成 <code>.md</code> 和 <code>.py</code> 是纯规则代码完成的，不是让 LLM 直接写 Python 文件。</p>
+                        <hr>
+                        <h3>3.1 输入：任务 seed 子图</h3>
+                        <p>seed 来自第二步的 motif 采样，里面包含真实实体、关系证据、初始状态、目标状态和候选工具。LLM 后续只能基于 seed 中已有的实体和工具生成任务，不能随便编造数据库中不存在的关系。</p>
+                        <pre><code class="language-json">{
+                          &quot;seed_id&quot;: &quot;SEED_L3_PERMISSION_001&quot;,
+                          &quot;difficulty&quot;: 3,
+                          &quot;motif_id&quot;: &quot;L3_PERMISSION_APPROVAL&quot;,
+                          &quot;domains&quot;: [&quot;document&quot;, &quot;permission&quot;],
+                          &quot;actors&quot;: [
+                            {
+                              &quot;user_id&quot;: &quot;user017&quot;,
+                              &quot;name&quot;: &quot;Alice&quot;,
+                              &quot;role&quot;: &quot;document_owner&quot;
+                            },
+                            {
+                              &quot;user_id&quot;: &quot;user031&quot;,
+                              &quot;name&quot;: &quot;Bob&quot;,
+                              &quot;role&quot;: &quot;requester&quot;
+                            }
+                          ],
+                          &quot;entities&quot;: {
+                            &quot;permission_request&quot;: {
+                              &quot;request_id&quot;: &quot;req000123&quot;,
+                              &quot;document_id&quot;: &quot;doc000456&quot;,
+                              &quot;requester_id&quot;: &quot;user031&quot;,
+                              &quot;owner_id&quot;: &quot;user017&quot;,
+                              &quot;permission_requested&quot;: &quot;edit&quot;,
+                              &quot;status&quot;: &quot;pending&quot;
+                            },
+                            &quot;document&quot;: {
+                              &quot;document_id&quot;: &quot;doc000456&quot;,
+                              &quot;title&quot;: &quot;Partner Ops Launch Checklist&quot;,
+                              &quot;uploader_id&quot;: &quot;user017&quot;
+                            }
+                          },
+                          &quot;relation_evidence&quot;: [
+                            {
+                              &quot;relation&quot;: &quot;pending_permission_request&quot;,
+                              &quot;request_id&quot;: &quot;req000123&quot;,
+                              &quot;document_id&quot;: &quot;doc000456&quot;
+                            },
+                            {
+                              &quot;relation&quot;: &quot;request_owner&quot;,
+                              &quot;request_id&quot;: &quot;req000123&quot;,
+                              &quot;owner_id&quot;: &quot;user017&quot;
+                            }
+                          ],
+                          &quot;initial_state&quot;: [
+                            &quot;Permission request req000123 is pending.&quot;
+                          ],
+                          &quot;target_state&quot;: [
+                            &quot;Approve request req000123 and grant edit permission to user031 on doc000456.&quot;
+                          ],
+                          &quot;allowed_tools&quot;: [
+                            &quot;list_permission_requests&quot;,
+                            &quot;get_document&quot;,
+                            &quot;approve_permission_request&quot;,
+                            &quot;list_document_permissions&quot;
+                          ],
+                          &quot;forbidden_tools&quot;: [
+                            &quot;delete_document&quot;,
+                            &quot;reject_permission_request&quot;
+                          ]
+                        }</code></pre>
+                        <hr>
+                        <h3>3.2 Prompt：让 LLM 生成结构化任务草稿</h3>
+                        <p>Prompt 的目标不是让 LLM 自由发挥，而是让它把 seed 改写成自然、多阶段、可评测的用户任务。Prompt 中会明确约束：只能使用 seed 中的实体，只能使用 allowed tools，不能使用 forbidden tools，必须输出 JSON，并且读任务要有 <code>fill_blanks</code>，写任务要有 <code>state_checks</code>。</p>
+                        <pre><code class="language-plain">You are a benchmark task designer for an enterprise multi-tool agent.
+
+                        Your job is to convert the given task seed into a realistic, solvable,
+                        strictly checkable multi-stage benchmark task.
+
+                        Hard constraints:
+                        1. Use only entities and relations from the seed.
+                        2. Use only tools from allowed_tools.
+                        3. Never use tools from forbidden_tools.
+                        4. The number of stages must match the difficulty constraints.
+                        5. For read stages, provide fill_blanks with exact expected answers.
+                        6. For write stages, provide state_change and state_checks.
+                        7. state_checks must use real database tables and fields.
+                        8. The final task must be executable by the current tool system.
+                        9. Output JSON only.
+
+                        Seed Summary:
+                        {seed_json}
+
+                        Allowed Tool Specs:
+                        {allowed_tool_specs}
+
+                        Return JSON with this schema:
+                        {
+                          &quot;task_meta&quot;: {
+                            &quot;task_name&quot;: &quot;string&quot;,
+                            &quot;difficulty&quot;: 3,
+                            &quot;description&quot;: &quot;string&quot;,
+                            &quot;tags&quot;: [&quot;string&quot;]
+                          },
+                          &quot;stages&quot;: [
+                            {
+                              &quot;stage_id&quot;: 1,
+                              &quot;role&quot;: &quot;string&quot;,
+                              &quot;user_id&quot;: &quot;string&quot;,
+                              &quot;user_says&quot;: &quot;string&quot;,
+                              &quot;stage_goal&quot;: &quot;string&quot;,
+                              &quot;depends_on_stages&quot;: [],
+                              &quot;required_tools&quot;: [&quot;tool_name&quot;],
+                              &quot;optional_tools&quot;: [&quot;tool_name&quot;],
+                              &quot;forbidden_tools&quot;: [&quot;tool_name&quot;],
+                              &quot;fill_blanks&quot;: [
+                                {
+                                  &quot;key&quot;: &quot;string&quot;,
+                                  &quot;question&quot;: &quot;string&quot;,
+                                  &quot;expected&quot;: &quot;string&quot;,
+                                  &quot;check_type&quot;: &quot;exact&quot;,
+                                  &quot;required&quot;: true
+                                }
+                              ],
+                              &quot;state_checks&quot;: [
+                                {
+                                  &quot;table&quot;: &quot;string&quot;,
+                                  &quot;condition&quot;: {},
+                                  &quot;expected_count&quot;: 1
+                                }
+                              ],
+                              &quot;state_change&quot;: &quot;none | description&quot;
+                            }
+                          ],
+                          &quot;evaluation_outline&quot;: {
+                            &quot;cross_stage_rules&quot;: [&quot;string&quot;],
+                            &quot;final_state_checks&quot;: [],
+                            &quot;notes&quot;: &quot;string&quot;
+                          }
+                        }</code></pre>
+                        <hr>
+                        <h3>3.3 LLM 输出：task_draft.json 示例</h3>
+                        <p>LLM 输出的是结构化任务草稿，而不是最终 benchmark 文件。它定义了多阶段用户请求、每阶段期望工具、填空答案、状态检查和跨阶段规则。</p>
+                        <pre><code class="language-json">{
+                          &quot;task_meta&quot;: {
+                            &quot;task_name&quot;: &quot;Approve document edit request&quot;,
+                            &quot;difficulty&quot;: 3,
+                            &quot;description&quot;: &quot;The document owner needs to find and approve a pending edit permission request, then verify that the requester has edit access.&quot;,
+                            &quot;tags&quot;: [&quot;document&quot;, &quot;permission&quot;, &quot;approval&quot;]
+                          },
+                          &quot;stages&quot;: [
+                            {
+                              &quot;stage_id&quot;: 1,
+                              &quot;role&quot;: &quot;document_owner&quot;,
+                              &quot;user_id&quot;: &quot;user017&quot;,
+                              &quot;user_says&quot;: &quot;Find the pending edit request for the Partner Ops launch checklist.&quot;,
+                              &quot;stage_goal&quot;: &quot;Locate the pending permission request and identify the related document and requester.&quot;,
+                              &quot;depends_on_stages&quot;: [],
+                              &quot;required_tools&quot;: [
+                                &quot;list_permission_requests&quot;,
+                                &quot;get_document&quot;
+                              ],
+                              &quot;optional_tools&quot;: [],
+                              &quot;forbidden_tools&quot;: [
+                                &quot;approve_permission_request&quot;,
+                                &quot;reject_permission_request&quot;,
+                                &quot;delete_document&quot;
+                              ],
+                              &quot;fill_blanks&quot;: [
+                                {
+                                  &quot;key&quot;: &quot;request_id&quot;,
+                                  &quot;question&quot;: &quot;What is the pending permission request ID?&quot;,
+                                  &quot;expected&quot;: &quot;req000123&quot;,
+                                  &quot;check_type&quot;: &quot;exact&quot;,
+                                  &quot;required&quot;: true
+                                },
+                                {
+                                  &quot;key&quot;: &quot;document_id&quot;,
+                                  &quot;question&quot;: &quot;Which document is the request for?&quot;,
+                                  &quot;expected&quot;: &quot;doc000456&quot;,
+                                  &quot;check_type&quot;: &quot;exact&quot;,
+                                  &quot;required&quot;: true
+                                },
+                                {
+                                  &quot;key&quot;: &quot;requester_id&quot;,
+                                  &quot;question&quot;: &quot;Who requested the permission?&quot;,
+                                  &quot;expected&quot;: &quot;user031&quot;,
+                                  &quot;check_type&quot;: &quot;exact&quot;,
+                                  &quot;required&quot;: true
+                                }
+                              ],
+                              &quot;state_checks&quot;: [],
+                              &quot;state_change&quot;: &quot;none&quot;
+                            },
+                            {
+                              &quot;stage_id&quot;: 2,
+                              &quot;role&quot;: &quot;document_owner&quot;,
+                              &quot;user_id&quot;: &quot;user017&quot;,
+                              &quot;user_says&quot;: &quot;Approve that request and verify the requester can edit the document.&quot;,
+                              &quot;stage_goal&quot;: &quot;Approve the same request found in Stage 1 and verify edit permission.&quot;,
+                              &quot;depends_on_stages&quot;: [1],
+                              &quot;required_tools&quot;: [
+                                &quot;approve_permission_request&quot;,
+                                &quot;list_document_permissions&quot;
+                              ],
+                              &quot;optional_tools&quot;: [],
+                              &quot;forbidden_tools&quot;: [
+                                &quot;reject_permission_request&quot;,
+                                &quot;delete_document&quot;
+                              ],
+                              &quot;fill_blanks&quot;: [],
+                              &quot;state_checks&quot;: [
+                                {
+                                  &quot;table&quot;: &quot;PermissionRequest&quot;,
+                                  &quot;condition&quot;: {
+                                    &quot;request_id&quot;: &quot;req000123&quot;,
+                                    &quot;status&quot;: &quot;approved&quot;
+                                  },
+                                  &quot;expected_count&quot;: 1
+                                },
+                                {
+                                  &quot;table&quot;: &quot;DocumentPermission&quot;,
+                                  &quot;condition&quot;: {
+                                    &quot;document_id&quot;: &quot;doc000456&quot;,
+                                    &quot;entity_type&quot;: &quot;user&quot;,
+                                    &quot;entity_id&quot;: &quot;user031&quot;,
+                                    &quot;permission&quot;: &quot;edit&quot;
+                                  },
+                                  &quot;expected_count&quot;: 1
+                                }
+                              ],
+                              &quot;state_change&quot;: &quot;Approve permission request req000123 and grant edit permission to user031 on document doc000456.&quot;
+                            }
+                          ],
+                          &quot;evaluation_outline&quot;: {
+                            &quot;cross_stage_rules&quot;: [
+                              &quot;Stage 2 must approve the same request_id found in Stage 1.&quot;,
+                              &quot;The approved permission must belong to the same document_id and requester_id identified in Stage 1.&quot;
+                            ],
+                            &quot;final_state_checks&quot;: [
+                              {
+                                &quot;table&quot;: &quot;PermissionRequest&quot;,
+                                &quot;condition&quot;: {
+                                  &quot;request_id&quot;: &quot;req000123&quot;,
+                                  &quot;status&quot;: &quot;approved&quot;
+                                },
+                                &quot;expected_count&quot;: 1
+                              }
+                            ],
+                            &quot;notes&quot;: &quot;The task requires carrying request_id, document_id, and requester_id across stages.&quot;
+                          }
+                        }</code></pre>
+                        <hr>
+                        <h3>3.4 Compiler：JSON 草稿编译成 md 和 py</h3>
+                        <p>compiler 的输入是 <code>task_draft.json</code> 和 <code>seed.json</code>，输出是两份文件：</p>
+                        <ul><li><code>.md</code>：给人看的任务说明，方便人工检查任务语义；</li><li><code>.py</code>：给 benchmark runner 和 evaluator 用的可执行任务定义。</li></ul>
+                        <p>这一步没有 LLM 参与，是确定性的规则转换。</p>
+                        <pre><code class="language-python">from pathlib import Path
+                        from benchmark.generators import draft_compiler
+
+                        py_path, md_path = draft_compiler.compile_draft(
+                            draft_file=Path(&quot;benchmark/data/task_drafts/L3_201.draft.json&quot;),
+                            draft_index=0,
+                            seed_file=Path(&quot;benchmark/data/task_seeds/L3_201.seed.json&quot;),
+                            seed_index=0,
+                            task_id=&quot;L3_201&quot;,
+                            py_out=&quot;&quot;,
+                            md_out=&quot;&quot;
+                        )
+
+                        print(py_path)
+                        print(md_path)</code></pre>
+                        <p>编译逻辑可以概括为：</p>
+                        <pre><code class="language-plain">读取 task_draft.json
+                        读取 seed.json
+                        补全空 expected 字段
+                        根据 seed 构造 db_setup patches
+                        校验 stage / fill_blanks / state_checks 结构
+                        生成 cross-stage checks
+                        _render_md() 生成任务说明
+                        _render_py() 生成可执行任务文件
+                        写入 benchmark/tasks/levelX 和 benchmark/tasks/taskmd/levelX</code></pre>
+                        <hr>
+                        <h3>3.5 编译输出一：task.md 示例</h3>
+                        <p><code>.md</code> 文件是人类可读版本，主要用于人工审查任务是否自然、合理、可评测。</p>
+                        <pre><code class="language-markdown"># L3_201 Task Spec
+
+                        ## 1. Task Meta
+
+                        - Task Name: Approve document edit request
+                        - Difficulty: L3
+                        - Domains: document, permission
+                        - Description: The document owner needs to find and approve a pending edit permission request, then verify edit access.
+
+                        ## 2. Stage-by-Stage Expectation
+
+                        ### Stage 1
+
+                        User says:
+
+                        &quot;Find the pending edit request for the Partner Ops launch checklist.&quot;
+
+                        Goal:
+
+                        Locate the pending permission request and identify the related document and requester.
+
+                        Required Tools:
+
+                        - list_permission_requests
+                        - get_document
+
+                        Fill Blanks:
+
+                        - request_id = req000123
+                        - document_id = doc000456
+                        - requester_id = user031
+
+                        State Change:
+
+                        - none
+
+                        ### Stage 2
+
+                        User says:
+
+                        &quot;Approve that request and verify the requester can edit the document.&quot;
+
+                        Goal:
+
+                        Approve the same request found in Stage 1 and verify edit permission.
+
+                        Required Tools:
+
+                        - approve_permission_request
+                        - list_document_permissions
+
+                        State Checks:
+
+                        - PermissionRequest where request_id = req000123 and status = approved
+                        - DocumentPermission where document_id = doc000456, entity_id = user031, permission = edit
+
+                        ## 3. Cross-Stage Rules
+
+                        - Stage 2 must approve the same request_id found in Stage 1.
+                        - The approved permission must belong to the same document_id and requester_id identified in Stage 1.
+
+                        ## 4. Database Setup Patches
+
+                        - Ensure PermissionRequest req000123 exists and is pending before the task starts.</code></pre>
+                        <hr>
+                        <h3>3.6 编译输出二：task.py 示例</h3>
+                        <p><code>.py</code> 文件是机器可执行版本。它定义了任务内容、数据库初始化补丁、每阶段评测要求和跨阶段一致性检查。</p>
+                        <pre><code class="language-python">from benchmark.schemas import (
+                            UserStage,
+                            DatabaseSetup,
+                            DatabasePatch,
+                            StageExpectation,
+                            ToolCallExpectation,
+                            ParameterCheck,
+                            StateExpectation,
+                            CrossStageCheck,
+                        )
+                        from benchmark.tasks.base import TaskDefinition, EvaluationDefinition, create_task
+
+
+                        def get_task_definition() -&gt; TaskDefinition:
+                            return TaskDefinition(
+                                task_id=&quot;L3_201&quot;,
+                                name=&quot;Approve document edit request&quot;,
+                                difficulty=3,
+                                description=(
+                                    &quot;The document owner needs to find and approve a pending edit &quot;
+                                    &quot;permission request, then verify edit access.&quot;
+                                ),
+                                tags=[&quot;document&quot;, &quot;permission&quot;, &quot;approval&quot;],
+                                stages=[
+                                    UserStage(
+                                        role=&quot;document_owner&quot;,
+                                        user_id=&quot;user017&quot;,
+                                        user_says=&quot;Find the pending edit request for the Partner Ops launch checklist.&quot;,
+                                        description=&quot;Locate the pending request and identify document/requester.&quot;,
+                                    ),
+                                    UserStage(
+                                        role=&quot;document_owner&quot;,
+                                        user_id=&quot;user017&quot;,
+                                        user_says=&quot;Approve that request and verify the requester can edit the document.&quot;,
+                                        description=&quot;Approve the same request and verify edit permission.&quot;,
+                                    ),
+                                ],
+                                db_setup=get_db_setup(),
+                                real_entities={
+                                    &quot;seed_id&quot;: &quot;SEED_L3_PERMISSION_001&quot;,
+                                    &quot;request_id&quot;: &quot;req000123&quot;,
+                                    &quot;document_id&quot;: &quot;doc000456&quot;,
+                                    &quot;requester_id&quot;: &quot;user031&quot;,
+                                    &quot;owner_id&quot;: &quot;user017&quot;,
+                                },
+                            )
+
+
+                        def get_db_setup() -&gt; DatabaseSetup:
+                            return DatabaseSetup(
+                                description=&quot;Task-specific setup delta.&quot;,
+                                patches=[
+                                    DatabasePatch(
+                                        table=&quot;PermissionRequest&quot;,
+                                        operation=&quot;upsert&quot;,
+                                        entity_id=&quot;req000123&quot;,
+                                        data={
+                                            &quot;request_id&quot;: &quot;req000123&quot;,
+                                            &quot;document_id&quot;: &quot;doc000456&quot;,
+                                            &quot;requester_id&quot;: &quot;user031&quot;,
+                                            &quot;owner_id&quot;: &quot;user017&quot;,
+                                            &quot;permission_requested&quot;: &quot;edit&quot;,
+                                            &quot;status&quot;: &quot;pending&quot;,
+                                            &quot;reason&quot;: &quot;Need to update the launch checklist.&quot;,
+                                        },
+                                    )
+                                ],
+                            )
+
+
+                        def get_evaluation_definition() -&gt; EvaluationDefinition:
+                            return EvaluationDefinition(
+                                success_keywords=[],
+                                failure_keywords=[],
+                                stage_expectations=[
+                                    StageExpectation(
+                                        stage_id=1,
+                                        description=&quot;Find the pending request and identify key IDs.&quot;,
+                                        expected_tools=[
+                                            ToolCallExpectation(
+                                                tool_name=&quot;list_permission_requests&quot;,
+                                                required=True,
+                                                parameters=[
+                                                    ParameterCheck(
+                                                        param_name=&quot;status&quot;,
+                                                        check_type=&quot;exact&quot;,
+                                                        expected_value=&quot;pending&quot;,
+                                                    )
+                                                ],
+                                            ),
+                                            ToolCallExpectation(
+                                                tool_name=&quot;get_document&quot;,
+                                                required=True,
+                                                parameters=[
+                                                    ParameterCheck(
+                                                        param_name=&quot;document_id&quot;,
+                                                        check_type=&quot;exact&quot;,
+                                                        expected_value=&quot;doc000456&quot;,
+                                                    )
+                                                ],
+                                            ),
+                                        ],
+                                        forbidden_tools=[
+                                            &quot;approve_permission_request&quot;,
+                                            &quot;reject_permission_request&quot;,
+                                            &quot;delete_document&quot;,
+                                        ],
+                                        fill_blanks=[
+                                            {
+                                                &quot;key&quot;: &quot;request_id&quot;,
+                                                &quot;question&quot;: &quot;What is the pending permission request ID?&quot;,
+                                                &quot;expected&quot;: &quot;req000123&quot;,
+                                                &quot;check_type&quot;: &quot;exact&quot;,
+                                                &quot;required&quot;: True,
+                                            },
+                                            {
+                                                &quot;key&quot;: &quot;document_id&quot;,
+                                                &quot;question&quot;: &quot;Which document is the request for?&quot;,
+                                                &quot;expected&quot;: &quot;doc000456&quot;,
+                                                &quot;check_type&quot;: &quot;exact&quot;,
+                                                &quot;required&quot;: True,
+                                            },
+                                            {
+                                                &quot;key&quot;: &quot;requester_id&quot;,
+                                                &quot;question&quot;: &quot;Who requested the permission?&quot;,
+                                                &quot;expected&quot;: &quot;user031&quot;,
+                                                &quot;check_type&quot;: &quot;exact&quot;,
+                                                &quot;required&quot;: True,
+                                            },
+                                        ],
+                                        state_changes=[],
+                                    ),
+                                    StageExpectation(
+                                        stage_id=2,
+                                        description=&quot;Approve the request and verify edit permission.&quot;,
+                                        expected_tools=[
+                                            ToolCallExpectation(
+                                                tool_name=&quot;approve_permission_request&quot;,
+                                                required=True,
+                                                parameters=[
+                                                    ParameterCheck(
+                                                        param_name=&quot;request_id&quot;,
+                                                        check_type=&quot;exact&quot;,
+                                                        expected_value=&quot;req000123&quot;,
+                                                    )
+                                                ],
+                                            ),
+                                            ToolCallExpectation(
+                                                tool_name=&quot;list_document_permissions&quot;,
+                                                required=True,
+                                                parameters=[
+                                                    ParameterCheck(
+                                                        param_name=&quot;document_id&quot;,
+                                                        check_type=&quot;exact&quot;,
+                                                        expected_value=&quot;doc000456&quot;,
+                                                    )
+                                                ],
+                                            ),
+                                        ],
+                                        forbidden_tools=[
+                                            &quot;reject_permission_request&quot;,
+                                            &quot;delete_document&quot;,
+                                        ],
+                                        fill_blanks=[],
+                                        state_changes=[
+                                            StateExpectation(
+                                                table=&quot;PermissionRequest&quot;,
+                                                condition={
+                                                    &quot;request_id&quot;: &quot;req000123&quot;,
+                                                    &quot;status&quot;: &quot;approved&quot;,
+                                                },
+                                                expected_count=1,
+                                                exact_match=True,
+                                            ),
+                                            StateExpectation(
+                                                table=&quot;DocumentPermission&quot;,
+                                                condition={
+                                                    &quot;document_id&quot;: &quot;doc000456&quot;,
+                                                    &quot;entity_type&quot;: &quot;user&quot;,
+                                                    &quot;entity_id&quot;: &quot;user031&quot;,
+                                                    &quot;permission&quot;: &quot;edit&quot;,
+                                                },
+                                                expected_count=1,
+                                                exact_match=True,
+                                            ),
+                                        ],
+                                    ),
+                                ],
+                                cross_stage_checks=[
+                                    CrossStageCheck(
+                                        check_type=&quot;same_request_id&quot;,
+                                        stages=[1, 2],
+                                        description=&quot;Stage 2 must approve the same request found in Stage 1.&quot;,
+                                    )
+                                ],
+                                final_state_expectations=[],
+                            )
+
+
+                        def get_task():
+                            return create_task(get_task_definition(), get_evaluation_definition())</code></pre>
+                        <p>第三步的核心作用是把“结构化 seed”变成“可执行 benchmark 任务”。LLM 负责把 seed 改写成自然的多阶段任务草稿，compiler 负责把草稿确定性转换为 <code>.md</code> 和 <code>.py</code>。其中 <code>.md</code> 用于人工审查任务语义，<code>.py</code> 用于自动执行和评测。这样既保留了 LLM 生成自然任务的能力，又通过 seed、工具约束和 compiler 保证任务可复现、可执行、可评测。</p>
+                        <h2>4. 规则门控与可解性门控</h2>
+                        <p>这一部分主要解决任务生成后的质量控制问题。由于任务草稿由 LLM 生成，可能出现实体关系矛盾、工具链不可执行、评测字段不可回答、数据库状态检查错误等问题。因此系统在任务进入 benchmark 前，会经过两层门控：第一层是静态规则门控，检查任务“写得是否合理”；第二层是动态可解性门控，检查任务“是否真的能被当前工具系统跑通”。</p>
+                        <p>整体流程如下：</p>
+                        <pre><code class="language-plain">LLM 生成 task_draft.json
+                          -&gt; 规则门控：静态检查草稿是否合法
+                          -&gt; compiler 编译成 task.md / task.py
+                          -&gt; 可解性门控：动态执行期望工具链
+                          -&gt; evaluator 检查查询答案和数据库状态
+                          -&gt; 通过：加入 benchmark
+                          -&gt; 失败：修复草稿 / 重新编译 / 删除样本</code></pre>
+                        <hr>
+                        <h3>4.1 规则门控：检查任务草稿是否合理</h3>
+                        <p>规则门控主要发生在 <code>task_draft.json</code> 编译成 <code>.md</code> / <code>.py</code> 之前。它不执行工具，而是静态检查 LLM 生成的任务草稿是否符合 schema、工具约束、数据库约束和难度约束。</p>
+                        <h4>规则门控检查内容</h4>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>检查项</th><th>具体含义</th></tr></thead><tbody><tr><td>JSON 格式检查</td><td>检查 <code>task_meta</code>、<code>stages</code>、<code>required_tools</code>、<code>fill_blanks</code>、<code>state_checks</code> 等字段是否存在，类型是否正确</td></tr><tr><td>工具范围检查</td><td>每个阶段使用的工具必须来自 seed 的 <code>allowed_tools</code>，不能调用 <code>forbidden_tools</code></td></tr><tr><td>数据库字段检查</td><td><code>state_checks</code> 中的表名和字段必须真实存在，不能生成不存在的字段，例如 <code>permission_level</code></td></tr><tr><td>实体关系检查</td><td>检查 <code>request_id</code>、<code>document_id</code>、<code>user_id</code> 等实体是否和 seed 子图中的真实关系一致</td></tr><tr><td>评测可回答性检查</td><td><code>fill_blanks</code> 中的答案必须能从期望工具输出中获得，不能设计工具无法返回的评测字段</td></tr><tr><td>难度合理性检查</td><td>检查 stage 数量、角色数量、业务域数量、是否包含状态变化等是否符合 L1-L4 难度设定</td></tr><tr><td>多阶段一致性检查</td><td>后续阶段必须继承前面找到的同一对象，避免“前面查 A，后面改 B”</td></tr></tbody></table></div>
+                        <p>对应代码主要在：</p>
+                        <pre><code class="language-plain">benchmark/generators/llm_task_generator.py
+                          - _validate_output_shape()
+                          - _normalize_task_draft()
+                          - _build_revision_messages()
+
+                        benchmark/generators/draft_compiler.py
+                          - _validate_new_style_stages()
+                          - _collect_cross_stage_check()
+                          - _build_final_state_expectations()
+
+                        benchmark/generators/run_full_pipeline.py
+                          - _static_sanity_check_task()</code></pre>
+                        <h4>规则门控代码逻辑示例</h4>
+                        <pre><code class="language-python">def validate_task_draft(task_draft, seed, table_field_index):
+                            issues = []
+
+                            # 1. 检查 stages 结构
+                            stages = task_draft.get(&quot;stages&quot;, [])
+                            if not isinstance(stages, list) or not stages:
+                                issues.append(&quot;stages must be a non-empty list&quot;)
+
+                            # 2. 检查工具是否在 allowed_tools 中
+                            allowed_tools = set(seed.get(&quot;allowed_tools&quot;, []))
+                            forbidden_tools = set(seed.get(&quot;forbidden_tools&quot;, []))
+
+                            for stage in stages:
+                                used_tools = set(stage.get(&quot;required_tools&quot;, [])) | set(stage.get(&quot;optional_tools&quot;, []))
+
+                                for tool in used_tools:
+                                    if tool not in allowed_tools:
+                                        issues.append(f&quot;tool {tool} is not in allowed_tools&quot;)
+                                    if tool in forbidden_tools:
+                                        issues.append(f&quot;tool {tool} is forbidden&quot;)
+
+                            # 3. 检查 state_checks 的表和字段是否真实存在
+                            for stage in stages:
+                                for check in stage.get(&quot;state_checks&quot;, []):
+                                    table = check.get(&quot;table&quot;)
+                                    condition = check.get(&quot;condition&quot;, {})
+
+                                    if table not in table_field_index:
+                                        issues.append(f&quot;unknown table: {table}&quot;)
+                                        continue
+
+                                    valid_fields = table_field_index[table]
+                                    for field in condition.keys():
+                                        if field not in valid_fields:
+                                            issues.append(f&quot;unknown field {field} for table {table}&quot;)
+
+                            # 4. 检查读任务是否有可评测 fill_blanks
+                            for stage in stages:
+                                has_read_eval = bool(stage.get(&quot;fill_blanks&quot;))
+                                has_write_eval = bool(stage.get(&quot;state_checks&quot;))
+
+                                if not has_read_eval and not has_write_eval:
+                                    issues.append(&quot;stage has no checkable outcome&quot;)
+
+                            return len(issues) == 0, issues</code></pre>
+                        <p>如果规则门控失败，系统会把错误反馈给 LLM 的 revision prompt，让 LLM 修复草稿；多轮修复仍失败，则丢弃该样本。</p>
+                        <hr>
+                        <h3>4.2 编译后的补充检查</h3>
+                        <p>当草稿通过静态规则后，compiler 会把它转换成 <code>.md</code> 和 <code>.py</code>。编译时也会做一些轻量补充检查和补全，例如：</p>
+                        <ul><li>根据 seed 和数据库补全空的 expected 值；</li><li>根据 seed 构造 <code>DatabasePatch</code>，保证任务初始状态稳定；</li><li>将 <code>fill_blanks</code> 转成 <code>StageExpectation</code>；</li><li>将 <code>state_checks</code> 转成 <code>StateExpectation</code>；</li><li>自动收集跨阶段一致性检查；</li><li>将真实实体保存到 <code>real_entities</code>，方便后续评测和可解性验证。</li></ul>
+                        <p>对应流程可以简化为：</p>
+                        <pre><code class="language-python">def compile_from_objects(task_draft, seed, task_id):
+                            db = load_database(seed)
+
+                            backfill_empty_expected_from_seed_db(task_draft, seed, db)
+                            patches = build_db_patches(seed, task_draft, db)
+                            validate_new_style_stages(task_draft[&quot;stages&quot;])
+
+                            cross_stage_checks = collect_cross_stage_check(seed, task_draft[&quot;stages&quot;])
+                            final_state_expectations = build_final_state_expectations(task_draft)
+
+                            md_text = render_md(task_id, task_draft, seed, patches, cross_stage_checks)
+                            py_text = render_py(task_id, task_draft, seed, patches, cross_stage_checks)
+
+                            write_text(md_path, md_text)
+                            write_text(py_path, py_text)</code></pre>
+                        <hr>
+                        <h3>4.3 可解性门控：检查任务是否真的能跑通</h3>
+                        <p>可解性门控发生在 <code>.py</code> 任务文件生成之后。它会加载编译后的 task 文件，重置数据库，应用任务的 <code>db_setup</code>，然后按照每个阶段的 <code>required_tools</code> 执行一条确定性的工具链，最后用 evaluator 检查是否全部通过。</p>
+                        <p>这里不是让真实 Agent 自由执行，而是用 scripted path 跑期望工具链。这样可以验证“任务本身是否可解”，避免把任务设计错误误判为 Agent 能力不足。</p>
+                        <h4>可解性门控流程</h4>
+                        <pre><code class="language-plain">加载 task.py
+                          -&gt; 重置数据库 unified_database.json
+                          -&gt; 应用 db_setup patches
+                          -&gt; 读取 seed_facts / real_entities
+                          -&gt; 注册 107 个工具
+                          -&gt; 按 stage 执行 required_tools
+                          -&gt; 记录工具调用结果和每阶段数据库快照
+                          -&gt; DetailedTaskEvaluator 自动评测
+                          -&gt; gate_pass = true / false</code></pre>
+                        <p>对应代码主要在：</p>
+                        <pre><code class="language-plain">benchmark/generators/solvability_gate.py
+                          - run_solvability_gate()
+                          - _load_task_from_py()
+                          - _apply_db_setup()
+                          - _tool_registry()
+                          - _execute_required_tools_for_stage()
+                          - _patch_fill_blank_to_scripted()
+
+                        benchmark/evaluators.py
+                          - DetailedTaskEvaluator.evaluate()
+                          - DetailedTaskEvaluator._evaluate_stage()</code></pre>
+                        <h4>可解性门控代码逻辑示例</h4>
+                        <pre><code class="language-python">def run_solvability_gate(task_file):
+                            # 1. 重置数据库
+                            reset_database()
+
+                            # 2. 加载编译后的任务 py
+                            task = load_task_from_py(task_file)
+
+                            # 3. 应用任务自己的数据库 setup
+                            apply_db_setup(task)
+
+                            # 4. 注册所有可用工具
+                            registry = load_all_tools()
+
+                            traces = []
+                            stage_db_snapshots = {}
+
+                            # 5. 按每个 stage 的 required_tools 执行确定性工具链
+                            for stage_id, stage in enumerate(task.stages, start=1):
+                                stage_expectation = task.evaluation.stage_expectations[stage_id - 1]
+
+                                tool_calls_detail, agent_response = execute_required_tools_for_stage(
+                                    stage=stage,
+                                    stage_expectation=stage_expectation,
+                                    registry=registry,
+                                )
+
+                                traces.append({
+                                    &quot;stage_id&quot;: stage_id,
+                                    &quot;user_query&quot;: stage.user_says,
+                                    &quot;tool_calls_detail&quot;: tool_calls_detail,
+                                    &quot;agent_response&quot;: agent_response,
+                                })
+
+                                # 保存每个阶段结束后的数据库状态
+                                stage_db_snapshots[stage_id] = read_database()
+
+                            # 6. 评测工具调用、填空答案、数据库状态变化
+                            evaluator = DetailedTaskEvaluator(
+                                initial_db=initial_db,
+                                final_db=final_db,
+                                agent_traces=traces,
+                                stage_db_snapshots=stage_db_snapshots,
+                                enable_fill_blank_llm=False,
+                            )
+
+                            result = evaluator.evaluate(task, conversation_log=[])
+
+                            return {
+                                &quot;gate_pass&quot;: result[&quot;overall_success&quot;],
+                                &quot;score&quot;: result[&quot;score&quot;],
+                                &quot;evaluation_result&quot;: result,
+                            }</code></pre>
+                        <hr>
+                        <h3>4.4 Evaluator 检查内容</h3>
+                        <p>可解性门控最后会调用 <code>DetailedTaskEvaluator</code>，检查每个阶段是否满足任务定义中的评测条件。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>检查项</th><th>说明</th></tr></thead><tbody><tr><td>required tools</td><td>该阶段必须调用的工具是否都被执行</td></tr><tr><td>forbidden tools</td><td>是否误调用了禁止工具</td></tr><tr><td>fill blanks</td><td>查询类任务是否能从工具结果中抽取出正确答案</td></tr><tr><td>state changes</td><td>写操作后数据库是否出现预期状态变化</td></tr><tr><td>no tool call</td><td>对于不应调用工具的阶段，检查是否真的没有工具调用</td></tr><tr><td>stage pass</td><td>每个阶段的 outcome 是否通过</td></tr><tr><td>task pass</td><td>所有阶段都通过，任务才算通过</td></tr></tbody></table></div>
+                        <p>核心逻辑可以简化为：</p>
+                        <pre><code class="language-python">def evaluate_stage(expectation, stage_trace, state_db):
+                            called_tools = extract_called_tools(stage_trace)
+
+                            # 1. required tool 检查
+                            missing = required_tools - called_tools
+                            if missing:
+                                process_pass = False
+
+                            # 2. forbidden tool 检查
+                            forbidden_called = forbidden_tools &amp; called_tools
+                            if forbidden_called:
+                                process_pass = False
+
+                            # 3. 写任务：检查数据库状态
+                            state_results = []
+                            for state_expectation in expectation.state_changes:
+                                state_results.append(check_state_expectation(state_expectation, state_db))
+
+                            # 4. 读任务：检查 fill_blanks
+                            fill_blank_result = evaluate_fill_blanks(
+                                expectation.fill_blanks,
+                                stage_trace[&quot;agent_response&quot;]
+                            )
+
+                            # 5. outcome-first：以结果是否达成为主要通过标准
+                            if expectation.state_changes and expectation.fill_blanks:
+                                passed = all_state_passed and fill_blank_passed
+                            elif expectation.state_changes:
+                                passed = all_state_passed
+                            elif expectation.fill_blanks:
+                                passed = fill_blank_passed
+                            else:
+                                passed = process_pass
+
+                            return passed</code></pre>
+                        <hr>
+                        <h3>4.5 失败处理：修复或删除</h3>
+                        <p>如果可解性门控失败，系统会生成详细日志，记录：</p>
+                        <ul><li>哪个 stage 失败；</li><li>缺了哪些 required tools；</li><li>哪些 fill_blanks 没有抽到或答案不匹配；</li><li>哪些 state_checks 没有满足；</li><li>哪个工具调用失败，参数是什么，返回了什么结果。</li></ul>
+                        <p>失败后有两种处理方式：</p>
+                        <ol><li>如果开启 gate repair，系统会把失败日志反馈给 LLM，让它修复 <code>task_draft.json</code>，然后重新编译和重新验证。</li><li>如果多轮修复仍失败，或者没有开启修复，就删除该任务样本，避免不可解任务进入 benchmark。</li></ol>
+                        <p>对应逻辑可以简化为：</p>
+                        <pre><code class="language-python">for round_idx in range(max_repair_rounds):
+                            py_path, md_path = compile_from_objects(current_draft, seed, task_id)
+                            gate_result = run_solvability_gate(py_path)
+
+                            if gate_result[&quot;gate_pass&quot;]:
+                                keep_task(py_path, md_path)
+                                break
+
+                            issues = extract_gate_failure_issues_from_log(gate_result[&quot;log_path&quot;])
+                            current_draft = repair_draft_by_llm(seed, current_draft, issues)
+                        else:
+                            drop_task(py_path, md_path)</code></pre>
+                        <hr>
+                        <h3>4.6 错误分类</h3>
+                        <p>在真实 Agent 执行 benchmark 后，系统还会对失败阶段做规则化错误分类，方便分析模型失败原因。当前主要分成四类：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>错误类型</th><th>含义</th><th>示例</th></tr></thead><tbody><tr><td>READ_MISSING_FACT</td><td>查询任务没有找到 required fill_blank 的答案</td><td>需要回答 <code>document_id</code>，但实际输出为空</td></tr><tr><td>READ_WRONG_FACT</td><td>查询任务找到了答案，但答案和标准答案不一致</td><td>把 <code>doc000456</code> 错答成 <code>doc000789</code></td></tr><tr><td>WRITE_NO_EFFECT</td><td>写操作没有产生任何预期数据库变化</td><td>调用了审批工具，但数据库里没有 approved 记录</td></tr><tr><td>WRITE_WRONG_TARGET_OR_VALUE</td><td>写操作产生了变化，但目标或值不对</td><td>审批了错误的 request，或权限从 edit 变成 view</td></tr></tbody></table></div>
+                        <p>对应代码在：</p>
+                        <pre><code class="language-plain">benchmark/fail_stage_rule_labeler.py
+                          - READ_MISSING_FACT
+                          - READ_WRONG_FACT
+                          - WRITE_NO_EFFECT
+                          - WRITE_WRONG_TARGET_OR_VALUE
+                          - build_rule_report()</code></pre>
+                        <p>错误分类代码逻辑可以简化为：</p>
+                        <pre><code class="language-python">def label_failed_stage(stage_result):
+                            stage_type = stage_result[&quot;stage_type&quot;]
+
+                            if stage_type in {&quot;read&quot;, &quot;read_write&quot;}:
+                                missing_fields, wrong_fields = collect_failed_required_fields(stage_result)
+
+                                if missing_fields:
+                                    return &quot;READ_MISSING_FACT&quot;
+                                if wrong_fields:
+                                    return &quot;READ_WRONG_FACT&quot;
+
+                            if stage_type in {&quot;write&quot;, &quot;read_write&quot;}:
+                                failed_state_checks = collect_failed_state_checks(stage_result)
+
+                                if failed_state_checks:
+                                    all_zero = all(check[&quot;actual_count&quot;] == 0 for check in failed_state_checks)
+
+                                    if all_zero:
+                                        return &quot;WRITE_NO_EFFECT&quot;
+                                    else:
+                                        return &quot;WRITE_WRONG_TARGET_OR_VALUE&quot;
+
+                            return None</code></pre>
+                        <p>第四步的核心作用是保证进入 benchmark 的任务既合理又可解。</p>
+                        <p>规则门控负责静态检查任务草稿，避免 LLM 生成不存在的字段、错误实体关系、不可回答评测项或不合理难度；可解性门控负责动态执行任务工具链，验证当前数据库和工具系统确实能完成任务。</p>
+                        <p>只有通过静态规则检查和动态执行验证的任务，才会被保留下来作为最终 benchmark 样本。</p>
+                        <figure><img src="images/projects/entbench-agent/entbench-2.png" alt="EntBench-Agent ???" loading="lazy"></figure>
+                        <h2>5. 真实 Agent 评测与工具链轨迹采集</h2>
+                        <p>这一部分主要介绍：通过前面门控验证的任务，如何交给真实 Agent 执行，并在执行过程中记录用户对话、工具选择、工具调用、数据库状态变化、评测分数和失败类型。真实 Agent 评测不仅用于衡量当前 Agent 能否完成任务，也会沉淀大量真实工具调用轨迹，为后续构建历史工具调用图和工具检索方法提供数据。</p>
+                        <p>整体流程如下：</p>
+                        <pre><code class="language-plain">通过 gate 的 task.py
+                          -&gt; RealBenchmark 加载任务
+                          -&gt; 重置数据库
+                          -&gt; 应用 db_setup
+                          -&gt; 按 UserStage 多轮执行真实 Agent
+                          -&gt; Agent 自主选择 domain / tools / tool args
+                          -&gt; 记录 conversation_log + agent_traces
+                          -&gt; Evaluator 自动评测
+                          -&gt; 保存 task log
+                          -&gt; 抽取工具链轨迹数据</code></pre>
+                        <p>对应代码主要在：</p>
+                        <pre><code class="language-plain">benchmark/real_benchmark.py
+                          - RealBenchmark
+                          - run_task()
+                          - _save_log()
+
+                        progressive_daily_agent.py
+                          - ProgressiveDailyAgent
+                          - _stage1_domain()
+                          - _stage2_tools()
+                          - _stage3_execute()
+                          - _reflect()
+                          - invoke()
+
+                        benchmark/evaluators.py
+                          - DetailedTaskEvaluator.evaluate()
+                          - _evaluate_stage()
+                          - _mine_solvable_paths()
+                          - _calculate_metrics()
+
+                        benchmark/generators/run_full_pipeline.py
+                          - _run_single_pipeline_item()
+
+                        benchmark/fail_stage_rule_labeler.py
+                          - build_rule_report()</code></pre>
+                        <hr>
+                        <h3>5.1 RealBenchmark：真实任务执行入口</h3>
+                        <p>真实评测由 <code>RealBenchmark.run_task()</code> 驱动。它会加载一个已经编译好的 <code>BenchmarkTask</code>，按照任务中的 <code>UserStage</code> 逐轮模拟用户请求。每一轮都会切换到指定用户身份，让真实 Agent 根据自然语言请求自行选择工具并执行。</p>
+                        <p>核心流程可以简化为：</p>
+                        <pre><code class="language-python">class RealBenchmark:
+                            WORK_DB_PATH = &quot;database/unified_database.json&quot;
+
+                            def run_task(self, task):
+                                # 1. 清空 Agent 上下文，保证不同 task 之间隔离
+                                self.agent.conversation_history = []
+                                self.agent.current_user_id = None
+
+                                # 2. 重置数据库
+                                if self.reset_db_between_tasks:
+                                    self._restore_database()
+
+                                # 3. 应用任务专属 db_setup
+                                if self.reset_db_between_tasks:
+                                    self._apply_db_setup(task)
+
+                                # 4. 保存初始数据库快照，用于后续评测
+                                task_initial_snapshot = read_json(&quot;database/unified_database.json&quot;)
+
+                                conversation_log = []
+                                agent_traces = []
+                                stage_db_snapshots = {}
+
+                                # 5. 逐 stage 执行真实 Agent
+                                for i, stage in enumerate(task.stages):
+                                    self.agent.login(stage.user_id)
+
+                                    conversation_log.append({
+                                        &quot;role&quot;: &quot;user&quot;,
+                                        &quot;user_id&quot;: stage.user_id,
+                                        &quot;content&quot;: stage.user_says,
+                                    })
+
+                                    result = self.agent.invoke(stage.user_says)
+
+                                    agent_traces.append({
+                                        &quot;stage_id&quot;: i + 1,
+                                        &quot;user_query&quot;: stage.user_says,
+                                        &quot;user_id&quot;: stage.user_id,
+                                        &quot;agent_response&quot;: result[&quot;final_message&quot;],
+                                        &quot;selected_domain&quot;: result[&quot;selected_domain&quot;],
+                                        &quot;selected_tools&quot;: result[&quot;selected_tools&quot;],
+                                        &quot;tool_calls_detail&quot;: result[&quot;tool_calls_detail&quot;],
+                                        &quot;stage1_thought&quot;: result[&quot;stage1_thought&quot;],
+                                        &quot;stage2_thought&quot;: result[&quot;stage2_thought&quot;],
+                                        &quot;attempt_count&quot;: result[&quot;attempt_count&quot;],
+                                        &quot;tried_domains&quot;: result[&quot;tried_domains&quot;],
+                                        &quot;token_usage&quot;: result[&quot;token_usage&quot;],
+                                        &quot;timing&quot;: result[&quot;timing&quot;],
+                                    })
+
+                                    conversation_log.append({
+                                        &quot;role&quot;: &quot;assistant&quot;,
+                                        &quot;acting_as_user&quot;: stage.user_id,
+                                        &quot;content&quot;: result[&quot;final_message&quot;],
+                                    })
+
+                                    # 每个 stage 后保存数据库快照，避免后续写操作污染前面阶段的检查
+                                    stage_db_snapshots[i + 1] = read_json(&quot;database/unified_database.json&quot;)
+
+                                # 6. 读取最终数据库状态
+                                final_db = read_json(&quot;database/unified_database.json&quot;)
+
+                                # 7. 用 DetailedTaskEvaluator 自动评测
+                                evaluator = DetailedTaskEvaluator(
+                                    initial_db=task_initial_snapshot,
+                                    final_db=final_db,
+                                    agent_traces=agent_traces,
+                                    stage_db_snapshots=stage_db_snapshots,
+                                    task=task,
+                                )
+                                eval_result = evaluator.evaluate(task, conversation_log)
+
+                                # 8. 保存完整运行日志
+                                log_path = self._save_log(task, conversation_log, eval_result, agent_traces)
+
+                                return TaskResult(
+                                    task_id=task.task_id,
+                                    success=eval_result[&quot;overall_success&quot;],
+                                    score=eval_result[&quot;score&quot;],
+                                    conversation_log=conversation_log,
+                                    agent_traces=agent_traces,
+                                    final_state_check=eval_result,
+                                )</code></pre>
+                        <p>这一步和前面的 solvability gate 不同：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>阶段</th><th>执行方式</th><th>目的</th></tr></thead><tbody><tr><td>可解性门控</td><td>scripted required_tools</td><td>验证任务本身是否可解</td></tr><tr><td>真实 Agent 评测</td><td>Agent 自主选域、选工具、填参数</td><td>测试 Agent 在真实工具环境中的执行能力</td></tr></tbody></table></div>
+                        <hr>
+                        <h3>5.2 ProgressiveDailyAgent：真实 Agent 的分阶段执行</h3>
+                        <p>真实 Agent 使用 <code>ProgressiveDailyAgent</code>，采用渐进式工具暴露策略。它不会一开始看到全部 107 个工具，而是先判断业务域，再选择该域下的候选工具，最后只基于选中的工具进行参数生成和调用。</p>
+                        <p>整体结构如下：</p>
+                        <pre><code class="language-plain">用户请求 user_says
+                          -&gt; Stage 1: Domain Selection
+                          -&gt; Stage 2: Tool Selection
+                          -&gt; Stage 3: Tool Execution
+                          -&gt; Stage 4: Reflection / Retry
+                          -&gt; final_message + trace</code></pre>
+                        <h4>Stage 1：选择业务域</h4>
+                        <p>Agent 先根据用户请求判断最相关的业务域，例如 document、permission、meeting、project、schedule、hr 等。</p>
+                        <pre><code class="language-python">def _stage1_domain(self, state):
+                            user_query = state[&quot;messages&quot;][-1].content
+
+                            prompt = f&quot;&quot;&quot;
+                            Determine which domain is most relevant to the user request.
+
+                            Available domains:
+                            - system
+                            - document
+                            - permission
+                            - meeting
+                            - project
+                            - schedule
+                            - hr
+
+                            User request: {user_query}
+
+                            Output:
+                            [Thought Process]
+                            ...
+                            [Domain]
+                            document
+                            &quot;&quot;&quot;
+
+                            response = self.llm.invoke([HumanMessage(content=prompt)])
+                            thought = response.content
+                            domain = self._extract_domain_from_stage1_thought(thought)
+
+                            return {
+                                &quot;selected_domain&quot;: domain,
+                                &quot;stage1_thought&quot;: thought,
+                                &quot;tried_domains&quot;: [...],
+                            }</code></pre>
+                        <p>日志中会记录：</p>
+                        <pre><code class="language-json">{
+                          &quot;selected_domain&quot;: &quot;permission&quot;,
+                          &quot;stage1_thought&quot;: &quot;...&quot;
+                        }</code></pre>
+                        <hr>
+                        <h4>Stage 2：选择工具</h4>
+                        <p>选定业务域后，Agent 只看到该域下的工具，以及系统工具 <code>get_current_time</code>、<code>query_users</code>。它需要从这些工具中选出本轮可能需要的工具。</p>
+                        <pre><code class="language-python">def _stage2_tools(self, state):
+                            user_query = state[&quot;messages&quot;][-1].content
+                            domain = state.get(&quot;selected_domain&quot;, &quot;document&quot;)
+
+                            allowed_tools = self._get_allowed_tools_for_domain(domain)
+
+                            prompt = STAGE2_TOOL_SELECTION_PROMPT.format(
+                                user_query=user_query,
+                                domain=domain,
+                                tool_list=format_tool_list(allowed_tools),
+                            )
+
+                            response = self.llm.invoke([HumanMessage(content=prompt)])
+                            thought = response.content
+                            selected = self._extract_tools_from_stage2_thought(thought, allowed_tools)
+
+                            return {
+                                &quot;selected_tools&quot;: selected,
+                                &quot;stage2_thought&quot;: thought,
+                            }</code></pre>
+                        <p>日志中会记录：</p>
+                        <pre><code class="language-json">{
+                          &quot;selected_tools&quot;: [
+                            &quot;list_permission_requests&quot;,
+                            &quot;approve_permission_request&quot;,
+                            &quot;list_document_permissions&quot;
+                          ],
+                          &quot;stage2_thought&quot;: &quot;...&quot;
+                        }</code></pre>
+                        <hr>
+                        <h4>Stage 3：真实工具调用</h4>
+                        <p>第三阶段会将选中的工具绑定到 LLM，使 LLM 真实生成 tool call。系统会执行这些工具，并记录工具名、参数、返回结果和是否成功。</p>
+                        <pre><code class="language-python">def _stage3_execute(self, state):
+                            selected_tools = state.get(&quot;selected_tools&quot;, [])
+                            selected_tool_objs = [self.all_tools[name] for name in selected_tools]
+
+                            llm_with_tools = self.llm.bind_tools(selected_tool_objs)
+                            tool_calls_detail = []
+
+                            for iteration in range(10):
+                                response = llm_with_tools.invoke(messages)
+
+                                if not response.tool_calls:
+                                    break
+
+                                for tool_call in response.tool_calls:
+                                    tool_name = tool_call[&quot;name&quot;]
+                                    tool_args = tool_call[&quot;args&quot;]
+
+                                    try:
+                                        result = self.all_tools[tool_name].invoke(tool_args)
+                                        tool_calls_detail.append({
+                                            &quot;tool_name&quot;: tool_name,
+                                            &quot;arguments&quot;: tool_args,
+                                            &quot;result&quot;: result[:500],
+                                            &quot;success&quot;: True,
+                                            &quot;error&quot;: None,
+                                        })
+                                    except Exception as e:
+                                        tool_calls_detail.append({
+                                            &quot;tool_name&quot;: tool_name,
+                                            &quot;arguments&quot;: tool_args,
+                                            &quot;result&quot;: None,
+                                            &quot;success&quot;: False,
+                                            &quot;error&quot;: str(e),
+                                        })
+
+                            final_response = synthesize_answer_from_tool_results(tool_calls_detail)
+
+                            return {
+                                &quot;final_message&quot;: final_response,
+                                &quot;tool_calls_detail&quot;: tool_calls_detail,
+                            }</code></pre>
+                        <p>单个工具调用记录示例：</p>
+                        <pre><code class="language-json">{
+                          &quot;tool_name&quot;: &quot;list_permission_requests&quot;,
+                          &quot;arguments&quot;: {
+                            &quot;document_id&quot;: &quot;doc000456&quot;,
+                            &quot;status&quot;: &quot;pending&quot;
+                          },
+                          &quot;result&quot;: &quot;Found 1 pending permission request: req000123 ...&quot;,
+                          &quot;success&quot;: true,
+                          &quot;error&quot;: null
+                        }</code></pre>
+                        <hr>
+                        <h4>Stage 4：反思和重试</h4>
+                        <p>执行完成后，Agent 会根据最终回答和工具调用结果判断是否成功。如果失败，它可以尝试换一个业务域或重新选择工具。</p>
+                        <pre><code class="language-python">def _reflect(self, state):
+                            final_response = state[&quot;messages&quot;][-1].content
+                            tool_calls_detail = state.get(&quot;tool_calls_detail&quot;, [])
+                            tried_domains = state.get(&quot;tried_domains&quot;, [])
+
+                            reflect_prompt = f&quot;&quot;&quot;
+                            Analyze whether the user request was successfully completed.
+
+                            Execution result:
+                            {final_response}
+
+                            Tool call record:
+                            {tool_calls_detail}
+
+                            Should another domain be tried?
+                            &quot;&quot;&quot;
+
+                            response = self.llm.invoke([HumanMessage(content=reflect_prompt)])
+                            reflection_thought = response.content
+
+                            return {
+                                &quot;reflection_thought&quot;: reflection_thought,
+                                &quot;need_retry&quot;: need_retry,
+                                &quot;attempt_history&quot;: [...]
+                            }</code></pre>
+                        <p>这使得日志中不仅有最终一次工具链，也能记录失败尝试和重试过程。</p>
+                        <hr>
+                        <h3>5.3 真实评测日志结构</h3>
+                        <p>每次真实 Agent 运行任务后，系统会将完整日志保存到：</p>
+                        <pre><code class="language-plain">benchmark/task_logs/{model}-{task_id}-{timestamp}.json</code></pre>
+                        <p>日志的顶层结构大致如下：</p>
+                        <pre><code class="language-json">{
+                          &quot;task_id&quot;: &quot;L4_1124&quot;,
+                          &quot;task_name&quot;: &quot;Permission Approval for Security Audit Task Handoff&quot;,
+                          &quot;difficulty&quot;: 4,
+                          &quot;stages&quot;: [...],
+                          &quot;evaluation_config&quot;: {...},
+                          &quot;conversation_log&quot;: [...],
+                          &quot;agent_traces&quot;: [...],
+                          &quot;evaluation_result&quot;: {...},
+                          &quot;summary_stats&quot;: {...},
+                          &quot;model&quot;: &quot;aliyun_qwen_flash&quot;,
+                          &quot;timestamp&quot;: &quot;2026-03-23T15:33:04&quot;
+                        }</code></pre>
+                        <h4>conversation_log：用户和 Assistant 对话</h4>
+                        <pre><code class="language-json">[
+                          {
+                            &quot;role&quot;: &quot;user&quot;,
+                            &quot;name&quot;: &quot;document_owner&quot;,
+                            &quot;user_id&quot;: &quot;user017&quot;,
+                            &quot;user_name&quot;: &quot;Alice&quot;,
+                            &quot;content&quot;: &quot;Find the pending edit request for the launch checklist.&quot;
+                          },
+                          {
+                            &quot;role&quot;: &quot;assistant&quot;,
+                            &quot;acting_as_user&quot;: &quot;user017&quot;,
+                            &quot;acting_as_name&quot;: &quot;Alice&quot;,
+                            &quot;content&quot;: &quot;[Explicit Facts] ... [User Reply] ...&quot;
+                          }
+                        ]</code></pre>
+                        <h4>agent_traces：每个 stage 的执行轨迹</h4>
+                        <pre><code class="language-json">{
+                          &quot;stage_id&quot;: 1,
+                          &quot;stage_description&quot;: &quot;Find the pending permission request.&quot;,
+                          &quot;user_query&quot;: &quot;Find the pending edit request for the launch checklist.&quot;,
+                          &quot;user_id&quot;: &quot;user017&quot;,
+                          &quot;user_name&quot;: &quot;Alice&quot;,
+                          &quot;role&quot;: &quot;document_owner&quot;,
+                          &quot;agent_response&quot;: &quot;...&quot;,
+                          &quot;stage1_thought&quot;: &quot;...&quot;,
+                          &quot;stage2_thought&quot;: &quot;...&quot;,
+                          &quot;selected_domain&quot;: &quot;permission&quot;,
+                          &quot;selected_tools&quot;: [
+                            &quot;list_permission_requests&quot;,
+                            &quot;get_document&quot;
+                          ],
+                          &quot;tool_calls_detail&quot;: [
+                            {
+                              &quot;tool_name&quot;: &quot;list_permission_requests&quot;,
+                              &quot;arguments&quot;: {
+                                &quot;status&quot;: &quot;pending&quot;
+                              },
+                              &quot;result&quot;: &quot;...&quot;,
+                              &quot;success&quot;: true,
+                              &quot;error&quot;: null
+                            }
+                          ],
+                          &quot;attempt_count&quot;: 1,
+                          &quot;tried_domains&quot;: [&quot;permission&quot;],
+                          &quot;reflection_thought&quot;: &quot;...&quot;,
+                          &quot;attempt_history&quot;: [...],
+                          &quot;token_usage&quot;: {
+                            &quot;total&quot;: 4200,
+                            &quot;stage1&quot;: 600,
+                            &quot;stage2&quot;: 800,
+                            &quot;stage3&quot;: 2400,
+                            &quot;reflect&quot;: 400
+                          },
+                          &quot;timing&quot;: {
+                            &quot;overall_ms&quot;: 12000,
+                            &quot;stage1_ms&quot;: 1500,
+                            &quot;stage2_ms&quot;: 1600,
+                            &quot;stage3_ms&quot;: 7200,
+                            &quot;reflect_ms&quot;: 1700
+                          }
+                        }</code></pre>
+                        <h4>evaluation_result：自动评测结果</h4>
+                        <pre><code class="language-json">{
+                          &quot;stage_results&quot;: [
+                            {
+                              &quot;stage_id&quot;: 1,
+                              &quot;stage_type&quot;: &quot;read&quot;,
+                              &quot;process_pass&quot;: true,
+                              &quot;outcome_pass&quot;: true,
+                              &quot;passed&quot;: true,
+                              &quot;fill_blank_score&quot;: 1.0,
+                              &quot;observed_tool_path&quot;: [
+                                &quot;list_permission_requests&quot;,
+                                &quot;get_document&quot;
+                              ],
+                              &quot;actual_tool_count&quot;: 2,
+                              &quot;optimal_tool_count&quot;: 2,
+                              &quot;path_efficiency_score&quot;: 1.0
+                            }
+                          ],
+                          &quot;overall_metrics&quot;: {
+                            &quot;state_diff_accuracy&quot;: 1.0,
+                            &quot;stage_completion&quot;: 1.0,
+                            &quot;task_completion&quot;: 1.0,
+                            &quot;tool_call_efficiency&quot;: 1.0
+                          },
+                          &quot;overall_success&quot;: true,
+                          &quot;score&quot;: 1.0
+                        }</code></pre>
+                        <h4>summary_stats：运行成本统计</h4>
+                        <pre><code class="language-json">{
+                          &quot;total_tokens&quot;: 28221,
+                          &quot;total_time_ms&quot;: 60955,
+                          &quot;total_time_seconds&quot;: 60.96,
+                          &quot;total_attempts&quot;: 5,
+                          &quot;all_tried_domains&quot;: [
+                            &quot;permission&quot;,
+                            &quot;project&quot;
+                          ]
+                        }</code></pre>
+                        <hr>
+                        <h3>5.4 Evaluator：真实执行结果如何打分</h3>
+                        <p>真实评测使用 <code>DetailedTaskEvaluator</code>。它不会只看最终回答，而是结合工具调用轨迹、数据库快照和任务定义中的评测配置，对每个 stage 做结构化检查。</p>
+                        <p>主要检查项如下：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>检查项</th><th>说明</th></tr></thead><tbody><tr><td>required tools</td><td>该阶段必须调用的工具是否出现</td></tr><tr><td>forbidden tools</td><td>是否调用了禁止工具</td></tr><tr><td>fill_blanks</td><td>读任务中关键实体 ID / 状态 / 时间是否回答正确</td></tr><tr><td>state_changes</td><td>写任务执行后，数据库状态是否满足预期</td></tr><tr><td>stage pass</td><td>当前阶段是否完成</td></tr><tr><td>task pass</td><td>所有阶段都通过，任务才算成功</td></tr><tr><td>tool efficiency</td><td>实际工具调用数量是否接近历史最短可解路径</td></tr></tbody></table></div>
+                        <p>核心评测逻辑可以简化为：</p>
+                        <pre><code class="language-python">def evaluate_stage(expectation, stage_trace, state_db):
+                            called_tools = [tc[&quot;tool_name&quot;] for tc in stage_trace[&quot;tool_calls_detail&quot;]]
+
+                            # 1. 检查 required tools
+                            missing = required_tools - called_tools
+
+                            # 2. 检查 forbidden tools
+                            forbidden_called = forbidden_tools &amp; called_tools
+
+                            # 3. 读任务：检查 fill_blanks
+                            if expectation.fill_blanks:
+                                fill_blank_check = evaluate_fill_blanks(
+                                    expectation.fill_blanks,
+                                    stage_trace[&quot;agent_response&quot;]
+                                )
+
+                            # 4. 写任务：检查数据库状态变化
+                            if expectation.state_changes:
+                                state_results = []
+                                for state_expectation in expectation.state_changes:
+                                    state_results.append(
+                                        check_state_expectation(state_expectation, state_db)
+                                    )
+
+                            # 5. outcome-first：以最终结果是否达成为主要判断依据
+                            if has_state_checks and has_fill_blanks:
+                                passed = state_passed and fill_blank_passed
+                            elif has_state_checks:
+                                passed = state_passed
+                            elif has_fill_blanks:
+                                passed = fill_blank_passed
+                            else:
+                                passed = process_pass
+
+                            return passed</code></pre>
+                        <p>整体指标包括：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>指标</th><th>含义</th></tr></thead><tbody><tr><td>state_diff_accuracy</td><td>写操作涉及的数据库状态检查通过率</td></tr><tr><td>stage_completion</td><td>每个 stage 的完成率</td></tr><tr><td>task_completion</td><td>整个任务是否全部完成</td></tr><tr><td>tool_call_efficiency</td><td>工具调用效率，越接近最短可解工具链越高</td></tr><tr><td>score</td><td>当前主要使用 task_completion，即任务整体是否成功</td></tr></tbody></table></div>
+                        <hr>
+                        <h3>5.5 工具链轨迹如何沉淀</h3>
+                        <p>真实 Agent 评测最重要的副产物是工具调用轨迹。每个 stage 的 <code>tool_calls_detail</code> 都可以抽取成一个工具序列：</p>
+                        <pre><code class="language-python">def extract_tool_path(stage_trace):
+                            path = []
+                            for tc in stage_trace.get(&quot;tool_calls_detail&quot;, []):
+                                if tc.get(&quot;tool_name&quot;):
+                                    path.append(tc[&quot;tool_name&quot;])
+                            return path</code></pre>
+                        <p>例如某个 stage 的工具调用详情是：</p>
+                        <pre><code class="language-json">&quot;tool_calls_detail&quot;: [
+                          {&quot;tool_name&quot;: &quot;query_users&quot;, &quot;arguments&quot;: {&quot;name&quot;: &quot;Bob&quot;}},
+                          {&quot;tool_name&quot;: &quot;list_permission_requests&quot;, &quot;arguments&quot;: {&quot;status&quot;: &quot;pending&quot;}},
+                          {&quot;tool_name&quot;: &quot;approve_permission_request&quot;, &quot;arguments&quot;: {&quot;request_id&quot;: &quot;req000123&quot;}},
+                          {&quot;tool_name&quot;: &quot;list_document_permissions&quot;, &quot;arguments&quot;: {&quot;document_id&quot;: &quot;doc000456&quot;}}
+                        ]</code></pre>
+                        <p>就可以得到工具链：</p>
+                        <pre><code class="language-plain">query_users
+                          -&gt; list_permission_requests
+                          -&gt; approve_permission_request
+                          -&gt; list_document_permissions</code></pre>
+                        <p>这些工具链可以进一步统计为历史工具调用图：</p>
+                        <pre><code class="language-plain">节点：工具
+                        边：工具 A 后面经常调用工具 B
+                        边权：A -&gt; B 的共现/转移次数
+                        附加属性：成功率、平均长度、常见任务类型、常见业务域</code></pre>
+                        <p>例如：</p>
+                        <pre><code class="language-plain">list_permission_requests -&gt; approve_permission_request
+                        approve_permission_request -&gt; list_document_permissions
+                        query_users -&gt; grant_document_permission
+                        query_documents -&gt; get_document
+                        get_document -&gt; download_document
+                        list_project_tasks -&gt; update_task_status</code></pre>
+                        <p>这部分数据就是后续“工具图检索”的基础。相比只看工具描述的语义相似度，历史调用轨迹能够告诉系统：复杂任务中哪些工具经常连续出现，哪些工具是前置解析工具，哪些工具是写操作后的验证工具。</p>
+                        <hr>
+                        <h3>5.6 Path Mining：从历史日志中挖掘可解工具路径</h3>
+                        <p>Path Mining 是真实 Agent 评测日志中的一个关键创新点。它的目标不是简单统计 Agent 调用了哪些工具，而是从历史成功执行日志中自动挖掘“哪些工具链真正能够解决某类任务”。每次真实 Agent 执行任务后，日志里都会保存每个 stage 的 <code>tool_calls_detail</code>，也就是该阶段真实调用过的工具序列、参数和返回结果。如果这个 stage 最终通过评测，就说明这条工具路径在当前数据库、任务语义和工具系统下是可解的。</p>
+                        <p>例如，一个权限审批任务的成功路径可能是：</p>
+                        <pre><code class="language-plain">query_users
+                          -&gt; list_permission_requests
+                          -&gt; approve_permission_request
+                          -&gt; list_document_permissions</code></pre>
+                        <p>这条路径不仅说明 <code>approve_permission_request</code> 是核心动作工具，也说明在真实任务中，经常需要先用 <code>query_users</code> 或 <code>list_permission_requests</code> 找到正确对象，审批后还需要用 <code>list_document_permissions</code> 验证最终权限状态。也就是说，Path Mining 挖到的是“执行成功驱动的工具链先验”，而不只是工具描述之间的语义相似性。</p>
+                        <hr>
+                        <h4>当前基础实现</h4>
+                        <p>当前代码中，<code>DetailedTaskEvaluator._mine_solvable_paths()</code> 会扫描历史任务日志，从通过评测的 stage 中提取成功工具路径，并为当前任务阶段建立历史路径库。</p>
+                        <p>对应代码位置：</p>
+                        <pre><code class="language-plain">benchmark/evaluators.py
+                          - _extract_tool_path()
+                          - _mine_solvable_paths()
+                          - _apply_auto_path_baseline()</code></pre>
+                        <p>简化流程如下：</p>
+                        <pre><code class="language-plain">扫描 benchmark/task_logs
+                          -&gt; 找到同一 task_id 的历史运行日志
+                          -&gt; 读取 evaluation_result.stage_results
+                          -&gt; 只保留 passed stage
+                          -&gt; 从 agent_traces 中抽取 observed_tool_path
+                          -&gt; 按 stage_id 聚合工具路径
+                          -&gt; 统计路径长度、出现次数和来源日志
+                          -&gt; 选出 shortest_solvable_path
+                          -&gt; 计算当前运行的 path_efficiency_score</code></pre>
+                        <p>简化代码逻辑：</p>
+                        <pre><code class="language-python">def mine_solvable_paths(task_id):
+                            log_files = find_logs(f&quot;benchmark/task_logs/*-{task_id}-*.json&quot;)
+                            stage_path_bank = {}
+
+                            for log_path in log_files:
+                                payload = read_json(log_path)
+                                stage_results = payload[&quot;evaluation_result&quot;][&quot;stage_results&quot;]
+                                agent_traces = payload[&quot;agent_traces&quot;]
+
+                                for stage_result in stage_results:
+                                    if not stage_result[&quot;passed&quot;]:
+                                        continue
+
+                                    stage_id = stage_result[&quot;stage_id&quot;]
+                                    stage_trace = find_trace(agent_traces, stage_id)
+                                    path = extract_tool_path(stage_trace)
+
+                                    stage_path_bank[stage_id][tuple(path)] += 1
+
+                            shortest_baseline = choose_shortest_successful_path(stage_path_bank)
+                            return shortest_baseline</code></pre>
+                        <p>其中工具路径抽取逻辑很简单：</p>
+                        <pre><code class="language-python">def extract_tool_path(stage_trace):
+                            path = []
+                            for tc in stage_trace.get(&quot;tool_calls_detail&quot;, []):
+                                tool_name = tc.get(&quot;tool_name&quot;)
+                                if tool_name:
+                                    path.append(tool_name)
+                            return path</code></pre>
+                        <p>输出示例：</p>
+                        <pre><code class="language-json">{
+                          &quot;stage_path_bank&quot;: {
+                            &quot;3&quot;: [
+                              {
+                                &quot;path&quot;: [
+                                  &quot;get_project&quot;,
+                                  &quot;get_project_progress&quot;
+                                ],
+                                &quot;length&quot;: 2,
+                                &quot;count&quot;: 3,
+                                &quot;sources&quot;: [
+                                  &quot;run_001.json&quot;,
+                                  &quot;run_002.json&quot;
+                                ]
+                              }
+                            ]
+                          },
+                          &quot;shortest_baseline&quot;: {
+                            &quot;3&quot;: {
+                              &quot;path&quot;: [
+                                &quot;get_project&quot;,
+                                &quot;get_project_progress&quot;
+                              ],
+                              &quot;length&quot;: 2,
+                              &quot;count&quot;: 3
+                            }
+                          }
+                        }</code></pre>
+                        <p>当前 Agent 的真实路径会和历史最短可解路径进行对比：</p>
+                        <pre><code class="language-json">{
+                          &quot;stage_id&quot;: 3,
+                          &quot;passed&quot;: true,
+                          &quot;observed_tool_path&quot;: [
+                            &quot;get_project&quot;,
+                            &quot;list_project_tasks&quot;,
+                            &quot;get_project_progress&quot;
+                          ],
+                          &quot;shortest_solvable_path&quot;: [
+                            &quot;get_project&quot;,
+                            &quot;get_project_progress&quot;
+                          ],
+                          &quot;actual_tool_count&quot;: 3,
+                          &quot;optimal_tool_count&quot;: 2,
+                          &quot;path_efficiency_score&quot;: 0.67
+                        }</code></pre>
+                        <p>这说明 Agent 虽然完成了任务，但调用路径比历史最短可解路径更长，工具调用效率还有优化空间。</p>
+                        <hr>
+                        <h4>为什么 Path Mining 是创新点</h4>
+                        <h5>1. 从语义相似转向执行成功先验</h5>
+                        <p>传统工具检索通常依赖 query 和工具描述之间的语义相似度。例如用户说：</p>
+                        <pre><code class="language-plain">Approve that request and make sure access is correct.</code></pre>
+                        <p>语义检索可能只召回：</p>
+                        <pre><code class="language-plain">approve_permission_request</code></pre>
+                        <p>但真实可解路径往往需要：</p>
+                        <pre><code class="language-plain">list_permission_requests
+                          -&gt; approve_permission_request
+                          -&gt; list_document_permissions</code></pre>
+                        <p>其中 <code>list_permission_requests</code> 是前置定位工具，<code>list_document_permissions</code> 是后置验证工具。它们不一定会在用户请求中显式出现，因此单次语义检索容易漏掉。Path Mining 则能从历史成功轨迹中学到这些“前置查询 -\&amp;gt; 核心动作 -\&amp;gt; 后置验证”的结构。</p>
+                        <hr>
+                        <h5>2. 不需要人工标注工具链</h5>
+                        <p>成功日志本身就是监督信号：</p>
+                        <pre><code class="language-plain">如果某个 stage passed
+                          -&gt; 该 stage 的 observed_tool_path 可以视为一条可解路径</code></pre>
+                        <p>因此系统不需要人工为每个任务编写 gold tool chain，而是可以从真实运行中自动积累工具链经验。例如：</p>
+                        <pre><code class="language-plain">任务类型：权限审批
+                        成功路径：list_permission_requests -&gt; approve_permission_request -&gt; list_document_permissions</code></pre>
+                        <p>这种方式更可扩展，也更贴近真实 Agent 的执行分布。</p>
+                        <hr>
+                        <h5>3. 能发现前置工具、后置工具和跨域桥接工具</h5>
+                        <p>Path Mining 不只记录核心动作工具，还能发现复杂任务中的辅助工具结构。</p>
+                        <p>权限审批任务：</p>
+                        <pre><code class="language-plain">query_users -&gt; list_permission_requests -&gt; approve_permission_request -&gt; list_document_permissions</code></pre>
+                        <p>可以发现：</p>
+                        <pre><code class="language-plain">query_users                  = 前置用户解析工具
+                        list_permission_requests     = 前置请求定位工具
+                        approve_permission_request   = 核心写操作工具
+                        list_document_permissions    = 后置验证工具</code></pre>
+                        <p>跨项目文档任务：</p>
+                        <pre><code class="language-plain">get_project -&gt; list_project_tasks -&gt; get_document -&gt; grant_document_permission</code></pre>
+                        <p>可以发现：</p>
+                        <pre><code class="language-plain">list_project_tasks = 项目域到文档/权限域的桥接工具</code></pre>
+                        <p>这类桥接工具在纯语义召回里很容易被漏掉，但在历史成功路径里会反复出现。</p>
+                        <hr>
+                        <h5>4. 支持多条正确路径，而不是固定唯一 gold path</h5>
+                        <p>企业任务往往不只有一种解法。比如查找一个文档，可能有多条可解路径：</p>
+                        <pre><code class="language-plain">query_documents -&gt; get_document</code></pre>
+                        <p>也可能是：</p>
+                        <pre><code class="language-plain">list_received_shares -&gt; get_document</code></pre>
+                        <p>如果 benchmark 强行写死一条 gold tool chain，容易误判 Agent。Path Mining 会保留历史中出现过的多条成功路径，再根据路径长度、出现频率和成功率排序。它更适合作为：</p>
+                        <pre><code class="language-plain">效率基线
+                        工具检索先验
+                        多路径参考</code></pre>
+                        <p>而不是死板的唯一标准答案。</p>
+                        <hr>
+                        <h5>5. 让 benchmark 变成自我增强系统</h5>
+                        <p>Path Mining 使 benchmark 不只是被动评测 Agent，而是在每次真实 Agent 运行后积累新的工具链经验，并反过来服务后续工具检索和工具规划。</p>
+                        <p>可以形成如下闭环：</p>
+                        <pre><code class="language-plain">Agent 执行任务
+                          -&gt; 产生日志
+                          -&gt; 成功 stage 提取工具路径
+                          -&gt; 聚合历史可解路径库
+                          -&gt; 构建历史工具调用图
+                          -&gt; 改进下一轮工具召回和工具链规划</code></pre>
+                        <p>这样，benchmark 既是评测环境，也是工具链经验采集器。</p>
+                        <hr>
+                        <h4>与工具图检索的关系</h4>
+                        <p>Path Mining 是后续工具图检索的数据来源。它可以把成功工具路径转化为历史工具调用图。</p>
+                        <p>例如从成功路径：</p>
+                        <pre><code class="language-plain">query_users
+                          -&gt; list_permission_requests
+                          -&gt; approve_permission_request
+                          -&gt; list_document_permissions</code></pre>
+                        <p>构造有向边：</p>
+                        <pre><code class="language-plain">query_users -&gt; list_permission_requests
+                        list_permission_requests -&gt; approve_permission_request
+                        approve_permission_request -&gt; list_document_permissions</code></pre>
+                        <p>边权可以来自历史成功频率：</p>
+                        <pre><code class="language-plain">edge_weight(A, B) = count(A 后面调用 B 的次数)</code></pre>
+                        <p>节点是工具，边表示工具之间的连续调用关系。这样得到的历史调用图能够表达：</p>
+                        <pre><code class="language-plain">哪些工具经常作为前置解析工具
+                        哪些工具经常跟在写操作之后做验证
+                        哪些工具经常连接两个业务域
+                        哪些工具链在真实任务中更容易成功</code></pre>
+                        <p>后续进行工具检索时，可以先用语义检索得到 seed tools：</p>
+                        <pre><code class="language-plain">approve_permission_request</code></pre>
+                        <p>然后在历史工具调用图上做 PPR 扩散，召回与它历史上经常协同出现的工具：</p>
+                        <pre><code class="language-plain">list_permission_requests
+                        list_document_permissions
+                        query_users</code></pre>
+                        <p>这就对应了工具图检索中的核心流程：</p>
+                        <pre><code class="language-plain">语义种子召回
+                          -&gt; 历史工具图传播
+                          -&gt; 扩展 Top-k 工具候选</code></pre>
+                        <p>相比纯语义检索，Path Mining 提供的是“真实执行成功”驱动的结构先验，因此更适合复杂多步任务中的工具链召回。</p>
+                        <hr>
+                        <h4>可以进一步增强的方向</h4>
+                        <p>当前代码里的 Path Mining 还是比较轻量的，主要按 <code>task_id + stage_id</code> 聚合历史路径。后续可以进一步增强：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>方向</th><th>说明</th></tr></thead><tbody><tr><td>按 motif 聚合</td><td>不只按 task_id，而是按任务类型聚合，例如权限审批、会议协调、项目交付</td></tr><tr><td>按业务域聚合</td><td>统计 document、permission、meeting、project 等域内和跨域工具链</td></tr><tr><td>加入成功率</td><td>边权不仅看出现次数，也看该路径对应 stage 的成功率</td></tr><tr><td>加入参数依赖</td><td>记录某个工具输出字段是否被后续工具作为输入，例如 request_id / document_id</td></tr><tr><td>加入失败路径对比</td><td>成功路径作为正边，失败路径作为负样本或低权重边</td></tr><tr><td>从路径库到 PPR 图</td><td>将可解路径库转化为历史工具调用图，并用于 PPR 工具候选扩展</td></tr></tbody></table></div>
+                        <p>例如可以从：</p>
+                        <pre><code class="language-plain">list_permission_requests -&gt; approve_permission_request -&gt; list_document_permissions</code></pre>
+                        <p>进一步标注数据依赖：</p>
+                        <pre><code class="language-plain">list_permission_requests.output.request_id
+                          -&gt; approve_permission_request.input.request_id
+
+                        approve_permission_request.output.document_id
+                          -&gt; list_document_permissions.input.document_id</code></pre>
+                        <p>Path Mining 的核心价值是：从真实 Agent 成功执行日志中自动挖掘可解工具路径，并将其转化为可复用的工具链先验。它不依赖人工标注 gold tool chain，而是利用通过评测的 stage 作为弱监督信号，自动发现前置工具、核心动作工具、后置验证工具和跨域桥接工具。进一步地，这些成功路径可以构建历史工具调用图，为后续语义种子召回 + PPR 图传播的工具检索方法提供数据基础。</p>
+                        <hr>
+                        <h3>5.7 失败阶段错误分类</h3>
+                        <p>真实 Agent 执行失败后，系统会把失败 stage 转换成规则化错误标签，方便后续分析模型失败原因。</p>
+                        <p>对应代码：</p>
+                        <pre><code class="language-plain">benchmark/fail_stage_rule_labeler.py</code></pre>
+                        <p>当前主要分为四类：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>错误类型</th><th>含义</th><th>示例</th></tr></thead><tbody><tr><td>READ_MISSING_FACT</td><td>查询任务没有找到 required fill_blank 的答案</td><td>需要回答 <code>document_id</code>，但实际输出为空</td></tr><tr><td>READ_WRONG_FACT</td><td>查询任务找到了答案，但答案和标准答案不一致</td><td>把 <code>doc000456</code> 错答成 <code>doc000789</code></td></tr><tr><td>WRITE_NO_EFFECT</td><td>写操作没有产生任何预期数据库变化</td><td>调用了审批工具，但数据库里没有 approved 记录</td></tr><tr><td>WRITE_WRONG_TARGET_OR_VALUE</td><td>写操作产生了变化，但目标或值不对</td><td>审批了错误 request，或权限值不对</td></tr></tbody></table></div>
+                        <p>简化代码逻辑如下：</p>
+                        <pre><code class="language-python">def label_failed_stage(stage_result):
+                            stage_type = stage_result[&quot;stage_type&quot;]
+
+                            if stage_type in {&quot;read&quot;, &quot;read_write&quot;}:
+                                missing_fields, wrong_fields = collect_failed_required_fields(stage_result)
+                                if missing_fields:
+                                    return &quot;READ_MISSING_FACT&quot;
+                                if wrong_fields:
+                                    return &quot;READ_WRONG_FACT&quot;
+
+                            if stage_type in {&quot;write&quot;, &quot;read_write&quot;}:
+                                failed_state_checks = collect_failed_state_checks(stage_result)
+                                if failed_state_checks:
+                                    all_zero = all(check[&quot;actual_count&quot;] == 0 for check in failed_state_checks)
+                                    if all_zero:
+                                        return &quot;WRITE_NO_EFFECT&quot;
+                                    else:
+                                        return &quot;WRITE_WRONG_TARGET_OR_VALUE&quot;
+
+                            return None</code></pre>
+                        <p>完整 pipeline 中会在 Agent 运行后生成失败报告：</p>
+                        <pre><code class="language-plain">benchmark/task_logs/{model}-{task_id}-{timestamp}.fail_stage_rules.json</code></pre>
+                        <hr>
+                        <h3>5.8 当前日志数据规模示例</h3>
+                        <p>在当前仓库已有运行日志中，可以看到真实 Agent 评测已经沉淀了一批轨迹数据。统计示例：</p>
+                        <pre><code class="language-plain">valid task logs: 346
+                        agent stages: 1171
+                        tool calls: 2482
+                        passed tasks: 60</code></pre>
+                        <p>这些日志可以继续用于：</p>
+                        <ol><li>分析不同难度任务的 Agent 成功率；</li><li>统计不同业务域的工具调用分布；</li><li>抽取高频工具链模式；</li><li>构建历史工具调用图；</li><li>将成功轨迹作为后续工具图检索/PPR 扩展的历史先验。</li></ol>
+                        <hr>
+                        <p>第五步的核心作用是把通过门控的 benchmark task 交给真实 Agent 执行，并把执行全过程转化为可分析的结构化日志。日志中同时包含用户对话、Agent 选域和选工具过程、真实工具调用参数与结果、数据库状态检查、评测分数、工具路径和失败类型。最终，这些真实运行日志不仅用于评估 Agent 当前能力，也沉淀出大量工具链轨迹，为后续构建历史工具调用图和改进工具检索提供数据基础。</p>
+                        <figure><img src="images/projects/entbench-agent/entbench-3.png" alt="EntBench-Agent ???" loading="lazy"></figure>
+                        <h2>6. 失败原因标注与训练数据反馈闭环</h2>
+                        <p>这一部分主要讨论真实 Agent 评测之后，如何保存成功数据、标注失败数据，并进一步把这些运行日志转化为后续可训练的数据。当前系统已经实现了一个轻量级失败阶段标注器，但还没有做成完整的细粒度错误诊断系统。因此这部分更适合定位为：已有基础雏形，后续可以扩展为“成功轨迹 + 失败诊断 + 修复样本”的数据闭环。</p>
+                        <p>整体流程如下：</p>
+                        <pre><code class="language-plain">真实 Agent 执行任务
+                          -&gt; 保存完整 task log
+                          -&gt; 成功 stage：保存工具链轨迹，作为正样本
+                          -&gt; 失败 stage：提取失败证据，打规则标签
+                          -&gt; 生成 fail_stage_rules.json
+                          -&gt; 后续用于工具检索、工具链规划、参数生成和自我修复训练</code></pre>
+                        <p>对应代码主要在：</p>
+                        <pre><code class="language-plain">benchmark/fail_stage_rule_labeler.py
+                          - build_rule_report()
+                          - _label_failed_stage()
+                          - _collect_failed_required_fields()
+                          - _collect_failed_state_checks()
+
+                        benchmark/generators/run_full_pipeline.py
+                          - agent run 后调用 build_rule_report()
+                          - 保存 .fail_stage_rules.json
+                          - 汇总 fail_label_counts</code></pre>
+                        <hr>
+                        <h3>6.1 当前已经实现的轻量失败标注</h3>
+                        <p>当前系统在真实 Agent 跑完之后，会读取 <code>evaluation_result.stage_results</code> 和 <code>agent_traces</code>，找出失败的 stage，并根据 <code>fill_blanks</code> 和 <code>state_checks</code> 结果打 4 类基础标签。</p>
+                        <p>当前支持的标签如下：</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>标签</th><th>含义</th><th>判断依据</th></tr></thead><tbody><tr><td><code>READ_MISSING_FACT</code></td><td>读任务没有找到关键事实</td><td>required fill_blank 的 actual 为空</td></tr><tr><td><code>READ_WRONG_FACT</code></td><td>读任务找到了事实，但和标准答案不一致</td><td>required fill_blank 的 actual 非空但不等于 expected</td></tr><tr><td><code>WRITE_NO_EFFECT</code></td><td>写操作没有产生预期数据库变化</td><td>失败的 state_check 中 actual_count 全为 0</td></tr><tr><td><code>WRITE_WRONG_TARGET_OR_VALUE</code></td><td>写操作产生了变化，但目标或值不对</td><td>state_check 有部分命中，但不满足完整条件</td></tr></tbody></table></div>
+                        <p>简化代码逻辑如下：</p>
+                        <pre><code class="language-python">def label_failed_stage(stage_result):
+                            stage_type = stage_result[&quot;stage_type&quot;]
+
+                            if stage_type in {&quot;read&quot;, &quot;read_write&quot;}:
+                                missing_fields, wrong_fields = collect_failed_required_fields(stage_result)
+
+                                if missing_fields:
+                                    return &quot;READ_MISSING_FACT&quot;
+                                if wrong_fields:
+                                    return &quot;READ_WRONG_FACT&quot;
+
+                            if stage_type in {&quot;write&quot;, &quot;read_write&quot;}:
+                                failed_state_checks = collect_failed_state_checks(stage_result)
+
+                                if failed_state_checks:
+                                    all_zero = all(check[&quot;actual_count&quot;] == 0 for check in failed_state_checks)
+
+                                    if all_zero:
+                                        return &quot;WRITE_NO_EFFECT&quot;
+                                    else:
+                                        return &quot;WRITE_WRONG_TARGET_OR_VALUE&quot;
+
+                            return None</code></pre>
+                        <p>标注结果会保存为：</p>
+                        <pre><code class="language-plain">benchmark/task_logs/{model}-{task_id}-{timestamp}.fail_stage_rules.json</code></pre>
+                        <p>一个失败报告大致包含：</p>
+                        <pre><code class="language-json">{
+                          &quot;task_id&quot;: &quot;L4_1124&quot;,
+                          &quot;task_name&quot;: &quot;Permission Approval for Security Audit Task Handoff&quot;,
+                          &quot;model&quot;: &quot;aliyun_qwen_flash&quot;,
+                          &quot;supported_labels&quot;: [
+                            &quot;READ_MISSING_FACT&quot;,
+                            &quot;READ_WRONG_FACT&quot;,
+                            &quot;WRITE_NO_EFFECT&quot;,
+                            &quot;WRITE_WRONG_TARGET_OR_VALUE&quot;
+                          ],
+                          &quot;summary&quot;: {
+                            &quot;failed_stage_count&quot;: 5,
+                            &quot;label_counts&quot;: {
+                              &quot;READ_MISSING_FACT&quot;: 3,
+                              &quot;WRITE_NO_EFFECT&quot;: 2
+                            }
+                          },
+                          &quot;failed_stages&quot;: [
+                            {
+                              &quot;stage_id&quot;: 1,
+                              &quot;stage_type&quot;: &quot;read&quot;,
+                              &quot;label&quot;: &quot;READ_MISSING_FACT&quot;,
+                              &quot;rule_reason&quot;: &quot;required fill_blank fields contain null/empty actual values&quot;,
+                              &quot;observed_tool_path&quot;: [&quot;list_permission_requests&quot;],
+                              &quot;user_stage&quot;: {...},
+                              &quot;agent_trace&quot;: {...},
+                              &quot;evidence&quot;: {...}
+                            }
+                          ]
+                        }</code></pre>
+                        <p>从当前已有日志看，这套轻量标注已经能够覆盖大部分失败 stage。示例统计：</p>
+                        <pre><code class="language-plain">fail report files: 280
+                        failed stages: 522
+                        READ_MISSING_FACT: 279
+                        READ_WRONG_FACT: 135
+                        WRITE_NO_EFFECT: 107
+                        unlabeled: 1</code></pre>
+                        <hr>
+                        <h3>6.2 当前标签的轻量例子</h3>
+                        <h4>READ_MISSING_FACT</h4>
+                        <p>用户请求：</p>
+                        <pre><code class="language-plain">Find the pending edit request for the launch checklist.</code></pre>
+                        <p>标准答案：</p>
+                        <pre><code class="language-plain">request_id = req000123</code></pre>
+                        <p>Agent 输出里没有 <code>request_id</code>，或者输出为空：</p>
+                        <pre><code class="language-plain">I found a pending request, but no request ID is provided.</code></pre>
+                        <p>标注为：</p>
+                        <pre><code class="language-plain">READ_MISSING_FACT</code></pre>
+                        <hr>
+                        <h4>READ_WRONG_FACT</h4>
+                        <p>标准答案：</p>
+                        <pre><code class="language-plain">request_id = req000123</code></pre>
+                        <p>Agent 输出：</p>
+                        <pre><code class="language-plain">The pending request is req000789.</code></pre>
+                        <p>Agent 给出了一个非空答案，但和标准答案不一致，因此标注为：</p>
+                        <pre><code class="language-plain">READ_WRONG_FACT</code></pre>
+                        <hr>
+                        <h4>WRITE_NO_EFFECT</h4>
+                        <p>用户请求：</p>
+                        <pre><code class="language-plain">Approve that permission request.</code></pre>
+                        <p>期望数据库状态：</p>
+                        <pre><code class="language-plain">PermissionRequest(req000123).status = approved</code></pre>
+                        <p>实际执行后数据库中没有任何匹配记录：</p>
+                        <pre><code class="language-plain">actual_count = 0</code></pre>
+                        <p>标注为：</p>
+                        <pre><code class="language-plain">WRITE_NO_EFFECT</code></pre>
+                        <hr>
+                        <h4>WRITE_WRONG_TARGET_OR_VALUE</h4>
+                        <p>期望状态：</p>
+                        <pre><code class="language-plain">DocumentPermission(
+                          document_id = doc000456,
+                          entity_id = user031,
+                          permission = edit
+                        )</code></pre>
+                        <p>实际状态：</p>
+                        <pre><code class="language-plain">DocumentPermission(
+                          document_id = doc000456,
+                          entity_id = user031,
+                          permission = view
+                        )</code></pre>
+                        <p>说明写操作产生了结果，但值不对，因此标注为：</p>
+                        <pre><code class="language-plain">WRITE_WRONG_TARGET_OR_VALUE</code></pre>
+                        <hr>
+                        <h3>6.3 为什么当前还不够细</h3>
+                        <p>当前 4 类标签能快速判断“读错了还是写错了”，但还不能解释更深层原因。例如：</p>
+                        <pre><code class="language-plain">READ_WRONG_FACT</code></pre>
+                        <p>可能来自多种不同原因：</p>
+                        <ul><li>工具选错了；</li><li>工具选对但参数错了；</li><li>检索到了相似但错误的实体；</li><li>工具结果是对的，但最终回答写错了；</li><li>多轮上下文中丢失了前面提到的对象。</li></ul>
+                        <p>再比如：</p>
+                        <pre><code class="language-plain">WRITE_NO_EFFECT</code></pre>
+                        <p>也可能有不同原因：</p>
+                        <ul><li>没调用写工具；</li><li>调用了写工具但参数缺失；</li><li>当前用户没有权限；</li><li>写到了错误对象；</li><li>工具调用失败但 Agent 没处理失败。</li></ul>
+                        <p>因此，后续可以把失败原因进一步细分成多层标签。</p>
+                        <hr>
+                        <h3>6.4 后续可扩展的错误标签体系</h3>
+                        <p>建议不要一开始设计几十个标签，而是按 Agent 执行链路分层扩展。每层只保留能从日志里高置信判断的标签。</p>
+                        <h4>第一层：工具选择错误</h4>
+                        <p>这类错误发生在 Agent 还没有真正调用正确工具之前。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>标签</th><th>含义</th><th>轻量例子</th></tr></thead><tbody><tr><td><code>DOMAIN_MISSELECTED</code></td><td>业务域选错</td><td>权限审批任务却选了 <code>document</code> 域</td></tr><tr><td><code>TOOL_MISSING_REQUIRED</code></td><td>少了关键工具</td><td>需要审批权限，但没调用 <code>approve_permission_request</code></td></tr><tr><td><code>TOOL_WRONG_TOOL</code></td><td>选了不相关工具</td><td>查会议室却调用了文档下载工具</td></tr><tr><td><code>TOOL_FORBIDDEN_CALLED</code></td><td>调用了危险或禁止工具</td><td>任务只要求查看，却调用 <code>delete_document</code></td></tr><tr><td><code>TOOL_ORDER_ERROR</code></td><td>工具顺序不合理</td><td>跳过前置查询，直接写入</td></tr></tbody></table></div>
+                        <p>轻量例子：</p>
+                        <pre><code class="language-plain">任务：Approve the pending edit request.
+                        Agent 工具链：list_permission_requests -&gt; get_document
+                        缺失工具：approve_permission_request
+                        标签：TOOL_MISSING_REQUIRED</code></pre>
+                        <p>这个标签可以直接用于训练工具检索模型或工具 reranker，让模型知道该类 query 必须召回审批工具。</p>
+                        <hr>
+                        <h4>第二层：实体和参数错误</h4>
+                        <p>这类错误是工具选对了，但参数填错了。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>标签</th><th>含义</th><th>轻量例子</th></tr></thead><tbody><tr><td><code>ENTITY_MISMATCH</code></td><td>实体 ID 选错</td><td>应审批 <code>req000123</code>，却审批 <code>req000789</code></td></tr><tr><td><code>CONTEXT_LOSS</code></td><td>多轮上下文丢失</td><td>前面查到 A，后面 “that request” 却操作了 B</td></tr><tr><td><code>TIME_RANGE_ERROR</code></td><td>时间范围错</td><td>“last week” 被解析成今天</td></tr><tr><td><code>PARAM_VALUE_ERROR</code></td><td>状态/权限值错</td><td>应授权 <code>edit</code>，却授权 <code>view</code></td></tr><tr><td><code>PARAM_MISSING</code></td><td>必要参数缺失</td><td>调用审批工具时没有传 <code>request_id</code></td></tr></tbody></table></div>
+                        <p>轻量例子：</p>
+                        <pre><code class="language-plain">Stage 1 查到：
+                        request_id = req000123
+
+                        action 请求：
+                        Approve that request.
+
+                        Agent 调用：
+                        approve_permission_request(request_id=&quot;req000789&quot;)
+
+                        标签：CONTEXT_LOSS 或 ENTITY_MISMATCH</code></pre>
+                        <p>这类数据非常适合训练“多轮上下文实体继承”和“工具参数 grounding”。</p>
+                        <hr>
+                        <h4>第三层：读任务错误</h4>
+                        <p>这类错误发生在查询任务里，重点区分“没找到”和“找错了”。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>标签</th><th>含义</th><th>轻量例子</th></tr></thead><tbody><tr><td><code>READ_MISSING_FACT</code></td><td>没找到事实</td><td>没有输出 <code>document_id</code></td></tr><tr><td><code>READ_WRONG_FACT</code></td><td>找错事实</td><td>输出了错误的 <code>document_id</code></td></tr><tr><td><code>READ_WRONG_ENTITY</code></td><td>检索到了错误实体</td><td>在多个相似文档中选错</td></tr><tr><td><code>READ_WRONG_FIELD</code></td><td>实体对了，但字段读错</td><td>文档对了，但 uploader 读错</td></tr><tr><td><code>READ_AMBIGUOUS_TARGET</code></td><td>目标本身有歧义</td><td>用户只说“那个周报”，多个候选都相似</td></tr></tbody></table></div>
+                        <p>轻量例子：</p>
+                        <pre><code class="language-plain">工具返回：
+                        document_id = doc000456
+                        title = Partner Ops Launch Checklist
+
+                        Agent 回答：
+                        document_id = doc000789
+
+                        标签：READ_WRONG_FACT</code></pre>
+                        <hr>
+                        <h4>第四层：写任务错误</h4>
+                        <p>这类错误发生在数据库写操作后，重点看最终状态是否达成。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>标签</th><th>含义</th><th>轻量例子</th></tr></thead><tbody><tr><td><code>WRITE_NO_EFFECT</code></td><td>没有产生写入</td><td>审批后状态仍然是 <code>pending</code></td></tr><tr><td><code>WRITE_WRONG_TARGET</code></td><td>写到了错误对象</td><td>审批了另一个 request</td></tr><tr><td><code>WRITE_WRONG_VALUE</code></td><td>对象对了，但值错了</td><td>应授权 <code>edit</code>，实际授权 <code>view</code></td></tr><tr><td><code>WRITE_PARTIAL_EFFECT</code></td><td>部分成功，部分失败</td><td>request approved 了，但 permission 没创建</td></tr><tr><td><code>WRITE_PERMISSION_DENIED</code></td><td>因身份/权限问题写失败</td><td>非 owner 用户尝试审批权限</td></tr><tr><td><code>WRITE_NOT_VERIFIED</code></td><td>写完没有验证</td><td>审批后没有查询权限列表确认</td></tr></tbody></table></div>
+                        <p>轻量例子：</p>
+                        <pre><code class="language-plain">期望：
+                        PermissionRequest(req000123).status = approved
+                        DocumentPermission(doc000456, user031).permission = edit
+
+                        实际：
+                        PermissionRequest(req000123).status = approved
+                        但没有 DocumentPermission 记录
+
+                        标签：WRITE_PARTIAL_EFFECT</code></pre>
+                        <p>这个标签比当前的粗粒度标签更有用，因为它能区分“完全没写”和“写了一半”。</p>
+                        <hr>
+                        <h4>第五层：回答生成错误</h4>
+                        <p>这类错误不是工具调用失败，而是工具结果是对的，但最终回答没有忠实表达。</p>
+                        <div class="project-md-table-wrap"><table><thead><tr><th>标签</th><th>含义</th><th>轻量例子</th></tr></thead><tbody><tr><td><code>RESPONSE_MISSING_FACT</code></td><td>工具结果里有，但回答漏了</td><td>工具返回 request_id，回答没写</td></tr><tr><td><code>RESPONSE_WRONG_FACT</code></td><td>回答和工具结果不一致</td><td>工具返回 <code>doc000456</code>，回答写 <code>doc000789</code></td></tr><tr><td><code>RESPONSE_HALLUCINATION</code></td><td>编造工具结果里没有的信息</td><td>工具没返回会议室名称，回答编了一个</td></tr><tr><td><code>RESPONSE_NOT_GROUNDED</code></td><td>回答没有依据真实工具结果</td><td>总结中出现数据库不存在的状态</td></tr><tr><td><code>RESPONSE_FORMAT_ERROR</code></td><td>输出格式不满足评测要求</td><td>没有输出评测需要的关键字段</td></tr></tbody></table></div>
+                        <p>轻量例子：</p>
+                        <pre><code class="language-plain">工具结果：
+                        request_id = req000123
+
+                        Agent 回答：
+                        The pending request is req000789.
+
+                        工具调用可能没错，但最终回答错。
+                        标签：RESPONSE_WRONG_FACT</code></pre>
+                        <hr>
+                        <h3>6.5 成功数据如何使用</h3>
+                        <p>成功数据表示 Agent 在某个任务阶段中完成了目标，因此可以作为“应该怎么做”的正样本。</p>
+                        <p>例如成功轨迹：</p>
+                        <pre><code class="language-plain">用户请求：
+                        Approve the pending edit request for the launch checklist.
+
+                        成功工具链：
+                        list_permission_requests
+                          -&gt; approve_permission_request
+                          -&gt; list_document_permissions</code></pre>
+                        <p>这类数据可以用于：</p>
+                        <ol><li>训练工具召回模型：给定用户请求，预测应该召回哪些工具；</li><li>训练工具链规划模型：给定当前状态和已调用工具，预测下一步工具；</li><li>构建历史工具调用图：统计工具之间的连续调用关系；</li><li>学习写操作后的验证习惯：例如审批后通常需要再查权限列表。</li></ol>
+                        <p>轻量训练样本形式：</p>
+                        <pre><code class="language-json">{
+                          &quot;input&quot;: {
+                            &quot;user_query&quot;: &quot;Approve the pending edit request for the launch checklist.&quot;,
+                            &quot;context&quot;: &quot;document permission request is pending&quot;
+                          },
+                          &quot;target_tools&quot;: [
+                            &quot;list_permission_requests&quot;,
+                            &quot;approve_permission_request&quot;,
+                            &quot;list_document_permissions&quot;
+                          ],
+                          &quot;label&quot;: &quot;success_trace&quot;
+                        }</code></pre>
+                        <hr>
+                        <h3>6.6 失败数据如何使用</h3>
+                        <p>失败数据更适合作为 hard negative 或修复训练样本。它能告诉模型：什么工具链、什么参数、什么回答方式会导致失败。</p>
+                        <h4>用于工具检索 hard negative</h4>
+                        <p>错误轨迹：</p>
+                        <pre><code class="language-plain">用户请求：
+                        Approve the pending edit request.
+
+                        Agent 工具链：
+                        list_permission_requests -&gt; get_document
+
+                        失败原因：
+                        TOOL_MISSING_REQUIRED
+                        缺失工具：approve_permission_request</code></pre>
+                        <p>可以构造成训练样本：</p>
+                        <pre><code class="language-json">{
+                          &quot;input&quot;: &quot;Approve the pending edit request.&quot;,
+                          &quot;positive_tools&quot;: [
+                            &quot;list_permission_requests&quot;,
+                            &quot;approve_permission_request&quot;
+                          ],
+                          &quot;negative_tools&quot;: [
+                            &quot;get_document&quot;
+                          ],
+                          &quot;failure_label&quot;: &quot;TOOL_MISSING_REQUIRED&quot;
+                        }</code></pre>
+                        <hr>
+                        <h4>用于参数修复训练</h4>
+                        <p>错误轨迹：</p>
+                        <pre><code class="language-plain">Stage 1 查到：request_id = req000123
+                        Stage 2 用户说：Approve that request.
+                        Agent 调用：approve_permission_request(request_id=&quot;req000789&quot;)</code></pre>
+                        <p>修复样本：</p>
+                        <pre><code class="language-json">{
+                          &quot;input&quot;: {
+                            &quot;conversation_context&quot;: &quot;Stage 1 found request_id=req000123&quot;,
+                            &quot;user_query&quot;: &quot;Approve that request.&quot;,
+                            &quot;wrong_call&quot;: {
+                              &quot;tool&quot;: &quot;approve_permission_request&quot;,
+                              &quot;arguments&quot;: {
+                                &quot;request_id&quot;: &quot;req000789&quot;
+                              }
+                            }
+                          },
+                          &quot;target_fix&quot;: {
+                            &quot;tool&quot;: &quot;approve_permission_request&quot;,
+                            &quot;arguments&quot;: {
+                              &quot;request_id&quot;: &quot;req000123&quot;
+                            }
+                          },
+                          &quot;failure_label&quot;: &quot;CONTEXT_LOSS&quot;
+                        }</code></pre>
+                        <hr>
+                        <h4>用于自我反思/纠错训练</h4>
+                        <p>失败报告可以转化为“诊断 + 修复建议”：</p>
+                        <pre><code class="language-json">{
+                          &quot;failure_evidence&quot;: {
+                            &quot;label&quot;: &quot;READ_WRONG_FACT&quot;,
+                            &quot;expected&quot;: &quot;doc000456&quot;,
+                            &quot;actual&quot;: &quot;doc000789&quot;,
+                            &quot;observed_tool_path&quot;: [&quot;query_documents&quot;]
+                          },
+                          &quot;target_diagnosis&quot;: &quot;The agent selected a similar but wrong document.&quot;,
+                          &quot;target_repair&quot;: &quot;Use the permission request&#39;s document_id or add a more specific title filter before answering.&quot;
+                        }</code></pre>
+                        <p>这类数据可以训练一个轻量 repair policy，让 Agent 在失败后知道应该重查实体、补调用工具，还是修正参数。</p>
+                        <hr>
+                        <h3>6.7 建议的三层标注方案</h3>
+                        <p>后续如果要把这部分真正做扎实，可以采用“三层标注”方案。</p>
+                        <h4>第一层：规则高置信标注</h4>
+                        <p>直接从日志字段判断，不依赖 LLM：</p>
+                        <pre><code class="language-plain">missing_required_tools 非空
+                          -&gt; TOOL_MISSING_REQUIRED
+
+                        forbidden_tools_called 非空
+                          -&gt; TOOL_FORBIDDEN_CALLED
+
+                        fill_blank actual 为空
+                          -&gt; READ_MISSING_FACT
+
+                        fill_blank actual 非空但不等于 expected
+                          -&gt; READ_WRONG_FACT
+
+                        state_check actual_count = 0
+                          -&gt; WRITE_NO_EFFECT</code></pre>
+                        <p>优点是稳定、可复现、成本低。</p>
+                        <hr>
+                        <h4>第二层：LLM 辅助诊断</h4>
+                        <p>把失败 stage 的结构化证据交给 LLM，让它判断更细原因：</p>
+                        <pre><code class="language-plain">user_says
+                        selected_domain
+                        selected_tools
+                        tool_calls_detail
+                        fill_blank expected / actual
+                        state_check expected / actual
+                        agent_response</code></pre>
+                        <p>LLM 输出：</p>
+                        <pre><code class="language-json">{
+                          &quot;primary_error&quot;: &quot;CONTEXT_LOSS&quot;,
+                          &quot;secondary_error&quot;: &quot;PARAM_WRONG_ENTITY_ID&quot;,
+                          &quot;reason&quot;: &quot;The previous stage found req000123, but the approval call used req000789.&quot;,
+                          &quot;repair_suggestion&quot;: &quot;Reuse the request_id identified in the previous stage.&quot;
+                        }</code></pre>
+                        <p>优点是能做更细粒度解释，但需要控制一致性。</p>
+                        <hr>
+                        <h4>第三层：人工抽样校验</h4>
+                        <p>不需要人工标所有数据，只需要抽样检查：</p>
+                        <pre><code class="language-plain">每类标签随机抽 20-50 个样本
+                        检查标签是否准确
+                        修正 prompt 或规则
+                        估计标签噪声率</code></pre>
+                        <p>这样可以在低成本下保证标签体系不跑偏。</p>
+                        <hr>
+                        <p>第六部分当前是一个轻量失败分析模块：成功样本保留完整工具链轨迹，失败样本根据阶段评测结果打基础规则标签，例如读不到事实、读错事实、写入无效、写错目标或值。后续可以进一步扩展为细粒度失败原因体系，把错误分解到工具选择、参数生成、读事实、写状态和回答生成五个层面。</p>
+                        <p>更重要的是，这些日志可以形成训练数据闭环：成功轨迹作为工具链规划和工具检索的正样本，失败轨迹作为 hard negative、参数修复样本和自我纠错样本。这样 benchmark 不只是用来评测 Agent，也可以持续产生改进 Agent 的训练信号。</p>
+                        <figure><img src="images/projects/entbench-agent/entbench-4.png" alt="EntBench-Agent ???" loading="lazy"></figure>
+                        <h2>工具图检索（Pattern-Aware Tool Retrieval）</h2>
+                        <h4>7.1 背景问题：为什么需要工具图检索</h4>
+                        <p>企业 Agent 任务通常不是单工具调用，而是多步工具链。例如“审批一个文档权限请求”往往需要先查请求，再查文档/权限，再执行审批，最后验证权限状态。</p>
+                        <p>如果只做扁平语义检索，模型可能只召回和用户语义最接近的工具，例如 approve_permission_request，但漏掉前置工具 list_permission_requests、后续验证工具 list_document_permissions，或者跨域桥接工具 query_users / get_current_time。这样会导致任务看似理解正确，但实际执行链不完整。</p>
+                        <p>因此，这一部分的核心思想是：工具不是孤立节点，而是在历史成功任务中形成稳定的调用模式。我们希望把历史工具链沉淀成图结构，用图传播补全语义检索漏掉的关键工具。</p>
+                        <hr>
+                        <h4>7.2 当前代码中的工具选择 baseline</h4>
+                        <p>当前真实 Agent 的工具选择流程在 progressive_daily_agent.py 中实现，采用渐进式工具暴露：</p>
+                        <ol><li>Stage 1：领域选择</li></ol>
+                        <ul><li>根据用户请求先选择业务域，例如 document / meeting / project / schedule / hr / permission。</li></ul>
+                        <ol><li>Stage 2：工具选择</li></ol>
+                        <ul><li>只暴露当前领域下的工具，以及 system 工具。</li><li>LLM 根据工具名称和简短描述选择 selected_tools。</li></ul>
+                        <ol><li>Stage 3：工具执行</li></ol>
+                        <ul><li>只给出 selected_tools 的完整参数说明。</li><li>LLM 进行真实 tool call，并记录调用结果。</li></ul>
+                        <p>对应代码位置：</p>
+                        <ul><li>progressive_daily_agent.py：Stage 1/2/3 主流程</li><li>benchmark/prompts/base_prompt.py：Stage 2 工具选择 prompt</li><li>benchmark/prompts/agent_tool_metadata_en.json：107 个工具的领域、描述、参数元数据</li></ul>
+                        <p>这里的 baseline 本质是“领域过滤 + LLM 选择工具”，还不是完整的在线 PPR 图检索。</p>
+                        <hr>
+                        <h4>7.3 工具轨迹数据如何产生</h4>
+                        <p>在真实 Agent 评测时，系统会对每个任务 stage 记录完整执行轨迹，包括：</p>
+                        <ul><li>用户请求 user_says</li><li>selected_domain：模型选择的业务域</li><li>selected_tools：模型选择的候选工具</li><li>stage1_thought / stage2_thought：模型选择领域和工具时的推理过程</li><li>tool_calls_detail：真实调用了哪些工具、参数是什么、结果是否成功</li><li>agent_response：最终回复</li><li>evaluation_result：评测是否通过、状态检查是否满足</li></ul>
+                        <p>这些日志保存在 benchmark/task_logs 下，生成逻辑在 benchmark/real_benchmark.py 中。</p>
+                        <p>因此，每条成功样本都可以被看作一条可复用的工具链轨迹，例如：</p>
+                        <p>query_documents -\&amp;gt; get_document -\&amp;gt; list_document_permissions</p>
+                        <p>list_received_shares -\&amp;gt; get_document</p>
+                        <p>list_permission_requests -\&amp;gt; approve_permission_request -\&amp;gt; list_document_permissions</p>
+                        <p>这些轨迹就是后续构建历史调用图的原始数据。</p>
+                        <hr>
+                        <h4>7.4 Path Mining：从成功日志中挖掘可解工具路径</h4>
+                        <p>代码中已经实现了 Path Mining，位置在 benchmark/evaluators.py。</p>
+                        <p>主要流程：</p>
+                        <ol><li>从 agent_traces 中读取每个 stage 的 tool_calls_detail。</li><li>抽取工具调用序列，得到 observed_tool_path。</li><li>扫描历史 task_logs 中同一任务的历史运行日志。</li><li>只保留 passed stage 的工具路径。</li><li>按 stage 聚合多个成功路径，统计路径长度、出现次数和来源日志。</li><li>选择最短可解路径作为 shortest_solvable_path。</li><li>用当前运行路径和历史最短路径计算 path_efficiency_score。</li></ol>
+                        <p>这一步的意义是：系统不是人工指定唯一 gold tool chain，而是从真实成功执行中自动发现“这个任务实际可以怎样被工具链解决”。</p>
+                        <p>它带来两个好处：</p>
+                        <ul><li>支持多条正确路径：同一个任务可能有不同但都能成功的工具链。</li><li>支持经验沉淀：成功路径越多，系统越能知道哪些工具经常一起出现。</li></ul>
+                        <p>这部分可以看作工具图检索的“数据挖掘基础层”。</p>
+                        <hr>
+                        <h4>7.5 从 Path Mining 到工具历史图</h4>
+                        <p>基于成功工具路径，可以进一步构建历史调用图：</p>
+                        <ul><li>节点：工具，例如 query_documents、get_document、approve_permission_request。</li><li>有向边：工具调用顺序，例如 query_documents -\&amp;gt; get_document。</li><li>边权重：这条工具转移在成功日志中出现的频率。</li><li>节点属性：工具所属领域、调用次数、成功次数、平均路径位置等。</li></ul>
+                        <p>例如，如果成功日志中多次出现：</p>
+                        <p>query_documents -\&amp;gt; get_document</p>
+                        <p>get_document -\&amp;gt; list_document_permissions</p>
+                        <p>list_permission_requests -\&amp;gt; approve_permission_request</p>
+                        <p>那么图中这些边的权重会更高，代表它们是企业工作流中更稳定的工具链模式。</p>
+                        <p>这和普通语义检索不同：语义检索只看“用户请求和工具描述像不像”，历史图还会看“这个工具在成功任务里通常和哪些工具一起用”。</p>
+                        <hr>
+                        <h4>7.6 双图检索设计：历史图 + 语义图</h4>
+                        <p>工具图检索可以分成两张图：</p>
+                        <ol><li>历史调用图</li></ol>
+                        <ul><li>来自真实 Agent 成功日志。</li><li>表示工具之间真实出现过的调用顺序和协作关系。</li><li>优点是能补全前置工具、后续工具和跨域桥接工具。</li></ul>
+                        <ol><li>语义相似图</li></ol>
+                        <ul><li>来自工具名称、描述、参数说明的语义相似度。</li><li>例如 list_document_permissions 和 check_document_permission 在语义上接近。</li><li>优点是能处理历史日志中没出现过的新组合。</li></ul>
+                        <p>最终可以做双图融合：</p>
+                        <ul><li>历史图权重更高，因为它来自真实可解路径。</li><li>语义图作为补充，增强对新任务和低频工具的泛化。</li></ul>
+                        <p>可以理解为：历史图负责“工作流经验”，语义图负责“语义泛化”。</p>
+                        <hr>
+                        <h4>7.7 在线检索流程：语义 seed + PPR 扩散</h4>
+                        <p>在线面对一个新用户请求时，工具图检索可以按如下流程工作：</p>
+                        <ol><li>先用语义检索召回少量 seed tools。</li></ol>
+                        <ul><li>例如用户说“approve that document access request”，语义种子可能包含 approve_permission_request。</li></ul>
+                        <ol><li>把 seed tools 作为 PPR 起点。</li></ol>
+                        <ul><li>在融合后的工具图上做 Personalized PageRank 扩散。</li></ul>
+                        <ol><li>图传播会把相关工具一起扩展出来。</li></ol>
+                        <ul><li>前置工具：list_permission_requests</li><li>目标工具：approve_permission_request</li><li>后续验证工具：list_document_permissions / check_document_permission</li><li>桥接工具：query_users / get_document</li></ul>
+                        <ol><li>输出 Top-k 工具候选。</li></ol>
+                        <ul><li>这些工具再交给 Agent 进行规划和执行。</li></ul>
+                        <p>最终效果是：即使用户请求只显式提到“approve”，系统也能通过历史工具链补全“查请求 -\&amp;gt; 审批 -\&amp;gt; 验证权限”的完整工具集合。</p>
+                        <hr>
+                        <h4>7.8 指标评测</h4>
+                        <figure><img src="images/projects/entbench-agent/entbench-5.png" alt="EntBench-Agent ???" loading="lazy"></figure>
+                        <p>这张图就是我们项目里“工具图检索”的核心证据：在复杂企业任务开始执行前，系统先从 100+ 工具里召回 Top-k 候选工具。表里评的不是最终 Agent 成功率，而是“候选工具集是否覆盖真实工具链”。</p>
+                        <p><strong>指标OC@k/R@k</strong></p>
+                        <ul><li>OC@k：任务级完全覆盖率。Top-k 里只要少了一个必需工具，这个任务就是 0；全覆盖才是 1。它最能反映多步任务是否能跑通。</li><li>R@k：工具级召回率。真实需要 5 个工具，召回 4 个就是 0.8。它比 OC 宽松。</li></ul>
+                        <p>所以对我们项目来说，OC 更关键，因为企业工作流经常是“查人 -\&amp;gt; 查权限 -\&amp;gt; 查会议 -\&amp;gt; 查文档 -\&amp;gt; 发提醒”这种链式调用，漏一个前置工具就断。</p>
+                        <p><strong>8个方法</strong></p>
+                        <ul><li>SSR：普通语义检索，只看任务描述和工具描述的相似度。</li><li>BM25 / Bigram：关键词或简单 n-gram baseline。</li><li>IF：意图拆解融合，把任务拆成多个子意图再检索。</li><li>SPPR-Sem：只用语义工具图做 PPR 扩散。</li><li>HPPR-Hist：只用历史调用图，也就是从成功任务日志里统计工具共现/调用轨迹。</li><li>SHPPR：语义图 + 历史图混合。</li><li>sub-SHPPR：先定位相关子图，再在子图里做语义历史混合传播，减少无关工具扩散。</li></ul>
+                        <p>我们的核心想法就是：复杂任务需要的不只是“语义相似工具”，还需要“工作流相邻工具”。比如用户说“共享会议纪要给项目成员”，语义检索可能只召回 share_meeting_minutes，但真实链条还可能需要 get_meeting、list_meeting_attendees、check_meeting_permission、grant_meeting_permission、create_reminder。历史图能把这些“经常一起出现但语义不完全相似”的桥接工具带出来。</p>
+                        <p><strong>在自建企业数据集上，图方法提升非常明显：</strong></p>
+                        <ul><li>SSR 在 OC@15 是 43.54，sub-SHPPR 到 65.31，提升 21.77 个点。</li><li>SSR 在 R@15 是 81.72，sub-SHPPR 到 92.10，提升 10.38 个点。</li><li>SSR 在 OC@20 是 46.89，sub-SHPPR 到 78.47，提升 31.58 个点。</li><li>SSR 在 R@20 是 85.11，sub-SHPPR 到 96.03，提升 10.92 个点。</li></ul>
+                        <p>这里要注意一个小细节：你前面项目描述里写的“OC@15 从 46.89 到 78.47，Recall@15 从 85.11 到 96.03”，按这张图其实对应的是 @20，不是 @15。如果写简历或答辩，建议改成：</p>
+                        <p>&gt; *在自建企业基准上，sub-SHPPR 将 OC@15 从 43.54 提升到 65.31，R@15 从 81.72 提升到 92.10；在 @20 下进一步将 OC 从 46.89 提升到 78.47，Recall 从 85.11 提升到 96.03。* &gt;  &gt;</p>
+                        <p>在 ToolBench G2 \&amp; G3 上，提升也有但没自建数据集那么大：</p>
+                        <ul><li>SSR OC@15 = 28.35，SHPPR OC@15 = 36.39，提升约 8.04 个点。</li><li>SSR OC@20 = 31.37，HPPR/SHPPR 到约 41.14，提升约 9.77 个点。</li></ul>
+                        <p>端到端完成率Acc（以SSR为baseline）</p>
+                        <ul><li>用 Top-10 工具候选：自建数据集从 25.5% 提到 32.7%，公开数据集从 11.3% 提到 15.7%</li><li>用 Top-15 工具候选：自建数据集从 31.1% 提到 47.6%，公开数据集从 14.1% 提到 19.3%</li><li>用 Top-20 工具候选：自建数据集从 32.8% 提到 63.0%，公开数据集从 15.8% 提到 24.1%</li></ul>
+                        <p>这个提升主要来自“减少漏工具”，剩下的失败多来自实体绑定错误、ID 幻觉、写操作未生效，所以端到端涨幅会小于 OC 涨幅。</p>
+                        <p>这说明方法不是只对我们自己的数据有效，在公开工具调用数据上也有泛化收益；但自建企业数据集提升更大，因为企业任务更有稳定业务流程，历史工具图的结构价值更强。</p>
+                        <hr>
+                        <h4>7.9 创新点总结</h4>
+                        <p>这部分的创新点不是简单换一个检索算法，而是把工具选择从“单点语义匹配”变成“历史工作流模式检索”。</p>
+                        <p>具体体现在：</p>
+                        <ol><li>从成功任务日志中自动挖掘可解工具路径，而不是人工写死 gold tool chain。</li><li>把工具调用轨迹建成历史图，学习企业任务中稳定出现的工具链模式。</li><li>用语义 seed + PPR 图传播，补全语义检索容易漏掉的前置、后续和跨域桥接工具。</li><li>支持多条可解路径，使 benchmark 不只评估“是否调用了固定工具”，而是能比较不同 Agent 的工具链效率。</li><li>形成闭环：Agent 评测产生日志，日志沉淀工具图，工具图再反过来增强后续工具检索。</li></ol>
+                        <p>一句话概括：</p>
+                        <p>工具图检索把企业 Agent 的历史执行经验显式建模为图结构，使工具选择不再只依赖当前请求和工具描述，而能利用过去成功任务中反复出现的工具链模式。</p>
+                        <figure><img src="images/projects/entbench-agent/entbench-6.png" alt="EntBench-Agent ???" loading="lazy"></figure>
+                        <h2>项目介绍</h2>
+                        <p>我这个项目叫 EntBench-Agent，企业工作流任务合成与工具图检索系统。它主要解决两个问题。</p>
+                        <p>第一个问题是，企业 Agent 的任务很难人工构造。真实企业任务通常不是单轮问答，而是多用户、多业务域、多步工具调用，比如一个权限审批任务可能会涉及用户、文档、会议、项目和待办。如果靠人工写 benchmark，成本高，而且数据关系和权限状态很难保证一致。</p>
+                        <p>第二个问题是，企业工具很多，单纯靠语义检索选工具很容易漏掉关键工具。比如用户只说“帮我审批这个权限请求”，语义上最相关的是 approve_permission_request，但实际执行前可能还需要 list_permission_requests 找到请求，执行后还需要 list_document_permissions 验证权限状态。所以我希望把工具看成工作流中的节点，而不是孤立工具。</p>
+                        <p>整个系统分成几块。</p>
+                        <p>第一块是 企业模拟数据库和工具库构建。我用 JSON 定义了企业数据库结构，包括组织用户、HR、文档、会议、项目、日程等业务域。当前版本有 29 张表、4000 多条模拟记录，以及 107 个企业工具。数据生成不是完全凭空让 LLM 编，而是先定义业务场景包，比如文档协作、会议协调、项目交付、请假审批、入职流程等，再用规则生成跨表记录。比如文档协作包会先选 uploader，创建 Document，再生成 DocumentVersion、DocumentShare、DocumentPermission、PermissionRequest，这样数据之间天然有合理关系。</p>
+                        <p>第二块是 任务 seed 子图生成。我会把数据库记录构成一个企业关系图，节点是 user、document、meeting、project 等实体，边是上传、分享、参会、负责、审批这类业务关系。然后根据预设业务 motif，从关系图里采样一小块任务子图 seed。seed 里不仅有实体，还有 relation evidence、initial state、target state 和候选工具。候选工具不是随机给的，而是综合 motif 偏好、业务域、实体类型、关系类型和目标状态关键词打分。</p>
+                        <p>第三块是 LLM 任务草稿生成和编译。给定 seed 之后，我调用 LLM 生成多阶段任务草稿，包括每一阶段的用户请求、期望工具、评测字段和状态检查。然后再把 JSON 草稿编译成可执行的 .md 和 .py benchmark task。这里 LLM 负责把结构化 seed 写成自然、多阶段的企业任务，但编译本身是规则程序完成的。</p>
+                        <p>第四块是 规则门控和可解性门控。规则门控会检查任务草稿、数据库关系、评测配置和工具链之间有没有矛盾，比如实体是否存在、权限是否一致、评测字段是否能从工具结果中回答。可解性门控会真正执行任务里要求的工具链，如果工具链跑不通或者评测过不了，这个任务就会被修复或过滤掉。这样可以保证最后进入 benchmark 的任务不是“看起来合理”，而是真的可执行、可评测。</p>
+                        <p>第五块是 真实 Agent 评测和轨迹收集。我用 ProgressiveDailyAgent 来跑这些任务。它分成领域选择、工具选择、工具执行和反思几个阶段。每次运行都会记录用户和 assistant 的对话、selected domain、selected tools、真实 tool call、数据库状态变化和评测分数。这些日志会形成大量真实工具链轨迹。</p>
+                        <p>最后一块是我觉得比较有创新性的 工具图检索。我从成功任务日志中挖掘可解工具路径，把工具作为节点，工具调用顺序作为边，构建历史调用图。同时基于工具名称、描述和参数 schema 构建语义图。在线检索时，先用语义方法召回 seed tools，再在历史图和语义图融合后的图上做 PPR 扩散，补全前置、后续和跨域桥接工具。这个方法是 training-free 的，也比较适合工具冷启动：新工具刚上线时可以先靠元数据进入语义图，随着 Agent 日志积累，再逐步被历史调用图增强。</p>
+                        <p>总结来说，这个项目的贡献有三点：第一，构建了一个可复现的企业 Agent benchmark 沙盒；第二，设计了 seed 采样、LLM 生成、规则门控和可解性验证的任务合成流水线；第三，利用真实工具调用轨迹构建工具图，用图传播提升复杂任务中的工具链召回能力。</p>
+                    </div>
+                </section>
+                <!-- END ENTBENCH_MD_DETAIL -->
             </div>
         </div>
     </section>

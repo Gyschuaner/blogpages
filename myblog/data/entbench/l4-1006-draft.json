@@ -1,0 +1,325 @@
+{
+  "seed_id": "SEED_L4_CROSS_DOMAIN_69823",
+  "model_alias": "deepseek_v3",
+  "model_name": "deepseek-chat",
+  "attempts": 4,
+  "valid": true,
+  "issues": [],
+  "task_draft": {
+    "task_meta": {
+      "task_name": "跨域协调：文档权限审批与会议跟进",
+      "difficulty": 4,
+      "description": "作为高级工程师张明（user002），您需要处理市场专员郑鹏（user010）提交的文档权限请求，并结合市场总监孙丽（user009）组织的近期会议进行协调。任务涉及查询请求详情、审批请求、更新文档权限，并验证会议与权限状态的关联性。",
+      "tags": [
+        "cross-domain",
+        "permission-approval",
+        "meeting-coordination",
+        "document-management"
+      ]
+    },
+    "stages": [
+      {
+        "stage_id": 1,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "早上好。我注意到有一个待处理的文档权限请求，可能与接口规范草案有关。请帮我查看一下最新的权限请求列表，我想了解是谁申请的、申请了什么权限，以及对应的文档信息。",
+        "stage_goal": "查询待处理的权限请求详情，获取请求者、文档和请求权限信息。",
+        "depends_on_stages": [],
+        "required_tools": [
+          "list_permission_requests"
+        ],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [
+          {
+            "key": "request_id",
+            "question": "待处理权限请求的ID是什么？",
+            "expected": "req000001",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "requester_id",
+            "question": "请求者的用户ID是什么？",
+            "expected": "user010",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "document_id",
+            "question": "请求关联的文档ID是什么？",
+            "expected": "doc000021",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "request_id",
+            "question": "请求的权限类型是什么（请回答ID）？",
+            "expected": "req000001",
+            "check_type": "exact",
+            "required": true
+          }
+        ],
+        "state_checks": [],
+        "state_change": "none"
+      },
+      {
+        "stage_id": 2,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "我看了那个请求，申请人是市场部的郑鹏。为了全面评估，我需要了解他所在的部门以及他的直接上级是谁。请查询一下他的用户信息。",
+        "stage_goal": "查询请求者郑鹏的用户信息，确认其部门和上级关联。",
+        "depends_on_stages": [
+          1
+        ],
+        "required_tools": [
+          "query_users"
+        ],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [
+          {
+            "key": "user_id",
+            "question": "郑鹏的用户ID是什么？",
+            "expected": "user010",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "name",
+            "question": "郑鹏的姓名是什么？",
+            "expected": "郑鹏",
+            "check_type": "exact",
+            "required": true
+          }
+        ],
+        "state_checks": [],
+        "state_change": "none"
+      },
+      {
+        "stage_id": 3,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "郑鹏是市场部的，而市场总监孙丽最近刚组织了一个Q1复盘会。考虑到会议可能涉及文档讨论，我需要先确认一下那个会议的具体安排，包括时间、地点和状态，以便评估权限审批的紧急性。",
+        "stage_goal": "查询近期会议详情，获取会议时间、房间和状态信息。",
+        "depends_on_stages": [
+          2
+        ],
+        "required_tools": [
+          "list_meetings",
+          "get_meeting"
+        ],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [
+          {
+            "key": "meeting_id",
+            "question": "孙丽组织的近期会议ID是什么？",
+            "expected": "meeting_003",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "room_id",
+            "question": "会议预订的房间ID是什么？",
+            "expected": "room003",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "status",
+            "question": "会议当前的状态是什么？",
+            "expected": "completed",
+            "check_type": "exact",
+            "required": true
+          }
+        ],
+        "state_checks": [],
+        "state_change": "none"
+      },
+      {
+        "stage_id": 4,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "会议已经结束，但文档权限请求仍然悬而未决。这里有个权衡：快速批准可能促进协作，但需确保不会过度开放敏感文档。考虑到会议上下文和请求的紧急性，我决定批准这个编辑权限请求。请执行审批操作。",
+        "stage_goal": "批准权限请求，更新请求状态为approved。",
+        "depends_on_stages": [
+          3
+        ],
+        "required_tools": [
+          "approve_permission_request"
+        ],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [],
+        "state_checks": [
+          {
+            "table": "PermissionRequest",
+            "condition": {
+              "request_id": "req000001",
+              "status": "approved"
+            },
+            "expected_count": 1
+          }
+        ],
+        "state_change": "PermissionRequest表中request_id为req000001的记录，status从pending更新为approved。"
+      },
+      {
+        "stage_id": 5,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "请求已批准，现在需要确保文档权限记录同步更新。请查看该文档的现有权限列表，确认郑鹏是否已获得编辑权限。",
+        "stage_goal": "查询文档权限列表，验证郑鹏的编辑权限已生效。",
+        "depends_on_stages": [
+          4
+        ],
+        "required_tools": [
+          "list_document_permissions"
+        ],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [
+          {
+            "key": "entity_id",
+            "question": "在文档doc000021的权限记录中，郑鹏对应的实体ID（即用户ID）是什么？",
+            "expected": "user010",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "permission",
+            "question": "郑鹏对该文档的权限是什么？",
+            "expected": "edit",
+            "check_type": "exact",
+            "required": true
+          }
+        ],
+        "state_checks": [],
+        "state_change": "none"
+      },
+      {
+        "stage_id": 6,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "权限已更新。为了后续协调，我需要确认会议房间的预订状态是否正常，因为如果房间有问题可能会影响未来的相关讨论。请检查一下那个会议的房间预订详情。",
+        "stage_goal": "查询房间预订状态，确认会议房间预订为confirmed。",
+        "depends_on_stages": [
+          5
+        ],
+        "required_tools": [
+          "list_bookings"
+        ],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [
+          {
+            "key": "booking_id",
+            "question": "会议meeting_003对应的房间预订ID是什么？",
+            "expected": "meeting_003",
+            "check_type": "exact",
+            "required": true
+          },
+          {
+            "key": "status",
+            "question": "该房间预订的状态是什么？",
+            "expected": "confirmed",
+            "check_type": "exact",
+            "required": true
+          }
+        ],
+        "state_checks": [],
+        "state_change": "none"
+      },
+      {
+        "stage_id": 7,
+        "role": "高级工程师",
+        "user_id": "user002",
+        "user_says": "所有检查都已完成。现在，请最终验证数据库状态：权限请求已批准，文档权限已授予，会议房间预订正常。确保没有不一致之处。",
+        "stage_goal": "最终验证数据库状态一致性，确认权限和会议相关记录均符合预期。",
+        "depends_on_stages": [
+          6
+        ],
+        "required_tools": [],
+        "optional_tools": [],
+        "forbidden_tools": [],
+        "fill_blanks": [],
+        "state_checks": [
+          {
+            "table": "PermissionRequest",
+            "condition": {
+              "request_id": "req000001",
+              "status": "approved"
+            },
+            "expected_count": 1
+          },
+          {
+            "table": "DocumentPermission",
+            "condition": {
+              "document_id": "doc000021",
+              "entity_id": "user010",
+              "permission": "edit"
+            },
+            "expected_count": 1
+          },
+          {
+            "table": "RoomBooking",
+            "condition": {
+              "booking_id": "meeting_003",
+              "status": "confirmed"
+            },
+            "expected_count": 1
+          }
+        ],
+        "state_change": "none"
+      }
+    ],
+    "evaluation_outline": {
+      "cross_stage_rules": [
+        "所有阶段必须按顺序执行，依赖关系不可跳过。",
+        "用户发言需自然连贯，避免直接提及工具名或API参数。",
+        "阶段3、5、6需隐含引用前序阶段内容（如“那个会议”、“该文档”、“会议房间”）。",
+        "阶段4需包含权衡语言（如“快速批准可能促进协作，但需确保不会过度开放”）。",
+        "最终状态检查必须基于真实数据库表，不使用合成表。"
+      ],
+      "final_state_checks": [
+        {
+          "table": "PermissionRequest",
+          "condition": {
+            "request_id": "req000001",
+            "status": "approved"
+          },
+          "expected_count": 1
+        },
+        {
+          "table": "DocumentPermission",
+          "condition": {
+            "document_id": "doc000021",
+            "entity_id": "user010",
+            "permission": "edit"
+          },
+          "expected_count": 1
+        },
+        {
+          "table": "RoomBooking",
+          "condition": {
+            "booking_id": "meeting_003",
+            "status": "confirmed"
+          },
+          "expected_count": 1
+        }
+      ],
+      "notes": [
+        "任务难度为4，符合跨域协调主题，涉及文档、权限和会议域。",
+        "共7个阶段，在难度约束的5-8范围内。",
+        "使用了3个演员（user002、user010、user009），在3-5范围内。",
+        "涉及2个域（document/permission和meeting），在2-3范围内。",
+        "最终阶段为具体检查，非总结性。",
+        "所有工具均来自allowed_tools，未使用forbidden_tools。",
+        "状态检查仅使用DB Schema Guard中列出的表和字段。",
+        "DocumentPermission检查使用permission字段，而非permission_type或permission_level。",
+        "近期语义（如“最近刚组织”）与seed中的meeting_recency（is_recent_meeting: true）对齐。",
+        "fill_blanks优先使用ID，用户信息查询避免使用title作为目标。"
+      ]
+    }
+  }
+}

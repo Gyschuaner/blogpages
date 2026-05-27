@@ -1,0 +1,316 @@
+{
+  "task_id": "L4_1006",
+  "task_name": "跨域协调：文档权限审批与会议跟进",
+  "model": "aliyun_qwen_flash",
+  "timestamp": "2026-03-18T16:06:37.315177",
+  "path_mining": {
+    "enabled": true,
+    "task_id": "L4_1006",
+    "source_dir": "benchmark/task_logs",
+    "history_window": 300,
+    "scanned_logs": 0,
+    "used_logs": 0,
+    "stage_path_bank": {
+      "1": [
+        {
+          "path": [
+            "list_permission_requests",
+            "get_document",
+            "query_users"
+          ],
+          "length": 3,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ],
+      "2": [
+        {
+          "path": [
+            "query_users",
+            "query_users",
+            "query_users",
+            "query_users"
+          ],
+          "length": 4,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ],
+      "3": [
+        {
+          "path": [
+            "list_meetings",
+            "get_meeting"
+          ],
+          "length": 2,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ],
+      "4": [
+        {
+          "path": [
+            "approve_permission_request"
+          ],
+          "length": 1,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ],
+      "5": [
+        {
+          "path": [
+            "list_document_permissions"
+          ],
+          "length": 1,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ],
+      "6": [
+        {
+          "path": [
+            "list_bookings",
+            "check_room_availability"
+          ],
+          "length": 2,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ],
+      "7": [
+        {
+          "path": [
+            "list_permission_requests",
+            "list_document_permissions",
+            "list_permission_requests",
+            "list_permission_requests",
+            "list_document_permissions",
+            "list_permission_requests",
+            "list_document_permissions",
+            "list_permission_requests",
+            "list_document_permissions",
+            "list_permission_requests",
+            "list_document_permissions",
+            "list_permission_requests"
+          ],
+          "length": 12,
+          "count": 1,
+          "sources": [
+            "__current_run__"
+          ]
+        }
+      ]
+    },
+    "shortest_baseline": {
+      "1": {
+        "path": [
+          "list_permission_requests",
+          "get_document",
+          "query_users"
+        ],
+        "length": 3,
+        "count": 1
+      },
+      "2": {
+        "path": [
+          "query_users",
+          "query_users",
+          "query_users",
+          "query_users"
+        ],
+        "length": 4,
+        "count": 1
+      },
+      "3": {
+        "path": [
+          "list_meetings",
+          "get_meeting"
+        ],
+        "length": 2,
+        "count": 1
+      },
+      "4": {
+        "path": [
+          "approve_permission_request"
+        ],
+        "length": 1,
+        "count": 1
+      },
+      "5": {
+        "path": [
+          "list_document_permissions"
+        ],
+        "length": 1,
+        "count": 1
+      },
+      "6": {
+        "path": [
+          "list_bookings",
+          "check_room_availability"
+        ],
+        "length": 2,
+        "count": 1
+      },
+      "7": {
+        "path": [
+          "list_permission_requests",
+          "list_document_permissions",
+          "list_permission_requests",
+          "list_permission_requests",
+          "list_document_permissions",
+          "list_permission_requests",
+          "list_document_permissions",
+          "list_permission_requests",
+          "list_document_permissions",
+          "list_permission_requests",
+          "list_document_permissions",
+          "list_permission_requests"
+        ],
+        "length": 12,
+        "count": 1
+      }
+    }
+  },
+  "current_run_path_comparison": [
+    {
+      "stage_id": 1,
+      "passed": true,
+      "observed_tool_path": [
+        "list_permission_requests",
+        "get_document",
+        "query_users"
+      ],
+      "shortest_solvable_path": [
+        "list_permission_requests",
+        "get_document",
+        "query_users"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 3,
+      "actual_tool_count": 3
+    },
+    {
+      "stage_id": 2,
+      "passed": true,
+      "observed_tool_path": [
+        "query_users",
+        "query_users",
+        "query_users",
+        "query_users"
+      ],
+      "shortest_solvable_path": [
+        "query_users",
+        "query_users",
+        "query_users",
+        "query_users"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 4,
+      "actual_tool_count": 4
+    },
+    {
+      "stage_id": 3,
+      "passed": true,
+      "observed_tool_path": [
+        "list_meetings",
+        "get_meeting"
+      ],
+      "shortest_solvable_path": [
+        "list_meetings",
+        "get_meeting"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 2,
+      "actual_tool_count": 2
+    },
+    {
+      "stage_id": 4,
+      "passed": true,
+      "observed_tool_path": [
+        "approve_permission_request"
+      ],
+      "shortest_solvable_path": [
+        "approve_permission_request"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 1,
+      "actual_tool_count": 1
+    },
+    {
+      "stage_id": 5,
+      "passed": true,
+      "observed_tool_path": [
+        "list_document_permissions"
+      ],
+      "shortest_solvable_path": [
+        "list_document_permissions"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 1,
+      "actual_tool_count": 1
+    },
+    {
+      "stage_id": 6,
+      "passed": true,
+      "observed_tool_path": [
+        "list_bookings",
+        "check_room_availability"
+      ],
+      "shortest_solvable_path": [
+        "list_bookings",
+        "check_room_availability"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 2,
+      "actual_tool_count": 2
+    },
+    {
+      "stage_id": 7,
+      "passed": true,
+      "observed_tool_path": [
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests"
+      ],
+      "shortest_solvable_path": [
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests",
+        "list_document_permissions",
+        "list_permission_requests"
+      ],
+      "path_efficiency_score": 1.0,
+      "optimal_tool_count": 12,
+      "actual_tool_count": 12
+    }
+  ]
+}

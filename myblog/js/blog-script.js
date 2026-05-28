@@ -13,6 +13,16 @@ class BlogLoader {
             // 直接定义博客数据，与blog-config.json内容相同
             let rawBlogs = [
         {
+            "title": "从 Classic RAG、Graph RAG 到 Agentic RAG",
+            "path": "notes/classic-graph-agentic-rag.html",
+            "date": "2026-05-28",
+            "category": "AI",
+            "author": "xgg",
+            "readTime": "12分钟",
+            "tags": ["RAG", "Graph RAG", "Agentic RAG", "检索增强生成"],
+            "excerpt": "用 Classic RAG、Graph RAG 和 Agentic RAG 三条线梳理检索、关系连接与动态推理的差异，并给出架构选择建议与经典论文索引。"
+        },
+        {
             "title": "DQN 深度强化学习网络",
             "path": "notes/dqn-deep-q-network.html",
             "date": "2026-05-26",

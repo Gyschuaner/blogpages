@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>从 Classic RAG、Graph RAG 到 Agentic RAG - 我的个人主页</title>
+    <link rel="stylesheet" href="../style.css?v=20260526-code1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+    <script src="../js/blog-script.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <header id="navbar">
+        <div class="container">
+            <div class="logo"><a href="../index.html">Xgg的个人主页</a></div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="../home.html">首页</a></li>
+                    <li><a href="../about.html">关于我</a></li>
+                    <li><a href="../skills.html">技能</a></li>
+                    <li><a href="../projects.html">项目</a></li>
+                    <li><a href="../blog.html">博客</a></li>
+                </ul>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-bilibili"></i></a>
+                <a href="#" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </header>
+
+    <div class="blog-container">
+        <aside class="blog-sidebar-left">
+            <nav class="blog-nav">
+                <h3>博客列表</h3>
+                <ul>
+                    <li><a href="../notes/dqn-deep-q-network.html">DQN 深度强化学习网络</a></li>
+                    <li><a href="../notes/RAG 查询优化.html">RAG 查询优化</a></li>
+                    <li><a href="../notes/classic-graph-agentic-rag.html">从 Classic RAG、Graph RAG 到 Agentic RAG</a></li>
+                    <li><a href="../notes/GPT-2.html">GPT-2模型详解与实现</a></li>
+                </ul>
+                <h3 style="margin-top: 30px;">分类</h3>
+                <ul>
+                    <li><a href="../blog.html">机器学习</a></li>
+                    <li><a href="../blog.html">深度学习</a></li>
+                    <li><a href="../blog.html">NLP</a></li>
+                    <li><a href="../blog.html">AI</a></li>
+                    <li><a href="../blog.html">Python</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="blog-main-content">
+            <article class="blog-article">
+                <h1>从 Classic RAG、Graph RAG 到 Agentic RAG</h1>
+                <div class="article-meta">
+                    <span class="author"><i class="far fa-user"></i> xgg</span>
+                    <span class="publish-time"><i class="far fa-calendar-alt"></i> 2026-05-28</span>
+                    <span class="read-time"><i class="far fa-clock"></i> 大约 12分钟</span>
+                    <span class="tags">
+                        <span class="tag">RAG</span><span class="tag">Graph RAG</span><span class="tag">Agentic RAG</span><span class="tag">检索增强生成</span>
+                    </span>
+                </div>
+                <hr>
+                <div class="article-body">
+<p>很多团队第一次把大模型接入业务系统时，都会遇到同一个问题：能不能让 AI 回答公司内部资料里的问题？</p>
+
+<p>这些资料可能是员工手册、产品文档、客服知识库、会议纪要、数据库记录，也可能是业务系统里的客户、订单、供应商和库存信息。普通大模型并不知道这些私有资料，如果只靠模型本身回答，很容易出现“看起来合理，但没有依据”的幻觉。</p>
+
+<p><strong>RAG</strong>，也就是 <strong>Retrieval-Augmented Generation</strong>，正是为了解决这个问题而出现的。它的基本思想很简单：先从外部知识库中找出和问题相关的资料，再让大模型基于这些资料生成答案。</p>
+
+<p>不过，RAG 发展到现在，已经不只是“向量检索 + 大模型”这一种形式。常见的 RAG 可以分成三类：<strong>Classic RAG</strong>、<strong>Graph RAG</strong> 和 <strong>Agentic RAG</strong>。</p>
+
+<p>理解它们，不需要一开始记很多复杂术语。抓住三个动词就够了：</p>
+
+<pre><code class="language-plain">Classic RAG：retrieves，检索
+Graph RAG：connects，连接
+Agentic RAG：reasons，推理</code></pre>
+
+<h2 id="1-classic-rag-先把相似内容找出来">1. Classic RAG：先把相似内容找出来</h2>
+
+<p>Classic RAG 是最经典、最容易落地的 RAG 形式。它的核心流程是：先把文档切成多个 chunk，再把每个 chunk 转成 embedding 存入向量数据库。用户提问时，系统也会把问题转成embedding，然后在向量库中查找最相似的文本片段，最后把这些片段交给大模型生成答案。</p>
+
+<p>它最适合回答这类问题：</p>
+
+<pre><code class="language-plain">公司的年假政策是什么？某个功能如何配置？产品 A 的保修期多久？客服遇到某类问题应该怎么回复？</code></pre>
+
+<p>这些问题通常有明确答案，而且答案往往就在某个文档片段里。只要检索准确，模型回答的可靠性就会比较高。</p>
+
+<p>Classic RAG 的优势是简单、快速、成本低、工具链成熟。对于大多数企业知识库来说，先做好 Classic RAG，就已经可以解决大量高频问答问题。</p>
+
+<p>但它的<strong>局限</strong>也很明显：它主要依赖“语义相似度”。如果问题需要跨多个实体、多个文档、多个系统来推导答案，它就容易不够稳定。</p>
+
+<p>比如用户问：“A 的经理的经理是谁？”这个问题不是找一个相似段落就能解决，而是要沿着组织关系一步步查询。Classic RAG 可能能找到员工目录，但不一定能稳定完成这种关系链推理。</p>
+
+<p>因此，Classic RAG 适合“答案在某个文档片段中”的问题，不适合复杂关系型问题。</p>
+
+<h2 id="2-graph-rag-不只找文本-还要找关系">2. Graph RAG：不只找文本，还要找关系</h2>
+
+<p>Graph RAG 的重点不是替代 Classic RAG，而是在文本检索之外，引入<strong>知识图谱</strong>。</p>
+
+<p>知识图谱会把业务知识拆成<strong>实体</strong>和<strong>关系</strong>。实体可以是员工、部门、产品、零件、供应商、客户、系统模块；关系可以是“汇报给”“属于”“依赖”“使用”“供应”“负责”“影响”等。</p>
+
+<p>例如：</p>
+
+<pre><code class="language-plain">产品 A 使用零件 B
+零件 B 来自供应商 C
+供应商 C 受到芯片短缺影响</code></pre>
+
+<p>当用户问“哪些产品会受到供应商 C 的影响”时，Classic RAG 可能只能找到和供应商 C 相关的文本片段，而 Graph RAG 可以沿着关系路径继续查找：</p>
+
+<pre><code class="language-plain">供应商 C → 零件 B → 产品 A</code></pre>
+
+<p>这样，系统不仅能给出答案，还能解释答案背后的关系链。</p>
+
+<p>Graph RAG 特别适合依赖分析、影响分析、供应链追踪、组织关系查询、审批链查询和因果链分析。它解决的是“信息之间如何连接”的问题。</p>
+
+<p>当然，Graph RAG 的成本也更高。系统需要从原始文档或结构化数据中抽取实体和关系，构建知识图谱，并且持续维护。如果实体识别错误、关系抽取错误，后续的图谱遍历也会出错。</p>
+
+<p>所以，Graph RAG 适合关系密集型业务，而不是所有文档问答场景都需要它。</p>
+
+<h2 id="3-agentic-rag-让系统自己决定下一步该查什么">3. Agentic RAG：让系统自己决定下一步该查什么</h2>
+
+<p>Agentic RAG 的重点是“行动”和“规划”。</p>
+
+<p>Classic RAG 通常是固定流程：检索一次，然后回答。Graph RAG 会增加关系路径查询。而 Agentic RAG 则让 Agent 根据问题目标，动态决定下一步该做什么。</p>
+
+<p>它会思考：</p>
+
+<pre><code class="language-plain">这个问题需要拆成哪些子问题？
+应该先查哪个数据源？
+该调用哪个工具？
+当前证据是否足够？
+是否需要重新检索？
+是否需要换一个方向继续查？</code></pre>
+
+<p>比如用户问：“为什么这个月产品销量下降了？”</p>
+
+<p>这个问题没有一个固定答案入口。原因可能来自销售数据、库存系统、价格调整、竞品活动、客服投诉、营销投放等多个方面。Agentic RAG 会先拆解问题，再依次调用销售数据库、库存系统、客服系统、营销记录等工具，最后综合多方证据给出判断。</p>
+
+<p>因此，Agentic RAG 适合复杂归因、跨系统调查、多步骤研究、技术排障、运营复盘等任务。</p>
+
+<p>它的优势是灵活，能够处理路径不确定的问题。但代价也最高：LLM 调用次数更多，成本更高，延迟更长，调试更困难。</p>
+
+<p>如果只是 FAQ 问答，使用 Agentic RAG 就有点过度设计。它真正适合的是那些需要边查边判断、边判断边调整方向的问题。</p>
+
+<h2 id="4-如何选择-rag-架构">4. 如何选择 RAG 架构？</h2>
+
+<p>选择 RAG 架构，不应该看哪个名字更先进，而应该看你的业务问题长什么样。</p>
+
+<p>如果问题可以从一个文档片段里直接回答，优先选择 Classic RAG。</p>
+
+<p>如果问题依赖多个实体之间的关系路径，就考虑 Graph RAG。</p>
+
+<p>如果问题本身路径不确定，需要系统动态规划、调用多个工具并验证证据，就考虑 Agentic RAG。</p>
+
+<p>可以用下面这句话总结：</p>
+
+<pre><code class="language-plain">Classic RAG 解决“资料在哪里”；
+Graph RAG 解决“资料之间怎么连”；
+Agentic RAG 解决“下一步该查什么”。</code></pre>
+
+<p><strong>从 Classic RAG 到 Graph RAG，再到 Agentic RAG，系统能力越来越灵活，但成本、延迟和调试难度也会同步上升。</strong></p>
+
+<p>因此，现实项目中最稳妥的做法往往不是三选一，而是混合使用：</p>
+
+<pre><code class="language-plain">先用 Classic RAG 覆盖高频文档问答；
+再用 Graph RAG 处理关系链和依赖链问题；
+最后把开放式、多步骤、跨系统任务交给 Agentic RAG。</code></pre>
+
+<p>这也符合工程实践中的基本原则：先用简单方案解决大多数问题，再为真正复杂的问题增加复杂度。</p>
+
+<h2 id="5-总结">5. 总结</h2>
+
+<p>RAG 的本质不是让大模型“记住”所有知识，而是让它在回答前能够使用外部知识。</p>
+
+<p>Classic RAG、Graph RAG 和 Agentic RAG 使用的可能是同一批知识源，但它们在查询时的使用方式不同。</p>
+
+<p>Classic RAG 像一个资料检索员，帮你找到相关文档。</p>
+
+<p>Graph RAG 像一个关系分析师，帮你沿着实体关系找到答案。</p>
+
+<p>Agentic RAG 像一个调查员，能够规划步骤、调用工具、验证证据，并在必要时重新调整方向。</p>
+
+<p>所以，理解 RAG 架构时，不要只看名词，而要看它到底在做什么动作：</p>
+
+<pre><code class="language-plain">它是在检索？它是在连接？还是在推理和行动？</code></pre>
+
+<p>把这三个动作看清楚，RAG 的架构选择就会清晰很多。</p>
+
+<h2 id="6-小测验">6.小测验</h2>
+
+<pre><code class="language-plain">1. Classic RAG 为什么适合 FAQ？
+2. Classic RAG 为什么不擅长多跳关系问题？
+3. Graph RAG 的“图”到底存的是什么？
+4. Graph RAG 和向量检索是不是互斥的？
+5. Agentic RAG 为什么更贵、更慢？
+6. Agentic RAG 和普通 RAG 最大区别是什么？
+7. 实际项目里为什么往往是混合架构？</code></pre>
+
+<p>尤其要记住一点：<strong>Graph RAG 和 Agentic RAG 不是为了替代 Classic RAG，而是在 Classic RAG 解决不了的问题上继续增强。</strong></p>
+
+<h2 id="7-经典论文">7.经典论文</h2>
+
+<h3 id="classic-rag">Classic RAG</h3>
+
+<p><strong>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2005.11401</a></p>
+
+<p>这就是 RAG 这个名字最经典的论文之一。它把预训练 seq2seq 模型和非参数化记忆，也就是外部 Wikipedia 向量索引结合起来，用于知识密集型任务。论文提出 RAG-Sequence 和 RAG-Token 两种形式，是理解 Classic RAG 的核心起点。</p>
+
+<p><strong>Precise Zero-Shot Dense Retrieval without Relevance Labels</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2212.10496" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2212.10496</a></p>
+
+<p>这篇提出 HyDE，也就是 Hypothetical Document Embeddings。它的思路是先让 LLM 根据问题生成一个“假想答案文档”，再对这个假想文档做 embedding，用它去检索真实文档。它很适合放在 Classic RAG 的“<strong>查询改写 / 查询增强</strong>”变体部分。</p>
+
+<p><strong>RAG-Fusion: a New Take on Retrieval-Augmented Generation</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2402.03367" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2402.03367</a></p>
+
+<p>RAG-Fusion 的核心是多查询生成加 Reciprocal Rank Fusion。它不是只用原始 query 检索，而是生成多个不同角度的 query，再把多个检索结果融合排序。适合用来解释“提高召回率”的 RAG 变体。</p>
+
+<p><strong>Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2310.11511" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2310.11511</a></p>
+
+<p>Self-RAG 是非常重要的 RAG 变体。它让模型学习在需要时检索，并对检索内容和自身生成结果进行反思。论文引入 reflection tokens，使模型能够控制何时检索、如何评价证据、如何生成最终答案。它非常适合解释 RAG 中的“自反思”和“自我评估”。</p>
+
+<p><strong>RAT: Retrieval Augmented Thoughts Elicit Context-Aware Reasoning in Long-Horizon Generation</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2403.05313" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2403.05313</a></p>
+
+<p>RAT 把检索和 Chain-of-Thought 结合起来。它先生成初始思维链，然后对每一步 thought 用检索信息进行修正。它适合解释“检索增强的不只是最终答案，也可以增强推理过程本身”。</p>
+
+<p><strong>DeepRAG: Thinking to Retrieval Step by Step for Large Language Models</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2502.01142" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2502.01142</a></p>
+
+<p>DeepRAG 是比较新的 reasoning RAG 工作。它把检索增强推理建模成 MDP，让模型在每一步决定是继续内部推理，还是调用外部检索。它和 Agentic RAG 很接近，因为重点不再是固定检索，而是“逐步判断什么时候需要外部知识”。</p>
+
+<h3 id="graph-rag">Graph RAG</h3>
+
+<p><strong>From Local to Global: A Graph RAG Approach to Query-Focused Summarization</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2404.16130" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2404.16130</a></p>
+
+<p>这是 Microsoft GraphRAG 代表性论文。它认为普通 RAG 对局部问题有效，但面对“整个语料的主要主题是什么”这类全局问题会比较弱。它通过 LLM 构建实体图谱、社区发现和社区摘要，实现从局部信息到全局总结的 Graph RAG。</p>
+
+<p><strong>HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2405.14831" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2405.14831</a></p>
+
+<p>HippoRAG 是很有意思的一篇 Graph RAG / Memory RAG 论文。它受人类海马体长期记忆机制启发，把 LLM、知识图谱和 Personalized PageRank 结合起来，用于多跳问答和长期知识整合。它特别适合放在“RAG + Memory + Graph”的方向。</p>
+
+<p><strong>LightRAG: Simple and Fast Retrieval-Augmented Generation</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2410.05779" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2410.05779</a></p>
+
+<p>LightRAG 是比较新的 Graph-based RAG 框架。它把图结构和向量表示结合起来，提出 dual-level retrieval，从低层实体信息和高层关系信息两个层次进行检索，并支持增量更新。适合用来讲“轻量化、可更新的 Graph RAG”。</p>
+
+<h3 id="agentic-rag">Agentic RAG</h3>
+
+<p><strong>Toolformer: Language Models Can Teach Themselves to Use Tools</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2302.04761</a></p>
+
+<p>Toolformer 研究的是语言模型如何学习调用工具，包括计算器、搜索引擎、问答系统、翻译系统和日历等。它对 Agentic RAG 的启发在于：RAG 不一定只调用向量库，也可以调用各种外部工具和 API。</p>
+
+<p><strong>ARAG: Agentic Retrieval Augmented Generation for Personalized Recommendation</strong></p>
+
+<p>arXiv: <a href="https://arxiv.org/abs/2506.21931" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2506.21931</a></p>
+
+<p>ARAG 是比较新的 Agentic RAG 应用论文，面向个性化推荐。它把多智能体机制放进 RAG pipeline，包括用户理解 agent、NLI agent、上下文总结 agent 和 item ranker agent，用于更动态地理解用户偏好和候选物品匹配度。</p>
+                </div>
+            </article>
+        </main>
+
+        <aside class="blog-sidebar-right">
+            <div class="toc">
+                <h3>文章目录</h3>
+                <ul class="toc-list">
+<li><a href="#1-classic-rag-先把相似内容找出来">1. Classic RAG：先把相似内容找出来</a></li>
+<li><a href="#2-graph-rag-不只找文本-还要找关系">2. Graph RAG：不只找文本，还要找关系</a></li>
+<li><a href="#3-agentic-rag-让系统自己决定下一步该查什么">3. Agentic RAG：让系统自己决定下一步该查什么</a></li>
+<li><a href="#4-如何选择-rag-架构">4. 如何选择 RAG 架构？</a></li>
+<li><a href="#5-总结">5. 总结</a></li>
+<li><a href="#6-小测验">6.小测验</a></li>
+<li class="toc-item-has-children">
+<div class="toc-toggle"><i class="fas fa-chevron-down toc-icon"></i>
+<a href="#7-经典论文">7.经典论文</a></div>
+<ul class="toc-children">
+<li><a href="#classic-rag">Classic RAG</a></li>
+<li><a href="#graph-rag">Graph RAG</a></li>
+<li><a href="#agentic-rag">Agentic RAG</a></li>
+</ul></li>
+                </ul>
+            </div>
+        </aside>
+
+        <style>
+            .toc-toggle { display: flex; align-items: center; cursor: pointer; }
+            .toc-icon { width: 16px; height: 16px; margin-right: 5px; transition: transform 0.3s ease; }
+            .toc-toggle.collapsed .toc-icon { transform: rotate(-90deg); }
+            .toc-children { margin-left: 20px; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 800px; overflow: hidden; opacity: 1; }
+            .toc-children.collapsed { max-height: 0; opacity: 0; }
+            .toc-toggle a { flex: 1; }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleItems = document.querySelectorAll('.toc-toggle');
+                toggleItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'A') return;
+                        const parent = this.closest('.toc-item-has-children');
+                        const children = parent.querySelector('.toc-children');
+                        this.classList.toggle('collapsed');
+                        children.classList.toggle('collapsed');
+                    });
+                });
+            });
+        </script>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Xgg的个人主页. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="../index.html">首页</a>
+                    <a href="../blog.html">博客</a>
+                    <a href="../contact.html">联系我</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button id="back-to-top" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
+    <script src="../script.js"></script>
+    <script src="../js/blog-script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { hljs.highlightAll(); });</script>
+</body>
+</html>
